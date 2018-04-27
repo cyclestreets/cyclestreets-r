@@ -18,7 +18,8 @@ from = "Leeds Rail Station"
 to = "University of Leeds"
 # res_json = stplanr::route_cyclestreet(from, to, silent = FALSE, save_raw = TRUE)
 # jsonlite::write_json(res_json, "inst/extdata/res_json.json")
-obj = jsonlite::read_json("inst/extdata/res_json.json", simplifyVector = T)
+f = system.file(package = "cyclestreets", "extdata/res_json.json")
+obj = jsonlite::read_json(f, simplifyVector = T)
 rsf = json2sf_cs(obj)
 sf:::plot.sf(rsf)
 }

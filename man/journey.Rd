@@ -54,7 +54,6 @@ allowing the API key to be available in future
 sessions.
 }
 \examples{
-
 \dontrun{
 from = c(-1.55, 53.80) # geo_code("leeds")
 to = c(-1.76, 53.80) # geo_code("bradford uk")
