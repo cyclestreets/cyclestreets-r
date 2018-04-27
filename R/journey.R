@@ -54,10 +54,10 @@ journey <- function(from, to, plan = "fastest", silent = TRUE, pat = NULL,
                     save_raw = "FALSE") {
 
   # Convert character strings to lon/lat if needs be
-  if(is.character(from))
-    from <- geo_code(from)
-  if(is.character(to))
-    to <- geo_code(to)
+  # if(is.character(from))
+  #   from <- geo_code(from)
+  # if(is.character(to))
+  #   to <- geo_code(to)
 
   orig <- paste0(from, collapse = ",")
   dest <- paste0(to, collapse = ",")
@@ -122,10 +122,10 @@ txt2coords = function(txt) { # helper function to document...
 #' # res_json = stplanr::route_cyclestreet(from, to, silent = FALSE, save_raw = TRUE)
 #' # jsonlite::write_json(res_json, "inst/extdata/res_json.json")
 #' f = system.file(package = "cyclestreets", "extdata/res_json.json")
-#' obj = jsonlite::read_json(f, simplifyVector = T)
+#' obj = jsonlite::read_json(f, simplifyVector = TRUE)
 #' rsf = json2sf_cs(obj)
 #' sf:::plot.sf(rsf)
-json2sf_cs <- function(obj, cols, default_crs) {
+json2sf_cs <- function(obj) {
   coord_list = lapply(obj$marker$`@attributes`$points[-1], txt2coords)
   rsflx = lapply(coord_list, sf::st_linestring)
   rsfl = sf::st_sfc(rsflx)
@@ -148,12 +148,6 @@ json2sf_cs <- function(obj, cols, default_crs) {
 
   # todo: create more segment-level statistics (vectors) +
   # add them to the data frame (d) below
-  if(!missing(cols)){
-    d = d[,cols]
-  }
-  else {
-    d
-  }
 
   rsf = sf::st_sf(d, geometry = rsfl, crs = 4326)
 
