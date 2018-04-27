@@ -37,7 +37,27 @@ devtools::install_github("robinlovelace/cyclestreets")
 This is a basic example which shows you how to solve a common problem:
 
 ```{r example}
-## basic example code
+# Install packages used below
+install.packages("stplanr")
+install.packages("devtools")
+devtools::install_github("Robinlovelace/cyclestreets")
+install.packages("mapview")
+
+# Get start/finish points as geocoded points
+library ("stplanr")
+from = stplanr::geo_code ("Bradford")
+to = stplanr::geo_code ("Leeds")
+
+# Obtain bicycle route
+# Get your key at https://www.cyclestreets.net/api/apply/
+# Route types available are: fastest, quietest, balanced
+library ("cyclestreets")
+Sys.setenv (CYCLESTREET='your_key_here')
+route = cyclestreets::journey (from, to, "fastest")
+
+# Display on map
+library ("mapview")
+mapview::mapview(route)
 ```
 
 What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
