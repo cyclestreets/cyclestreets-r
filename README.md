@@ -13,14 +13,8 @@ Installation
 You can install the released version of cyclestreets from [CRAN](https://CRAN.R-project.org) with:
 
 ``` r
-install.packages("cyclestreets")
-```
-
-And the development version from [GitHub](https://github.com/) with:
-
-``` r
-# install.packages("devtools")
-devtools::install_github("robinlovelace/cyclestreets")
+install.packages("devtools")
+devtools::install_github("Robinlovelace/cyclestreets")
 ```
 
 Example
@@ -29,26 +23,22 @@ Example
 This is a basic example which shows you how to solve a common problem:
 
 ``` r
-## basic example code
+# Get start/finish points, e.g. as geocoded points
+#install.packages("stplanr")
+library ("stplanr")
+from = stplanr::geo_code ("Bradford")
+to = stplanr::geo_code ("Leeds")
+
+# Obtain bicycle route
+# Get your key at https://www.cyclestreets.net/api/apply/
+# Put your key in your machine environment using `export CYCLESTREET=your_key_here`
+# Route types available are: fastest, quietest, balanced
+library ("cyclestreets")
+key = Sys.getenv ('CYCLESTREET')
+route = cyclestreets::journey (from, to, "balanced")
+
+# Display on map, e.g.
+#install.packages("mapview")
+#library ("mapview")
+#mapview::mapview(route)
 ```
-
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
-
-``` r
-summary(cars)
-#>      speed           dist       
-#>  Min.   : 4.0   Min.   :  2.00  
-#>  1st Qu.:12.0   1st Qu.: 26.00  
-#>  Median :15.0   Median : 36.00  
-#>  Mean   :15.4   Mean   : 42.98  
-#>  3rd Qu.:19.0   3rd Qu.: 56.00  
-#>  Max.   :25.0   Max.   :120.00
-```
-
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date.
-
-You can also embed plots, for example:
-
-<img src="man/figures/README-pressure-1.png" width="100%" />
-
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub!
