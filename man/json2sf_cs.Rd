@@ -4,9 +4,7 @@
 \alias{json2sf_cs}
 \title{Convert output from CycleStreets.net into sf object}
 \usage{
-json2sf_cs(obj, cols = c("name", "distances", "time", "busynance",
-  "elevations", "start_longitude", "start_latitude", "finish_longitude",
-  "finish_latitude"))
+json2sf_cs(obj, cols = NULL)
 }
 \arguments{
 \item{obj}{Object from CycleStreets.net read-in with}
@@ -15,18 +13,6 @@ json2sf_cs(obj, cols = c("name", "distances", "time", "busynance",
 }
 \description{
 Convert output from CycleStreets.net into sf object
-}
-\details{
-A full list of variables (\code{cols}) available is represented by:\preformatted{c("time", "busynance", "signalledJunctions", "signalledCrossings",
-"name", "walk", "elevations", "distances", "start", "finish",
-"startSpeed", "start_longitude", "start_latitude", "finish_longitude",
-"finish_latitude", "crow_fly_distance", "event", "whence", "speed",
-"itinerary", "clientRouteId", "plan", "note", "length", "quietness",
-"west", "south", "east", "north", "leaving", "arriving", "grammesCO2saved",
-"calories", "edition", "geometry")
-}
-
-Many of these are constant for each journey.
 }
 \examples{
 from = "Leeds Rail Station"
@@ -37,5 +23,5 @@ f = system.file(package = "cyclestreets", "extdata/res_json.json")
 obj = jsonlite::read_json(f, simplifyVector = TRUE)
 rsf = json2sf_cs(obj)
 sf:::plot.sf(rsf)
-json2sf_cs(obj, cols = NULL)
+json2sf_cs(obj, cols = c("time", "busynance", "elevations"))
 }

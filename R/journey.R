@@ -12,9 +12,19 @@
 #' By default it uses the CYCLESTREET environment variable.
 #' This can be set with `usethis::edit_r_environ()`.
 #'
+#' A full list of variables (`cols`) available is represented by:
+#' ```
+#' c("time", "busynance", "signalledJunctions", "signalledCrossings",
+#' "name", "walk", "elevations", "distances", "start", "finish",
+#' "startSpeed", "start_longitude", "start_latitude", "finish_longitude",
+#' "finish_latitude", "crow_fly_distance", "event", "whence", "speed",
+#' "itinerary", "clientRouteId", "plan", "note", "length", "quietness",
+#' "west", "south", "east", "north", "leaving", "arriving", "grammesCO2saved",
+#' "calories", "edition", "geometry")
+#' ```
+#'
 #' @param from Longitude/Latitude pair, e.g. `c(-1.55, 53.80)`
 #' @param to Longitude/Latitude pair, e.g. `c(-1.55, 53.80)`
-#'
 #' @param plan Text strong of either "fastest" (default), "quietest" or "balanced"
 #' @param silent Logical (default is FALSE). TRUE hides request sent.
 #' @param pat The API key used. By default this uses `Sys.getenv("CYCLESTREET")`.
@@ -23,6 +33,8 @@
 #' @param reporterrors Boolean value (TRUE/FALSE) indicating if cyclestreets (TRUE by default).
 #' should report errors (FALSE by default).
 #' @param save_raw Boolean value which returns raw list from the json if TRUE (FALSE by default).
+#' @inheritParams json2sf_cs
+#' @seealso json2sf_cs
 #' @export
 #' @examples
 #' \dontrun{
@@ -42,7 +54,18 @@ journey <- function(from, to, plan = "fastest", silent = TRUE,
                     pat = NULL,
                     base_url = "https://www.cyclestreets.net",
                     reporterrors = TRUE,
-                    save_raw = "FALSE") {
+                    save_raw = "FALSE",
+                    cols = c(
+                      "name",
+                      "distances",
+                      "time",
+                      "busynance",
+                      "elevations",
+                      "start_longitude",
+                      "start_latitude",
+                      "finish_longitude",
+                      "finish_latitude"
+                    )) {
 
   if(is.null(pat)) pat = Sys.getenv("CYCLESTREET")
   orig <- paste0(from, collapse = ",")
@@ -84,7 +107,7 @@ journey <- function(from, to, plan = "fastest", silent = TRUE,
   if(save_raw) {
     return(obj)
   } else {
-    r = json2sf_cs(obj)
+    r = json2sf_cs(obj, cols = cols)
   }
   r
 }
@@ -97,22 +120,6 @@ txt2coords = function(txt) { # helper function to document...
 #'
 #' @param obj Object from CycleStreets.net read-in with
 #' @param cols Columns to be included in the result, a character vector or `NULL` for all available columns (see details for default)
-#'
-#' @details
-#'
-#' A full list of variables (`cols`) available is represented by:
-#' ```
-#' c("time", "busynance", "signalledJunctions", "signalledCrossings",
-#' "name", "walk", "elevations", "distances", "start", "finish",
-#' "startSpeed", "start_longitude", "start_latitude", "finish_longitude",
-#' "finish_latitude", "crow_fly_distance", "event", "whence", "speed",
-#' "itinerary", "clientRouteId", "plan", "note", "length", "quietness",
-#' "west", "south", "east", "north", "leaving", "arriving", "grammesCO2saved",
-#' "calories", "edition", "geometry")
-#' ```
-#'
-#' Many of these are constant for each journey.
-#'
 #' @export
 #' @examples
 #' from = "Leeds Rail Station"
@@ -123,18 +130,8 @@ txt2coords = function(txt) { # helper function to document...
 #' obj = jsonlite::read_json(f, simplifyVector = TRUE)
 #' rsf = json2sf_cs(obj)
 #' sf:::plot.sf(rsf)
-#' json2sf_cs(obj, cols = NULL)
-json2sf_cs <- function(obj, cols = c(
-  "name",
-  "distances",
-  "time",
-  "busynance",
-  "elevations",
-  "start_longitude",
-  "start_latitude",
-  "finish_longitude",
-  "finish_latitude"
-)) {
+#' json2sf_cs(obj, cols = c("time", "busynance", "elevations"))
+json2sf_cs <- function(obj, cols = NULL) {
   coord_list = lapply(obj$marker$`@attributes`$points[-1], txt2coords)
   rsfl = lapply(coord_list, sf::st_linestring) %>%
     sf::st_sfc()

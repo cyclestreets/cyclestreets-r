@@ -6,7 +6,9 @@
 \usage{
 journey(from, to, plan = "fastest", silent = TRUE, pat = NULL,
   base_url = "https://www.cyclestreets.net", reporterrors = TRUE,
-  save_raw = "FALSE")
+  save_raw = "FALSE", cols = c("name", "distances", "time", "busynance",
+  "elevations", "start_longitude", "start_latitude", "finish_longitude",
+  "finish_latitude"))
 }
 \arguments{
 \item{from}{Longitude/Latitude pair, e.g. \code{c(-1.55, 53.80)}}
@@ -26,6 +28,8 @@ journey(from, to, plan = "fastest", silent = TRUE, pat = NULL,
 should report errors (FALSE by default).}
 
 \item{save_raw}{Boolean value which returns raw list from the json if TRUE (FALSE by default).}
+
+\item{cols}{Columns to be included in the result, a character vector or \code{NULL} for all available columns (see details for default)}
 }
 \description{
 R interface to the CycleStreets.net journey planning API,
@@ -39,6 +43,15 @@ CycleStreets.net does not yet work worldwide.
 You need to have an api key for this code to run.
 By default it uses the CYCLESTREET environment variable.
 This can be set with \code{usethis::edit_r_environ()}.
+
+A full list of variables (\code{cols}) available is represented by:\preformatted{c("time", "busynance", "signalledJunctions", "signalledCrossings",
+"name", "walk", "elevations", "distances", "start", "finish",
+"startSpeed", "start_longitude", "start_latitude", "finish_longitude",
+"finish_latitude", "crow_fly_distance", "event", "whence", "speed",
+"itinerary", "clientRouteId", "plan", "note", "length", "quietness",
+"west", "south", "east", "north", "leaving", "arriving", "grammesCO2saved",
+"calories", "edition", "geometry")
+}
 }
 \examples{
 \dontrun{
@@ -54,4 +67,7 @@ plot(r2["busynance"], add = TRUE)
 r3 = journey(from, to, silent = FALSE)
 r4 = journey(from, to, save_raw = TRUE)
 }
+}
+\seealso{
+json2sf_cs
 }
