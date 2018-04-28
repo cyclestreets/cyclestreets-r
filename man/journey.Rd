@@ -19,7 +19,7 @@ journey(from, to, plan = "fastest", silent = TRUE, pat = NULL,
 
 \item{silent}{Logical (default is FALSE). TRUE hides request sent.}
 
-\item{pat}{The API key used. By default this uses \code{Sys.getenv("CYCLESTREET")}.}
+\item{pat}{The API key used. By default this uses \code{Sys.getenv("CYCLESTREETS")}.}
 
 \item{base_url}{The base url from which to construct API requests
 (with default set to main server)}
@@ -41,7 +41,7 @@ Requires the internet and a CycleStreets.net API key.
 CycleStreets.net does not yet work worldwide.
 
 You need to have an api key for this code to run.
-By default it uses the CYCLESTREET environment variable.
+By default it uses the CYCLESTREETS environment variable.
 This can be set with \code{usethis::edit_r_environ()}.
 
 A full list of variables (\code{cols}) available is represented by:\preformatted{c("time", "busynance", "signalledJunctions", "signalledCrossings",
