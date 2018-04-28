@@ -44,9 +44,14 @@ This can be set with \code{usethis::edit_r_environ()}.
 \dontrun{
 from = c(-1.55, 53.80) # geo_code("leeds")
 to = c(-1.76, 53.80) # geo_code("bradford uk")
-r = journey(from, to)
-sf:::plot.sf(r)
-r = journey(from, to, silent = FALSE)
-r = journey(from, to, save_raw = TRUE)
+r1 = journey(from, to)
+sf:::plot.sf(r1)
+to = c(-2, 53.5) # towards manchester
+r1 = journey(from, to)
+r2 = journey(from, to, plan = "balanced")
+plot(r1["busynance"], reset = FALSE)
+plot(r2["busynance"], add = TRUE)
+r3 = journey(from, to, silent = FALSE)
+r4 = journey(from, to, save_raw = TRUE)
 }
 }

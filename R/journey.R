@@ -30,7 +30,7 @@
 #' to = c(-1.76, 53.80) # geo_code("bradford uk")
 #' r1 = journey(from, to)
 #' sf:::plot.sf(r1)
-#' to = c(-2, 53.5)
+#' to = c(-2, 53.5) # towards manchester
 #' r1 = journey(from, to)
 #' r2 = journey(from, to, plan = "balanced")
 #' plot(r1["busynance"], reset = FALSE)
@@ -39,11 +39,12 @@
 #' r4 = journey(from, to, save_raw = TRUE)
 #' }
 journey <- function(from, to, plan = "fastest", silent = TRUE,
-                    pat = Sys.getenv("CYCLESTREET"),
+                    pat = NULL,
                     base_url = "https://www.cyclestreets.net",
                     reporterrors = TRUE,
                     save_raw = "FALSE") {
 
+  if(is.null(pat)) pat = Sys.getenv("CYCLESTREET")
   orig <- paste0(from, collapse = ",")
   dest <- paste0(to, collapse = ",")
   ft_string <- paste(orig, dest, sep = "|")
