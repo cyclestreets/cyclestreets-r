@@ -110,29 +110,48 @@ txt2coords = function(txt) { # helper function to document...
 #' sf:::plot.sf(rsf)
 json2sf_cs <- function(obj) {
   coord_list = lapply(obj$marker$`@attributes`$points[-1], txt2coords)
-  rsflx = lapply(coord_list, sf::st_linestring)
-  rsfl = sf::st_sfc(rsflx)
+  rsfl = lapply(coord_list, sf::st_linestring) %>%
+    sf::st_sfc(.)
 
-  # variables
+  # variables - constant
+  n_segs = length(rsfl)
+  cols = sapply(obj$marker$`@attributes`, function(x) sum(is.na(x)))
+  sel_constant = cols == n_segs &
+    names(cols) != "coordinates"
+  cols_constant = names(cols)[sel_constant]
+  vals_constant = lapply(cols_constant, function(x)
+    obj$marker$`@attributes`[[x]][1])
+  names(vals_constant) = cols_constant
+  suppressWarnings({
+    vals_numeric = lapply(vals_constant, as.numeric)
+  })
+  sel_numeric = !is.na(vals_numeric)
+  vals_constant[sel_numeric] = vals_numeric[sel_numeric]
+
+  d_constant = data.frame(vals_constant)[rep(1, n_segs), ]
+
   # useful cols: busynance, name, elevations, distances, turn,provisionName
 
-  b = sapply(obj$marker$`@attributes`$busynance[-1], as.numeric)
-  n = obj$marker$`@attributes`$name[-1]
-  e = stringr::str_split(obj$marker$`@attributes`$elevations[-1],pattern = ",") %>%
-    lapply(as.numeric) %>%
-    lapply(mean) %>%
-    unlist()
-  d = sapply(obj$marker$`@attributes`$distance[-1],as.numeric)
-  t = obj$marker$`@attributes`$turn[-1]
-  p = obj$marker$`@attributes`$provisionName[-1]
 
-  d = data.frame(busynance = b, name = n, elevations = e, distance = d,
-                 turn = t, pname = p)
+  d = data.frame(row.names = 1:n_segs,
+    busynance = sapply(obj$marker$`@attributes`$busynance[-1], as.numeric),
+    name = obj$marker$`@attributes`$name[-1],
+    elevations = stringr::str_split(obj$marker$`@attributes`$elevations[-1],pattern = ",") %>%
+      lapply(as.numeric) %>%
+      lapply(mean) %>%
+      unlist(),
+    distance = sapply(obj$marker$`@attributes`$distance[-1],as.numeric),
+    turn = obj$marker$`@attributes`$turn[-1],
+    provisionName = obj$marker$`@attributes`$provisionName[-1]
+
+  )
+
+  d_all = cbind(d, d_constant)
 
   # todo: create more segment-level statistics (vectors) +
   # add them to the data frame (d) below
 
-  rsf = sf::st_sf(d, geometry = rsfl, crs = 4326)
+  rsf = sf::st_sf(d_all, geometry = rsfl, crs = 4326)
 
   return(rsf)
 

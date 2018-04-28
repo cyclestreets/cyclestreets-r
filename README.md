@@ -12,7 +12,8 @@ It was split-out from **stplanr** for modularity.
 Installation
 ------------
 
-You can install the released version of cyclestreets from [CRAN](https://CRAN.R-project.org) with:
+<!-- You can install the released version of cyclestreets from [CRAN](https://CRAN.R-project.org) with: -->
+Install the package with **devtools** as follows:
 
 ``` r
 # install.packages("devtools")
@@ -32,6 +33,8 @@ from = c(-1.544, 53.794)
 to = c(-1.551, 53.807)
 r = cyclestreets::journey(from, to, "balanced")
 sf:::plot.sf(r)
+#> Warning: plotting the first 10 out of 32 attributes; use max.plot = 32 to
+#> plot all
 ```
 
 <img src="man/figures/README-example-1.png" width="100%" />
