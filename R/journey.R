@@ -95,8 +95,23 @@ txt2coords = function(txt) { # helper function to document...
 }
 #' Convert output from CycleStreets.net into sf object
 #'
-#' @param obj Object from CycleStreets.net read-in with:
-#' \code{jsonlite::read_json("inst/extdata/res_json.json", simplifyVector = T)}
+#' @param obj Object from CycleStreets.net read-in with
+#' @param cols Columns to be included in the result, a character vector or `NULL` for all available columns (see details for default)
+#'
+#' @details
+#'
+#' A full list of variables (`cols`) available is represented by:
+#' ```
+#' c("time", "busynance", "signalledJunctions", "signalledCrossings",
+#' "name", "walk", "elevations", "distances", "start", "finish",
+#' "startSpeed", "start_longitude", "start_latitude", "finish_longitude",
+#' "finish_latitude", "crow_fly_distance", "event", "whence", "speed",
+#' "itinerary", "clientRouteId", "plan", "note", "length", "quietness",
+#' "west", "south", "east", "north", "leaving", "arriving", "grammesCO2saved",
+#' "calories", "edition", "geometry")
+#' ```
+#'
+#' Many of these are constant for each journey.
 #'
 #' @export
 #' @examples
@@ -108,17 +123,28 @@ txt2coords = function(txt) { # helper function to document...
 #' obj = jsonlite::read_json(f, simplifyVector = TRUE)
 #' rsf = json2sf_cs(obj)
 #' sf:::plot.sf(rsf)
-json2sf_cs <- function(obj) {
+#' json2sf_cs(obj, cols = NULL)
+json2sf_cs <- function(obj, cols = c(
+  "name",
+  "distances",
+  "time",
+  "busynance",
+  "elevations",
+  "start_longitude",
+  "start_latitude",
+  "finish_longitude",
+  "finish_latitude"
+)) {
   coord_list = lapply(obj$marker$`@attributes`$points[-1], txt2coords)
   rsfl = lapply(coord_list, sf::st_linestring) %>%
-    sf::st_sfc(.)
+    sf::st_sfc()
 
   # variables - constant
   n_segs = length(rsfl)
-  cols = sapply(obj$marker$`@attributes`, function(x) sum(is.na(x)))
-  sel_constant = cols == n_segs &
-    names(cols) != "coordinates"
-  cols_constant = names(cols)[sel_constant]
+  cols_na = sapply(obj$marker$`@attributes`, function(x) sum(is.na(x)))
+  sel_constant = cols_na == n_segs &
+    names(cols_na) != "coordinates"
+  cols_constant = names(cols_na)[sel_constant]
   vals_constant = lapply(cols_constant, function(x)
     obj$marker$`@attributes`[[x]][1])
   names(vals_constant) = cols_constant
@@ -127,26 +153,36 @@ json2sf_cs <- function(obj) {
   })
   sel_numeric = !is.na(vals_numeric)
   vals_constant[sel_numeric] = vals_numeric[sel_numeric]
-
   d_constant = data.frame(vals_constant)[rep(1, n_segs), ]
 
   # useful cols: busynance, name, elevations, distances, turn,provisionName
 
+  sel_variable = cols_na == 0 &
+    !grepl("startBearing|type", names(cols_na))
+  cols_variable = names(cols_na)[sel_variable]
+  vals_variable = lapply(cols_variable, function(x)
+    obj$marker$`@attributes`[[x]][-1])
+  names(vals_variable) = cols_variable
+  # vals_variable # take a look - which ones to process?
+  vals_variable$elevations = stringr::str_split(vals_variable$elevations, pattern = ",") %>%
+    lapply(as.numeric) %>%
+    lapply(mean) %>%
+    unlist()
+  vals_variable$distances = stringr::str_split(vals_variable$distances, pattern = ",") %>%
+    lapply(as.numeric) %>%
+    lapply(sum) %>%
+    unlist()
+  suppressWarnings({
+    vals_vnumeric = lapply(vals_variable, as.numeric)
+  })
+  vals_vnumeric$name = vals_variable$name
+  d_variable = data.frame(vals_vnumeric)
 
-  d = data.frame(row.names = 1:n_segs,
-    busynance = sapply(obj$marker$`@attributes`$busynance[-1], as.numeric),
-    name = obj$marker$`@attributes`$name[-1],
-    elevations = stringr::str_split(obj$marker$`@attributes`$elevations[-1],pattern = ",") %>%
-      lapply(as.numeric) %>%
-      lapply(mean) %>%
-      unlist(),
-    distance = sapply(obj$marker$`@attributes`$distance[-1],as.numeric),
-    turn = obj$marker$`@attributes`$turn[-1],
-    provisionName = obj$marker$`@attributes`$provisionName[-1]
+  d_all = cbind(d_variable, d_constant)
 
-  )
-
-  d_all = cbind(d, d_constant)
+  if(!is.null(cols)) {
+    d_all = d_all[cols]
+  }
 
   # todo: create more segment-level statistics (vectors) +
   # add them to the data frame (d) below
