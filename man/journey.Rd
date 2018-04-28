@@ -66,6 +66,7 @@ plot(r1["busynance"], reset = FALSE)
 plot(r2["busynance"], add = TRUE)
 r3 = journey(from, to, silent = FALSE)
 r4 = journey(from, to, save_raw = TRUE)
+r5 = journey(from, to, cols = NULL)
 }
 }
 \seealso{

@@ -46,7 +46,7 @@ sf:::plot.sf(r)
 
 To get a key go to https://www.cyclestreets.net/api/apply/
 
-Save the key as an environment varible using `export CYCLESTREET=your_key_here` by adding `CYCLESTREET=your_key_here` as a new line in your `.Renviron` file, e.g. with the following command:
+Save the key as an environment varible using `export CYCLESTREETS=your_key_here` by adding `CYCLESTREETS=your_key_here` as a new line in your `.Renviron` file, e.g. with the following command:
 
 ```{r, eval=FALSE}
 usethis::edit_r_environ()

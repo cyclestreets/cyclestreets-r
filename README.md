@@ -33,15 +33,13 @@ from = c(-1.544, 53.794)
 to = c(-1.551, 53.807)
 r = cyclestreets::journey(from, to, "balanced")
 sf:::plot.sf(r)
-#> Warning: plotting the first 10 out of 32 attributes; use max.plot = 32 to
-#> plot all
 ```
 
 <img src="man/figures/README-example-1.png" width="100%" />
 
 To get a key go to <https://www.cyclestreets.net/api/apply/>
 
-Save the key as an environment varible using `export CYCLESTREET=your_key_here` by adding `CYCLESTREET=your_key_here` as a new line in your `.Renviron` file, e.g. with the following command:
+Save the key as an environment varible using `export CYCLESTREETS=your_key_here` by adding `CYCLESTREETS=your_key_here` as a new line in your `.Renviron` file, e.g. with the following command:
 
 ``` r
 usethis::edit_r_environ()

@@ -9,7 +9,7 @@
 #' CycleStreets.net does not yet work worldwide.
 #'
 #' You need to have an api key for this code to run.
-#' By default it uses the CYCLESTREET environment variable.
+#' By default it uses the CYCLESTREETS environment variable.
 #' This can be set with `usethis::edit_r_environ()`.
 #'
 #' A full list of variables (`cols`) available is represented by:
@@ -27,7 +27,7 @@
 #' @param to Longitude/Latitude pair, e.g. `c(-1.55, 53.80)`
 #' @param plan Text strong of either "fastest" (default), "quietest" or "balanced"
 #' @param silent Logical (default is FALSE). TRUE hides request sent.
-#' @param pat The API key used. By default this uses `Sys.getenv("CYCLESTREET")`.
+#' @param pat The API key used. By default this uses `Sys.getenv("CYCLESTREETS")`.
 #' @param base_url The base url from which to construct API requests
 #' (with default set to main server)
 #' @param reporterrors Boolean value (TRUE/FALSE) indicating if cyclestreets (TRUE by default).
@@ -68,7 +68,7 @@ journey <- function(from, to, plan = "fastest", silent = TRUE,
                       "finish_latitude"
                     )) {
 
-  if(is.null(pat)) pat = Sys.getenv("CYCLESTREET")
+  if(is.null(pat)) pat = Sys.getenv("CYCLESTREETS")
   orig <- paste0(from, collapse = ",")
   dest <- paste0(to, collapse = ",")
   ft_string <- paste(orig, dest, sep = "|")
