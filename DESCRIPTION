@@ -1,7 +1,7 @@
 Package: cyclestreets
 Type: Package
 Title: Route Planning and Other Services for Cyclists
-Version: 0.1.1
+Version: 0.1.1.9000
 Author: person("Robin", "Lovelace", email = "rob00x@gmail.com", role = c("aut", "cre"),
     comment = c(ORCID = "0000-0001-5679-6536")),
     person("Martin", "Lucas-Smith", role = c("aut")),
