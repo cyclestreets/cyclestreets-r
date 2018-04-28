@@ -1,70 +1,52 @@
 #' Plan a journey with CycleStreets.net
 #'
-#' Provides an R interface to the CycleStreets.net cycle planning API,
+#' R interface to the CycleStreets.net journey planning API,
 #' a route planner made by cyclists for cyclists.
-#' See \url{https://www.cyclestreets.net/api/}for more information.
-#'
-#' @param from Text string or coordinates (a numeric vector of
-#'  `length = 2` representing latitude and longitude) representing a point
-#'  on Earth.
-#'
-#' @param to Text string or coordinates (a numeric vector of
-#'  `length = 2` representing latitude and longitude) representing a point
-#'  on Earth. This represents the destination of the trip.
-#'
-#' @param plan Text strong of either "fastest" (default), "quietest" or "balanced"
-#' @param silent Logical (default is FALSE). TRUE hides request sent.
-#' @param pat The API key used. By default this is set to NULL and
-#' this is usually aquired automatically through a helper, api_pat().
+#' See [cyclestreets.net/api](https://www.cyclestreets.net/api/) for details.
 #'
 #' @details
-#'
-#' Requires an
-#' internet connection, a CycleStreets.net API key
-#' and origins and destinations within the UK (and various areas beyond) to run.
-#'
-#' Note that if \code{from} and \code{to} are supplied as
-#' character strings (instead of lon/lat pairs), a
-#' geo-coding services are used via \code{geo_code()}.
+#' Requires the internet and a CycleStreets.net API key.
+#' CycleStreets.net does not yet work worldwide.
 #'
 #' You need to have an api key for this code to run.
 #' By default it uses the CYCLESTREET environment variable.
-#' This can be set with `usethis::edit_r_environ()`,
-#' allowing the API key to be available in future
-#' sessions.
+#' This can be set with `usethis::edit_r_environ()`.
 #'
+#' @param from Longitude/Latitude pair, e.g. `c(-1.55, 53.80)`
+#' @param to Longitude/Latitude pair, e.g. `c(-1.55, 53.80)`
+#'
+#' @param plan Text strong of either "fastest" (default), "quietest" or "balanced"
+#' @param silent Logical (default is FALSE). TRUE hides request sent.
+#' @param pat The API key used. By default this uses `Sys.getenv("CYCLESTREET")`.
 #' @param base_url The base url from which to construct API requests
 #' (with default set to main server)
 #' @param reporterrors Boolean value (TRUE/FALSE) indicating if cyclestreets (TRUE by default).
 #' should report errors (FALSE by default).
 #' @param save_raw Boolean value which returns raw list from the json if TRUE (FALSE by default).
 #' @export
-#' @seealso line2route
-#' @aliases route_cyclestreets
 #' @examples
 #' \dontrun{
 #' from = c(-1.55, 53.80) # geo_code("leeds")
 #' to = c(-1.76, 53.80) # geo_code("bradford uk")
-#' r = journey(from, to)
-#' sf:::plot.sf(r)
+#' r1 = journey(from, to)
+#' sf:::plot.sf(r1)
+#' to = c(-2, 53.5)
+#' r1 = journey(from, to)
+#' r2 = journey(from, to, plan = "balanced")
+#' plot(r1["busynance"], reset = FALSE)
+#' plot(r2["busynance"], add = TRUE)
+#' r3 = journey(from, to, silent = FALSE)
+#' r4 = journey(from, to, save_raw = TRUE)
 #' }
-journey <- function(from, to, plan = "fastest", silent = TRUE, pat = NULL,
+journey <- function(from, to, plan = "fastest", silent = TRUE,
+                    pat = Sys.getenv("CYCLESTREET"),
                     base_url = "https://www.cyclestreets.net",
                     reporterrors = TRUE,
                     save_raw = "FALSE") {
 
-  # Convert character strings to lon/lat if needs be
-  # if(is.character(from))
-  #   from <- geo_code(from)
-  # if(is.character(to))
-  #   to <- geo_code(to)
-
   orig <- paste0(from, collapse = ",")
   dest <- paste0(to, collapse = ",")
   ft_string <- paste(orig, dest, sep = "|")
-
-  if(is.null(pat))
-    pat = Sys.getenv("CYCLESTREET")
 
   httrmsg = httr::modify_url(
     base_url,

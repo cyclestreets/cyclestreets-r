@@ -2,7 +2,6 @@
 % Please edit documentation in R/journey.R
 \name{journey}
 \alias{journey}
-\alias{route_cyclestreets}
 \title{Plan a journey with CycleStreets.net}
 \usage{
 journey(from, to, plan = "fastest", silent = TRUE, pat = NULL,
@@ -10,20 +9,15 @@ journey(from, to, plan = "fastest", silent = TRUE, pat = NULL,
   save_raw = "FALSE")
 }
 \arguments{
-\item{from}{Text string or coordinates (a numeric vector of
-\code{length = 2} representing latitude and longitude) representing a point
-on Earth.}
+\item{from}{Longitude/Latitude pair, e.g. \code{c(-1.55, 53.80)}}
 
-\item{to}{Text string or coordinates (a numeric vector of
-\code{length = 2} representing latitude and longitude) representing a point
-on Earth. This represents the destination of the trip.}
+\item{to}{Longitude/Latitude pair, e.g. \code{c(-1.55, 53.80)}}
 
 \item{plan}{Text strong of either "fastest" (default), "quietest" or "balanced"}
 
 \item{silent}{Logical (default is FALSE). TRUE hides request sent.}
 
-\item{pat}{The API key used. By default this is set to NULL and
-this is usually aquired automatically through a helper, api_pat().}
+\item{pat}{The API key used. By default this uses \code{Sys.getenv("CYCLESTREET")}.}
 
 \item{base_url}{The base url from which to construct API requests
 (with default set to main server)}
@@ -34,24 +28,17 @@ should report errors (FALSE by default).}
 \item{save_raw}{Boolean value which returns raw list from the json if TRUE (FALSE by default).}
 }
 \description{
-Provides an R interface to the CycleStreets.net cycle planning API,
+R interface to the CycleStreets.net journey planning API,
 a route planner made by cyclists for cyclists.
-See \url{https://www.cyclestreets.net/api/}for more information.
+See \href{https://www.cyclestreets.net/api/}{cyclestreets.net/api} for details.
 }
 \details{
-Requires an
-internet connection, a CycleStreets.net API key
-and origins and destinations within the UK (and various areas beyond) to run.
-
-Note that if \code{from} and \code{to} are supplied as
-character strings (instead of lon/lat pairs), a
-geo-coding services are used via \code{geo_code()}.
+Requires the internet and a CycleStreets.net API key.
+CycleStreets.net does not yet work worldwide.
 
 You need to have an api key for this code to run.
 By default it uses the CYCLESTREET environment variable.
-This can be set with \code{usethis::edit_r_environ()},
-allowing the API key to be available in future
-sessions.
+This can be set with \code{usethis::edit_r_environ()}.
 }
 \examples{
 \dontrun{
@@ -59,8 +46,7 @@ from = c(-1.55, 53.80) # geo_code("leeds")
 to = c(-1.76, 53.80) # geo_code("bradford uk")
 r = journey(from, to)
 sf:::plot.sf(r)
+r = journey(from, to, silent = FALSE)
+r = journey(from, to, save_raw = TRUE)
 }
-}
-\seealso{
-line2route
 }
