@@ -2,10 +2,12 @@ Package: cyclestreets
 Type: Package
 Title: Cycle routing and data for cycling advocacy
 Version: 0.1.1.9001
-Authors@R: person("Robin", "Lovelace", email = "rob00x@gmail.com", role = c("aut", "cre"),
+Authors@R: c(
+    person("Robin", "Lovelace", email = "rob00x@gmail.com", role = c("aut", "cre"),
     comment = c(ORCID = "0000-0001-5679-6536")),
     person("Martin", "Lucas-Smith", role = c("aut")),
-    person("Eric", "Krueger", role = c("cbt")))
+    person("Eric", "Krueger", role = c("cbt"))
+    )
 Description: The goal of 'cyclestreets' is to provide a simple R interface to the CycleStreets (<https://www.cyclestreets.net/>) cycle routing/data API (<https://www.cyclestreets.net/api/>). This API provides A-B cycle routing, aiming to emulate as closely as possible the routes taken by a knowledgeable cyclist, and as well as other data such as collisions, traffic counts, user-submitted infrastructure images, POIs and more.
 License: GPL-3
 Encoding: UTF-8
