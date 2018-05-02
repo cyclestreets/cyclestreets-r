@@ -1,8 +1,6 @@
-# cyclestreets 0.1.2
+# cyclestreets 0.1.3
 
-# cyclestreets 0.1.1.9001
-
-# cyclestreets 0.1.1.9000
+* Changes to title and other things in preparation for CRAN submission
 
 # cyclestreets 0.1.1
 
