@@ -1,6 +1,6 @@
-# cyclestreets 0.1.3
+# cyclestreets 0.1.4
 
-* Changes to title and other things in preparation for CRAN submission
+* Update package description, title and other things in preparation for CRAN submission.
 
 # cyclestreets 0.1.1
 
