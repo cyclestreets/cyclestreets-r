@@ -8,7 +8,12 @@ Authors@R: c(
     person("Martin", "Lucas-Smith", role = c("aut")),
     person("Eric", "Krueger", role = c("ctb"))
     )
-Description: The goal of 'cyclestreets' is to provide a simple R interface to the CycleStreets (<https://www.cyclestreets.net/>) cycle routing/data API (<https://www.cyclestreets.net/api/>). This API provides A-B cycle routing, aiming to emulate as closely as possible the routes taken by a knowledgeable cyclist, and as well as other data such as collisions, traffic counts, user-submitted infrastructure images, POIs and more.
+Description: This package provides an R interface to the cycle routing/data services provided by CycleStreets.net,
+  a not-for-profit social enterprise and advocacy organisation.
+  The APIs provided by CycleStreets.net are documented at (<https://www.cyclestreets.net/api/>).
+  The focus of this package is the journey planning API, which aims to emulate the routes taken by a knowledgeable cyclist.
+  An innovative feature of the routing API of its provision of 'fastest', 'quietest' and 'balanced' profiles.
+  These represent routes taken to minimise time, avoid traffic and comprimise between the two, respectively.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
