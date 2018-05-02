@@ -1,3 +1,6 @@
+Note: CycleStreets.net is a not-for-profit organisation not software.
+This is clarified in the DESCRIPTION which has also received fixes to avoid or explain acronyms.
+
 ## Test environments
 
 * Docker running rocker/rstudio with R 3.5.0
