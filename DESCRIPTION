@@ -8,11 +8,11 @@ Authors@R: c(
     person("Martin", "Lucas-Smith", role = c("aut")),
     person("Eric", "Krueger", role = c("ctb"))
     )
-Description: This package provides an R interface to the cycle routing/data services provided by CycleStreets.net,
+Description: An interface to the cycle routing/data services provided by 'CycleStreets',
   a not-for-profit social enterprise and advocacy organisation.
-  The application programming interfaces (APIs) provided by CycleStreets.net are documented at (<https://www.cyclestreets.net/api/>).
+  The application programming interfaces (APIs) provided by 'CycleStreets' are documented at (<https://www.cyclestreets.net/api/>).
   The focus of this package is the journey planning API, which aims to emulate the routes taken by a knowledgeable cyclist.
-  An innovative feature of the routing service of its provision of 'fastest', 'quietest' and 'balanced' profiles.
+  An innovative feature of the routing service of its provision of fastest, quietest and balanced profiles.
   These represent routes taken to minimise time, avoid traffic and compromise between the two, respectively.
 License: GPL-3
 Encoding: UTF-8
