@@ -1,4 +1,4 @@
-# cyclestreets 0.1.4
+# cyclestreets 0.1.5
 
 * Update package description, title and other things in preparation for CRAN submission.
 
