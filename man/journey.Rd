@@ -4,11 +4,18 @@
 \alias{journey}
 \title{Plan a journey with CycleStreets.net}
 \usage{
-journey(from, to, plan = "fastest", silent = TRUE, pat = NULL,
-  base_url = "https://www.cyclestreets.net", reporterrors = TRUE,
-  save_raw = "FALSE", cols = c("name", "distances", "time", "busynance",
-  "elevations", "start_longitude", "start_latitude", "finish_longitude",
-  "finish_latitude"))
+journey(
+  from,
+  to,
+  plan = "fastest",
+  silent = TRUE,
+  pat = NULL,
+  base_url = "https://www.cyclestreets.net",
+  reporterrors = TRUE,
+  save_raw = "FALSE",
+  cols = c("name", "distances", "time", "busynance", "elevations", "start_longitude",
+    "start_latitude", "finish_longitude", "finish_latitude")
+)
 }
 \arguments{
 \item{from}{Longitude/Latitude pair, e.g. \code{c(-1.55, 53.80)}}

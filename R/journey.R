@@ -113,33 +113,78 @@ journey <- function(from, to, plan = "fastest", silent = TRUE,
   r
 }
 
+# obj = jsonlite::read_json(f, simplifyVector = TRUE)
+
 txt2coords = function(txt) { # helper function to document...
   coords_split <- stringr::str_split(txt, pattern = " |,")[[1]]
   matrix(as.numeric(coords_split), ncol = 2, byrow = TRUE)
 }
+# txt2coords(obj$marker$`@attributes`$points[2])
+
+# e = obj$marker$`@attributes`$elevations[1] # for whole journey
+# e1 = obj$marker$`@attributes`$elevations[2] # for 1st segment
+# txt = obj$marker$`@attributes`$elevations[2] # for 2nd segment
+
+txt2elevations = function(txt) { # helper function to document...
+  coords_split <- stringr::str_split(txt, pattern = ",")[[1]]
+  as.numeric(coords_split)
+}
+
 #' Convert output from CycleStreets.net into sf object
 #'
 #' @param obj Object from CycleStreets.net read-in with
 #' @param cols Columns to be included in the result, a character vector or `NULL` for all available columns (see details for default)
+#' @param cols_extra Additional columns to be added providing summaries of gradient and other variables
 #' @export
 #' @examples
 #' from = "Leeds Rail Station"
 #' to = "University of Leeds"
+#' # from_point = tmaptools::geocode_OSM(from)
+#' # to_point = tmaptools::geocode_OSM(to)
+#' from_point = c(-1.54408, 53.79360)
+#' to_point =   c(-1.54802, 53.79618)
 #' # save result from the API call to journey.json
-#' # res_json = stplanr::route_cyclestreet(from, to, silent = FALSE, save_raw = TRUE)
+#' # res_json = journey(from_point, to_point, silent = FALSE, save_raw = TRUE)
 #' # jsonlite::write_json(res_json, "inst/extdata/journey.json")
 #' f = system.file(package = "cyclestreets", "extdata/journey.json")
 #' obj = jsonlite::read_json(f, simplifyVector = TRUE)
 #' rsf = json2sf_cs(obj)
+#' rsf
+#' # stplanr::line2points(rsf) extract start and end points
 #' sf:::plot.sf(rsf)
 #' json2sf_cs(obj, cols = c("time", "busynance", "elevations"))
-json2sf_cs <- function(obj, cols = NULL) {
+json2sf_cs <- function(obj, cols = NULL, cols_extra = c(
+  "gradient_mean",
+  # "gradient_median",
+  # "gradient_p75",
+  # "gradient_max",
+  "provisionName",
+  "quietness"
+)) {
   coord_list = lapply(obj$marker$`@attributes`$points[-1], txt2coords)
+  elev_list = lapply(obj$marker$`@attributes`$elevations[-1], txt2elevations)
+  elev_diff_list = lapply(elev_list, function(x) diff(stats::lag(x, 1)))
+  # dist_list1 = geodist::geodist(rbind(coord_list[[1]][1, ], coord_list[[1]][2, ]), sequential = TRUE)
+  # dist_list2 = geodist::geodist(
+  #   data.frame(x = coord_list[[1]][, 1], y = coord_list[[1]][, 2]),
+  #   sequential = TRUE
+  #   )
+  dist_list = lapply(coord_list, function(x) {
+    geodist::geodist(
+      data.frame(x = x[, 1], y = x[, 2]),
+      sequential = TRUE
+      )}
+    )
+  # gradient_list = purrr::map2(elev_diff_list, dist_list, ~.x / .y)
+  gradient_list = mapply(function(x, y) x / y, elev_diff_list, dist_list)
   rsfl = lapply(coord_list, sf::st_linestring) %>%
     sf::st_sfc()
 
   # variables - constant
   n_segs = length(rsfl)
+  # cols_lengths = sapply(obj$marker$`@attributes`, length)
+  # cyclestreets_column_names = names(cols_lengths)
+  # usethis::use_data(cyclestreets_column_names)
   cols_na = sapply(obj$marker$`@attributes`, function(x) sum(is.na(x)))
   sel_constant = cols_na == n_segs &
     names(cols_na) != "coordinates"
@@ -167,6 +212,23 @@ json2sf_cs <- function(obj, cols = NULL) {
     lapply(as.numeric) %>%
     lapply(mean) %>%
     unlist()
+  vals_variable$gradient_mean = lapply(gradient_list, function(x) mean(abs(x))) %>%
+    unlist()
+  vals_variable$gradient_median = lapply(
+    gradient_list,
+    function(x) stats::median(abs(x))
+  ) %>%
+    unlist()
+  vals_variable$gradient_p75 = lapply(
+    gradient_list,
+    function(x) stats::quantile(abs(x), probs = 0.75)
+  ) %>%
+    unlist()
+  vals_variable$gradient_max = lapply(
+    gradient_list,
+    function(x) max(abs(x))
+  ) %>%
+    unlist()
   vals_variable$distances = stringr::str_split(vals_variable$distances, pattern = ",") %>%
     lapply(as.numeric) %>%
     lapply(sum) %>%
@@ -177,10 +239,13 @@ json2sf_cs <- function(obj, cols = NULL) {
   vals_vnumeric$name = vals_variable$name
   d_variable = data.frame(vals_vnumeric)
 
+  # manually add records
+  d_variable$provisionName = obj$marker$`@attributes`$provisionName[-1]
+  d_variable$quietness = d_variable$distances / d_variable$busynance
   d_all = cbind(d_variable, d_constant)
 
   if(!is.null(cols)) {
-    d_all = d_all[cols]
+    d_all = d_all[c(cols, cols_extra)]
   }
 
   # todo: create more segment-level statistics (vectors) +
@@ -191,3 +256,4 @@ json2sf_cs <- function(obj, cols = NULL) {
   return(rsf)
 
 }
+

@@ -4,12 +4,18 @@
 \alias{json2sf_cs}
 \title{Convert output from CycleStreets.net into sf object}
 \usage{
-json2sf_cs(obj, cols = NULL)
+json2sf_cs(
+  obj,
+  cols = NULL,
+  cols_extra = c("gradient_mean", "provisionName", "quietness")
+)
 }
 \arguments{
 \item{obj}{Object from CycleStreets.net read-in with}
 
 \item{cols}{Columns to be included in the result, a character vector or \code{NULL} for all available columns (see details for default)}
+
+\item{cols_extra}{Additional columns to be added providing summaries of gradient and other variables}
 }
 \description{
 Convert output from CycleStreets.net into sf object
@@ -17,12 +23,18 @@ Convert output from CycleStreets.net into sf object
 \examples{
 from = "Leeds Rail Station"
 to = "University of Leeds"
+# from_point = tmaptools::geocode_OSM(from)
+# to_point = tmaptools::geocode_OSM(to)
+from_point = c(-1.54408, 53.79360)
+to_point =   c(-1.54802, 53.79618)
 # save result from the API call to journey.json
-# res_json = stplanr::route_cyclestreet(from, to, silent = FALSE, save_raw = TRUE)
+# res_json = journey(from_point, to_point, silent = FALSE, save_raw = TRUE)
 # jsonlite::write_json(res_json, "inst/extdata/journey.json")
 f = system.file(package = "cyclestreets", "extdata/journey.json")
 obj = jsonlite::read_json(f, simplifyVector = TRUE)
 rsf = json2sf_cs(obj)
+rsf
+# stplanr::line2points(rsf) extract start and end points
 sf:::plot.sf(rsf)
 json2sf_cs(obj, cols = c("time", "busynance", "elevations"))
 }
