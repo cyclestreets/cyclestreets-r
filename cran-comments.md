@@ -3,9 +3,9 @@ This is clarified in the DESCRIPTION which has also received fixes to avoid or e
 
 ## Test environments
 
-* Docker running rocker/rstudio with R 3.5.0
-* local Ubuntu 16.04 install, R 3.4.4
-* Windows with appveyor, R 3.4.4
+* Docker running rocker/rstudio with R 3.6.3
+* local Ubuntu 18.04 install, R 3.6.3
+* Windows with appveyor, R 3.6.3
 * win-builder (devel and release)
 
 ## R CMD check results
@@ -16,6 +16,4 @@ This is clarified in the DESCRIPTION which has also received fixes to avoid or e
 
 ## Reverse dependencies
 
-This is a new release, so there are no reverse dependencies.
-
----
+No reverse dependencies.

@@ -1,5 +1,7 @@
 # cyclestreets 0.2.0
 
+* Updated `json2sf_cs()` function provides more columns
+
 # cyclestreets 0.1.5
 
 * Update package description, title and other things in preparation for CRAN submission.
