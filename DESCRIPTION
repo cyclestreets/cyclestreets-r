@@ -1,7 +1,7 @@
 Package: cyclestreets
 Type: Package
 Title: Cycle Routing and Data for Cycling Advocacy
-Version: 0.1.5
+Version: 0.2.0
 Authors@R: c(
     person("Robin", "Lovelace", email = "rob00x@gmail.com", role = c("aut", "cre"),
     comment = c(ORCID = "0000-0001-5679-6536")),
