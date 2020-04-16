@@ -14,7 +14,8 @@ journey(
   reporterrors = TRUE,
   save_raw = "FALSE",
   cols = c("name", "distances", "time", "busynance", "elevations", "start_longitude",
-    "start_latitude", "finish_longitude", "finish_latitude")
+    "start_latitude", "finish_longitude", "finish_latitude"),
+  cols_extra = c("gradient_mean", "provisionName", "quietness")
 )
 }
 \arguments{
@@ -37,6 +38,8 @@ should report errors (FALSE by default).}
 \item{save_raw}{Boolean value which returns raw list from the json if TRUE (FALSE by default).}
 
 \item{cols}{Columns to be included in the result, a character vector or \code{NULL} for all available columns (see details for default)}
+
+\item{cols_extra}{Additional columns to be added providing summaries of gradient and other variables}
 }
 \description{
 R interface to the CycleStreets.net journey planning API,
