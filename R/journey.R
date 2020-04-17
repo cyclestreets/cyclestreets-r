@@ -82,7 +82,8 @@ journey <- function(from, to, plan = "fastest", silent = TRUE,
                     ),
                     smooth_gradient = FALSE,
                     distance_cutoff = 20,
-                    gradient_cutoff = 0.1
+                    gradient_cutoff = 0.1,
+                    n = 3
                     ) {
 
   if(is.null(pat)) pat = Sys.getenv("CYCLESTREETS")
@@ -125,15 +126,12 @@ journey <- function(from, to, plan = "fastest", silent = TRUE,
   if(save_raw) {
     return(obj)
   } else {
-    r = json2sf_cs(obj, cols = cols, cols_extra = cols_extra)
-  }
-  if(smooth_gradient){
-    r$gradient_smooth = smooth_with_cutoffs(
-      r$gradient_segment,
-      r$dis,
-      distance_cutoff,
-      gradient_cutoff
-      )
+    r = json2sf_cs(obj, cols = cols, cols_extra = cols_extra,
+                   smooth_gradient,
+                   distance_cutoff,
+                   gradient_cutoff,
+                   n
+                   )
   }
   r
 }
@@ -160,6 +158,8 @@ txt2elevations = function(txt) { # helper function to document...
 #' @param obj Object from CycleStreets.net read-in with
 #' @param cols Columns to be included in the result, a character vector or `NULL` for all available columns (see details for default)
 #' @param cols_extra Additional columns to be added providing summaries of gradient and other variables
+#' @inheritParams smooth_with_cutoffs
+#' @inheritParams journey
 #' @export
 #' @examples
 #' from = "Leeds Rail Station"
@@ -181,7 +181,12 @@ txt2elevations = function(txt) { # helper function to document...
 #' # stplanr::line2points(rsf) extract start and end points
 #' sf:::plot.sf(rsf)
 #' json2sf_cs(obj, cols = c("time", "busynance", "elevations"))
-json2sf_cs <- function(obj, cols = NULL, cols_extra = c(
+#' json2sf_cs(obj, cols = c("distances"), smooth_gradient = TRUE,
+#'   gradient_cutoff = 0.05, distance_cutoff = 20)
+json2sf_cs <- function(
+  obj,
+  cols = NULL,
+  cols_extra = c(
   # "gradient_mean",
   # "gradient_median",
   # "gradient_p75",
@@ -191,7 +196,12 @@ json2sf_cs <- function(obj, cols = NULL, cols_extra = c(
   "gradient_segment",
   "provisionName",
   "quietness_segment"
-)) {
+  ),
+  smooth_gradient = FALSE,
+  distance_cutoff = 20,
+  gradient_cutoff = 0.1,
+  n = 3
+) {
   coord_list = lapply(obj$marker$`@attributes`$points[-1], txt2coords)
   elev_list = lapply(obj$marker$`@attributes`$elevations[-1], txt2elevations)
   elev_diff_list = lapply(elev_list, function(x) diff(stats::lag(x, 1)))
@@ -308,9 +318,19 @@ json2sf_cs <- function(obj, cols = NULL, cols_extra = c(
   # todo: create more segment-level statistics (vectors) +
   # add them to the data frame (d) below
 
-  rsf = sf::st_sf(d_all, geometry = rsfl, crs = 4326)
+  r = sf::st_sf(d_all, geometry = rsfl, crs = 4326)
 
-  return(rsf)
+  if(smooth_gradient){
+    r$gradient_smooth = smooth_with_cutoffs(
+      r$gradient_segment,
+      r$distances,
+      distance_cutoff,
+      gradient_cutoff,
+      n
+    )
+  }
+
+  return(r)
 
 }
 

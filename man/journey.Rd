@@ -18,7 +18,8 @@ journey(
   cols_extra = c("gradient_segment", "provisionName", "quietness"),
   smooth_gradient = FALSE,
   distance_cutoff = 20,
-  gradient_cutoff = 0.1
+  gradient_cutoff = 0.1,
+  n = 3
 )
 }
 \arguments{
@@ -50,6 +51,9 @@ https://github.com/Robinlovelace/cyclestreets/issues/14}
 \item{distance_cutoff}{Distance (m) used to identify anomalous gradients}
 
 \item{gradient_cutoff}{Gradient (\%, e.g. 0.1 being 10\%) used to identify anomalous gradients}
+
+\item{n}{The number of segments to use to smooth anomalous gradents.
+The default is 3, meaning segments directly before, after and including the offending segment.}
 }
 \description{
 R interface to the CycleStreets.net journey planning API,

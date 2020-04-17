@@ -8,7 +8,11 @@ json2sf_cs(
   obj,
   cols = NULL,
   cols_extra = c("elevation_start", "elevation_end", "gradient_segment",
-    "provisionName", "quietness_segment")
+    "provisionName", "quietness_segment"),
+  smooth_gradient = FALSE,
+  distance_cutoff = 20,
+  gradient_cutoff = 0.1,
+  n = 3
 )
 }
 \arguments{
@@ -17,6 +21,16 @@ json2sf_cs(
 \item{cols}{Columns to be included in the result, a character vector or \code{NULL} for all available columns (see details for default)}
 
 \item{cols_extra}{Additional columns to be added providing summaries of gradient and other variables}
+
+\item{smooth_gradient}{Identify and fix anomalous gradients? TRUE by default. See
+https://github.com/Robinlovelace/cyclestreets/issues/14}
+
+\item{distance_cutoff}{Distance (m) used to identify anomalous gradients}
+
+\item{gradient_cutoff}{Gradient (\%, e.g. 0.1 being 10\%) used to identify anomalous gradients}
+
+\item{n}{The number of segments to use to smooth anomalous gradents.
+The default is 3, meaning segments directly before, after and including the offending segment.}
 }
 \description{
 Convert output from CycleStreets.net into sf object
@@ -41,4 +55,6 @@ names(rsf2)
 # stplanr::line2points(rsf) extract start and end points
 sf:::plot.sf(rsf)
 json2sf_cs(obj, cols = c("time", "busynance", "elevations"))
+json2sf_cs(obj, cols = c("distances"), smooth_gradient = TRUE,
+  gradient_cutoff = 0.05, distance_cutoff = 20)
 }
