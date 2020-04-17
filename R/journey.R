@@ -33,6 +33,10 @@
 #' @param reporterrors Boolean value (TRUE/FALSE) indicating if cyclestreets (TRUE by default).
 #' should report errors (FALSE by default).
 #' @param save_raw Boolean value which returns raw list from the json if TRUE (FALSE by default).
+#' @param smooth_gradient Identify and fix anomalous gradients? TRUE by default. See
+#' https://github.com/Robinlovelace/cyclestreets/issues/14
+#' @param distance_cutoff Parameter used to identify anomolous gradients
+#' @param gradient_cutoff Parameter used to identify anomolous gradients
 #' @inheritParams json2sf_cs
 #' @seealso json2sf_cs
 #' @export
@@ -53,6 +57,9 @@
 #' r5 = journey(from, to, cols = NULL)
 #' r6 = journey(from, to, cols = "distances", cols_extra = "gradient_p75")
 #' plot(r6)
+#' r7 = journey(c(-1.524, 53.819), c(-1.556, 53.806), smooth_gradient = TRUE)
+#' plot(r7["gradient_segment"])
+#' plot(r7["gradient_smooth"])
 #' }
 journey <- function(from, to, plan = "fastest", silent = TRUE,
                     pat = NULL,
@@ -70,11 +77,14 @@ journey <- function(from, to, plan = "fastest", silent = TRUE,
                       "finish_longitude",
                       "finish_latitude"
                     ), cols_extra = c(
-                      "elevation_start",
-                      "elevation_end",
+                      "gradient_segment",
                       "provisionName",
                       "quietness"
-                    )) {
+                    ),
+                    smooth_gradient = FALSE,
+                    distance_cutoff = 20,
+                    gradient_cutoff = 0.1
+                    ) {
 
   if(is.null(pat)) pat = Sys.getenv("CYCLESTREETS")
   orig <- paste0(from, collapse = ",")
@@ -117,6 +127,19 @@ journey <- function(from, to, plan = "fastest", silent = TRUE,
     return(obj)
   } else {
     r = json2sf_cs(obj, cols = cols, cols_extra = cols_extra)
+  }
+  if(smooth_gradient){
+    r$gradient_smooth = smooth_with_cutoffs(
+      r$gradient_segment,
+      r$dis,
+      distance_cutoff,
+      gradient_cutoff
+      )
+    if(any(is.na(r$gradient_smooth))) {
+      message("NA values detected")
+      r$gradient_smooth[is.na(r$gradient_smooth)] = mean(r$gradient_median,
+                                                         na.rm = TRUE)
+    }
   }
   r
 }
@@ -294,6 +317,27 @@ json2sf_cs <- function(obj, cols = NULL, cols_extra = c(
   rsf = sf::st_sf(d_all, geometry = rsfl, crs = 4326)
 
   return(rsf)
+
+}
+
+smooth_with_cutoffs = function(
+  gradient_segment,
+  distances,
+  distance_cutoff = 20,
+  gradient_cutoff = 0.1
+) {
+  sel = gradient_segment > 0.1 &
+    distances <= distance_cutoff
+  summary(sel)
+  if(requireNamespace("stplanr"))
+    gradient_segment_smooth = stplanr::route_rolling_average(gradient_segment)
+  else
+    message("Please install stplanr")
+  gradient_segment[sel]
+  gradient_segment_smooth[sel]
+
+  gradient_segment[sel] = gradient_segment_smooth[sel]
+  gradient_segment
 
 }
 

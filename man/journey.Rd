@@ -15,7 +15,10 @@ journey(
   save_raw = "FALSE",
   cols = c("name", "distances", "time", "busynance", "elevations", "start_longitude",
     "start_latitude", "finish_longitude", "finish_latitude"),
-  cols_extra = c("elevation_start", "elevation_end", "provisionName", "quietness")
+  cols_extra = c("gradient_segment", "provisionName", "quietness"),
+  smooth_gradient = FALSE,
+  distance_cutoff = 20,
+  gradient_cutoff = 0.1
 )
 }
 \arguments{
@@ -40,6 +43,13 @@ should report errors (FALSE by default).}
 \item{cols}{Columns to be included in the result, a character vector or \code{NULL} for all available columns (see details for default)}
 
 \item{cols_extra}{Additional columns to be added providing summaries of gradient and other variables}
+
+\item{smooth_gradient}{Identify and fix anomalous gradients? TRUE by default. See
+https://github.com/Robinlovelace/cyclestreets/issues/14}
+
+\item{distance_cutoff}{Parameter used to identify anomolous gradients}
+
+\item{gradient_cutoff}{Parameter used to identify anomolous gradients}
 }
 \description{
 R interface to the CycleStreets.net journey planning API,
@@ -80,6 +90,9 @@ r4 = journey(from, to, save_raw = TRUE)
 r5 = journey(from, to, cols = NULL)
 r6 = journey(from, to, cols = "distances", cols_extra = "gradient_p75")
 plot(r6)
+r7 = journey(c(-1.524, 53.819), c(-1.556, 53.806))
+plot(r7["gradient_segment"])
+plot(r7["gradient_smooth"])
 }
 }
 \seealso{
