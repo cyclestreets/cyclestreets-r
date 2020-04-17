@@ -70,7 +70,8 @@ journey <- function(from, to, plan = "fastest", silent = TRUE,
                       "finish_longitude",
                       "finish_latitude"
                     ), cols_extra = c(
-                      "gradient_mean",
+                      "elevation_start",
+                      "elevation_end",
                       "provisionName",
                       "quietness"
                     )) {
@@ -155,18 +156,23 @@ txt2elevations = function(txt) { # helper function to document...
 #' # jsonlite::write_json(res_json, "inst/extdata/journey.json")
 #' f = system.file(package = "cyclestreets", "extdata/journey.json")
 #' obj = jsonlite::read_json(f, simplifyVector = TRUE)
-#' rsf = json2sf_cs(obj)
+#' rsf = json2sf_cs(obj, cols = c("distances", "time"))
+#' names(rsf)
 #' rsf
+#' rsf2 = json2sf_cs(obj, cols = NULL, cols_extra = NULL)
+#' names(rsf2)
 #' # stplanr::line2points(rsf) extract start and end points
 #' sf:::plot.sf(rsf)
 #' json2sf_cs(obj, cols = c("time", "busynance", "elevations"))
 json2sf_cs <- function(obj, cols = NULL, cols_extra = c(
-  "gradient_mean",
+  # "gradient_mean",
   # "gradient_median",
   # "gradient_p75",
   # "gradient_max",
+  "elevation_start",
+  "elevation_end",
   "provisionName",
-  "quietness"
+  "quietness_segment"
 )) {
   coord_list = lapply(obj$marker$`@attributes`$points[-1], txt2coords)
   elev_list = lapply(obj$marker$`@attributes`$elevations[-1], txt2elevations)
@@ -215,9 +221,25 @@ json2sf_cs <- function(obj, cols = NULL, cols_extra = c(
     obj$marker$`@attributes`[[x]][-1])
   names(vals_variable) = cols_variable
   # vals_variable # take a look - which ones to process?
-  vals_variable$elevations = stringr::str_split(vals_variable$elevations, pattern = ",") %>%
+  vals_variable$elevation_mean = stringr::str_split(vals_variable$elevations, pattern = ",") %>%
     lapply(as.numeric) %>%
     lapply(mean) %>%
+    unlist()
+  vals_variable$elevation_start = stringr::str_split(vals_variable$elevations, pattern = ",") %>%
+    lapply(as.numeric) %>%
+    lapply(utils::head, 1) %>%
+    unlist()
+  vals_variable$elevation_end = stringr::str_split(vals_variable$elevations, pattern = ",") %>%
+    lapply(as.numeric) %>%
+    lapply(utils::tail, 1) %>%
+    unlist()
+  vals_variable$elevation_max = stringr::str_split(vals_variable$elevations, pattern = ",") %>%
+    lapply(as.numeric) %>%
+    lapply(max) %>%
+    unlist()
+  vals_variable$elevation_min = stringr::str_split(vals_variable$elevations, pattern = ",") %>%
+    lapply(as.numeric) %>%
+    lapply(min) %>%
     unlist()
   vals_variable$gradient_mean = lapply(gradient_list, function(x) mean(abs(x))) %>%
     unlist()
@@ -248,7 +270,12 @@ json2sf_cs <- function(obj, cols = NULL, cols_extra = c(
 
   # manually add records
   d_variable$provisionName = obj$marker$`@attributes`$provisionName[-1]
-  d_variable$quietness = d_variable$distances / d_variable$busynance
+  d_variable$quietness_segment = d_variable$distances / d_variable$busynance
+  if(!is.null(cols_extra)) {
+    cols_extra_variable = c(cols, cols_extra)[c(cols, cols_extra) %in%
+                                                names(d_variable)]
+    d_variable = d_variable[cols_extra_variable]
+  }
   d_all = cbind(d_variable, d_constant)
 
   if(!is.null(cols)) {

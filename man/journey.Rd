@@ -15,7 +15,7 @@ journey(
   save_raw = "FALSE",
   cols = c("name", "distances", "time", "busynance", "elevations", "start_longitude",
     "start_latitude", "finish_longitude", "finish_latitude"),
-  cols_extra = c("gradient_mean", "provisionName", "quietness")
+  cols_extra = c("elevation_start", "elevation_end", "provisionName", "quietness")
 )
 }
 \arguments{
@@ -68,15 +68,18 @@ A full list of variables (\code{cols}) available is represented by:\preformatted
 from = c(-1.55, 53.80) # geo_code("leeds")
 to = c(-1.76, 53.80) # geo_code("bradford uk")
 r1 = journey(from, to)
+names(r1)
 sf:::plot.sf(r1)
 to = c(-2, 53.5) # towards manchester
 r1 = journey(from, to)
 r2 = journey(from, to, plan = "balanced")
-plot(r1["busynance"], reset = FALSE)
-plot(r2["busynance"], add = TRUE)
+plot(r1["quietness"], reset = FALSE)
+plot(r2["quietness"], add = TRUE)
 r3 = journey(from, to, silent = FALSE)
 r4 = journey(from, to, save_raw = TRUE)
 r5 = journey(from, to, cols = NULL)
+r6 = journey(from, to, cols = "distances", cols_extra = "gradient_p75")
+plot(r6)
 }
 }
 \seealso{
