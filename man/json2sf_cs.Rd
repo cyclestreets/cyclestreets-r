@@ -7,8 +7,8 @@
 json2sf_cs(
   obj,
   cols = NULL,
-  cols_extra = c("elevation_start", "elevation_end", "provisionName",
-    "quietness_segment")
+  cols_extra = c("elevation_start", "elevation_end", "gradient_segment",
+    "provisionName", "quietness_segment")
 )
 }
 \arguments{
@@ -33,7 +33,7 @@ to_point =   c(-1.54802, 53.79618)
 # jsonlite::write_json(res_json, "inst/extdata/journey.json")
 f = system.file(package = "cyclestreets", "extdata/journey.json")
 obj = jsonlite::read_json(f, simplifyVector = TRUE)
-rsf = json2sf_cs(obj, cols = c("distances", "time"))
+rsf = json2sf_cs(obj, cols = c("distances"))
 names(rsf)
 rsf
 rsf2 = json2sf_cs(obj, cols = NULL, cols_extra = NULL)

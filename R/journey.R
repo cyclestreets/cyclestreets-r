@@ -156,7 +156,7 @@ txt2elevations = function(txt) { # helper function to document...
 #' # jsonlite::write_json(res_json, "inst/extdata/journey.json")
 #' f = system.file(package = "cyclestreets", "extdata/journey.json")
 #' obj = jsonlite::read_json(f, simplifyVector = TRUE)
-#' rsf = json2sf_cs(obj, cols = c("distances", "time"))
+#' rsf = json2sf_cs(obj, cols = c("distances"))
 #' names(rsf)
 #' rsf
 #' rsf2 = json2sf_cs(obj, cols = NULL, cols_extra = NULL)
@@ -171,9 +171,11 @@ json2sf_cs <- function(obj, cols = NULL, cols_extra = c(
   # "gradient_max",
   "elevation_start",
   "elevation_end",
+  "gradient_segment",
   "provisionName",
   "quietness_segment"
 )) {
+  browser()
   coord_list = lapply(obj$marker$`@attributes`$points[-1], txt2coords)
   elev_list = lapply(obj$marker$`@attributes`$elevations[-1], txt2elevations)
   elev_diff_list = lapply(elev_list, function(x) diff(stats::lag(x, 1)))
@@ -269,6 +271,9 @@ json2sf_cs <- function(obj, cols = NULL, cols_extra = c(
   d_variable = data.frame(vals_vnumeric)
 
   # manually add records
+  d_variable$gradient_segment = (vals_variable$elevation_max -
+    vals_variable$elevation_min) / vals_variable$distances
+
   d_variable$provisionName = obj$marker$`@attributes`$provisionName[-1]
   d_variable$quietness_segment = d_variable$distances / d_variable$busynance
   if(!is.null(cols_extra)) {
@@ -279,6 +284,8 @@ json2sf_cs <- function(obj, cols = NULL, cols_extra = c(
   d_all = cbind(d_variable, d_constant)
 
   if(!is.null(cols)) {
+    # names(d_all)[! names(d_all) %in% c(cols, cols_extra)]
+    # c(cols, cols_extra)[! c(cols, cols_extra) %in% names(d_all)]
     d_all = d_all[c(cols, cols_extra)]
   }
 
