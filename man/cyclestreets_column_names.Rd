@@ -8,7 +8,7 @@
 An object of class \code{character} of length 44.
 }
 \source{
-\url{www.cyclestreets.net}
+\url{https://www.cyclestreets.net/}
 }
 \usage{
 cyclestreets_column_names

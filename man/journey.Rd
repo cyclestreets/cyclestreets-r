@@ -47,9 +47,9 @@ should report errors (FALSE by default).}
 \item{smooth_gradient}{Identify and fix anomalous gradients? TRUE by default. See
 https://github.com/Robinlovelace/cyclestreets/issues/14}
 
-\item{distance_cutoff}{Parameter used to identify anomolous gradients}
+\item{distance_cutoff}{Distance (m) used to identify anomalous gradients}
 
-\item{gradient_cutoff}{Parameter used to identify anomolous gradients}
+\item{gradient_cutoff}{Gradient (\%, e.g. 0.1 being 10\%) used to identify anomalous gradients}
 }
 \description{
 R interface to the CycleStreets.net journey planning API,
@@ -90,7 +90,7 @@ r4 = journey(from, to, save_raw = TRUE)
 r5 = journey(from, to, cols = NULL)
 r6 = journey(from, to, cols = "distances", cols_extra = "gradient_p75")
 plot(r6)
-r7 = journey(c(-1.524, 53.819), c(-1.556, 53.806))
+r7 = journey(c(-1.524, 53.819), c(-1.556, 53.806), smooth_gradient = TRUE)
 plot(r7["gradient_segment"])
 plot(r7["gradient_smooth"])
 }

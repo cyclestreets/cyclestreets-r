@@ -35,9 +35,8 @@
 #' @param save_raw Boolean value which returns raw list from the json if TRUE (FALSE by default).
 #' @param smooth_gradient Identify and fix anomalous gradients? TRUE by default. See
 #' https://github.com/Robinlovelace/cyclestreets/issues/14
-#' @param distance_cutoff Parameter used to identify anomolous gradients
-#' @param gradient_cutoff Parameter used to identify anomolous gradients
 #' @inheritParams json2sf_cs
+#' @inheritParams smooth_with_cutoffs
 #' @seealso json2sf_cs
 #' @export
 #' @examples
@@ -135,11 +134,6 @@ journey <- function(from, to, plan = "fastest", silent = TRUE,
       distance_cutoff,
       gradient_cutoff
       )
-    if(any(is.na(r$gradient_smooth))) {
-      message("NA values detected")
-      r$gradient_smooth[is.na(r$gradient_smooth)] = mean(r$gradient_median,
-                                                         na.rm = TRUE)
-    }
   }
   r
 }
@@ -320,23 +314,52 @@ json2sf_cs <- function(obj, cols = NULL, cols_extra = c(
 
 }
 
+#' Identify and smooth-out anomalous gradient values
+#'
+#' When `distance_cutoff` and `gradient_cutoff` thresholds are both broken
+#' for route segments, this function treats them as anomalous and
+#' sets the offending gradient values to the mean of the `n`
+#' segments closest to (in front of and behind) the offending segment.
+#'
+#' @param gradient_segment The gradient for each segment from CycleStreets.net
+#' @param distances The distance of each segment
+#' @param distance_cutoff Distance (m) used to identify anomalous gradients
+#' @param gradient_cutoff Gradient (%, e.g. 0.1 being 10%) used to identify anomalous gradients
+#' @param n The number of segments to use to smooth anomalous gradents.
+#' The default is 3, meaning segments directly before, after and including the offending segment.
+#' @export
+#' @examples
+#' f = system.file(package = "cyclestreets", "extdata/journey.json")
+#' obj = jsonlite::read_json(f, simplifyVector = TRUE)
+#' rsf = json2sf_cs(obj, cols = c("distances"))
+#' rsf$gradient_segment
+#' rsf$distances
+#' smooth_with_cutoffs(rsf$gradient_segment, rsf$distances)
+#' smooth_with_cutoffs(rsf$gradient_segment, rsf$distances, 20, 0.05)
+#' smooth_with_cutoffs(rsf$gradient_segment, rsf$distances, 200, 0.02)
+#' smooth_with_cutoffs(rsf$gradient_segment, rsf$distances, 200, 0.02, n = 5)
 smooth_with_cutoffs = function(
   gradient_segment,
   distances,
   distance_cutoff = 20,
-  gradient_cutoff = 0.1
+  gradient_cutoff = 0.1,
+  n = 3
 ) {
-  sel = gradient_segment > 0.1 &
+  sel = gradient_segment > gradient_cutoff &
     distances <= distance_cutoff
   summary(sel)
   if(requireNamespace("stplanr"))
-    gradient_segment_smooth = stplanr::route_rolling_average(gradient_segment)
+    gradient_segment_smooth = stplanr::route_rolling_average(gradient_segment, n = n)
   else
     message("Please install stplanr")
-  gradient_segment[sel]
-  gradient_segment_smooth[sel]
 
   gradient_segment[sel] = gradient_segment_smooth[sel]
+
+  if(any(is.na(gradient_segment))) {
+    message("NA values detected")
+    gradient_segment[is.na(gradient_segment)] =
+      mean(gradient_segment, na.rm = TRUE)
+  }
   gradient_segment
 
 }

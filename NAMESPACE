@@ -3,4 +3,5 @@
 export("%>%")
 export(journey)
 export(json2sf_cs)
+export(smooth_with_cutoffs)
 importFrom(magrittr,"%>%")

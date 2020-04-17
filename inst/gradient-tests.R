@@ -45,3 +45,14 @@ smooth_with_cutoffs = function(
 
 r$gradient_segment
 smooth_with_cutoffs(gradient_segment = r$gradient_segment, distances = r$distances)
+
+# with Lisbon data
+u = "http://web.tecnico.ulisboa.pt/~rosamfelix/gis/declives/RedeViaria_Lisboa_Declives.rar"
+d = tempdir()
+f = file.path(d, "declives.rar")
+download.file(u, f)
+archive::archive(f)
+# archive::archive_extract(f, dir = d, file = "RedeViariaDeclives.shp")
+library(dplyr)
+red = sf::read_sf("~/wip/pctLisbon-data/RedeViariaDeclives.shp")
+plot(red %>% select(matches("dec")))
