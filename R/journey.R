@@ -175,7 +175,6 @@ json2sf_cs <- function(obj, cols = NULL, cols_extra = c(
   "provisionName",
   "quietness_segment"
 )) {
-  browser()
   coord_list = lapply(obj$marker$`@attributes`$points[-1], txt2coords)
   elev_list = lapply(obj$marker$`@attributes`$elevations[-1], txt2elevations)
   elev_diff_list = lapply(elev_list, function(x) diff(stats::lag(x, 1)))
