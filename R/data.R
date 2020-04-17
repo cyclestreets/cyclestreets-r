@@ -2,5 +2,5 @@
 #'
 #' Variables provided by CycleStreets in their journey data
 #'
-#' @source \url{www.cyclestreets.net}
+#' @source \url{https://www.cyclestreets.net/}
 "cyclestreets_column_names"
