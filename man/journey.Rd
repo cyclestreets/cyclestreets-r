@@ -15,7 +15,7 @@ journey(
   save_raw = "FALSE",
   cols = c("name", "distances", "time", "busynance", "elevations", "start_longitude",
     "start_latitude", "finish_longitude", "finish_latitude"),
-  cols_extra = c("gradient_segment", "provisionName", "quietness"),
+  cols_extra = c("gradient_segment", "provisionName", "quietness", "quietness_segment"),
   smooth_gradient = FALSE,
   distance_cutoff = 20,
   gradient_cutoff = 0.1,
@@ -83,15 +83,18 @@ from = c(-1.55, 53.80) # geo_code("leeds")
 to = c(-1.76, 53.80) # geo_code("bradford uk")
 r1 = journey(from, to)
 names(r1)
-sf:::plot.sf(r1)
+plot(r1[1:4])
+plot(r1[10:ncol(r1)])
 to = c(-2, 53.5) # towards manchester
 r1 = journey(from, to)
+names(r1)
 r2 = journey(from, to, plan = "balanced")
-plot(r1["quietness"], reset = FALSE)
-plot(r2["quietness"], add = TRUE)
+plot(r1["quietness_segment"], reset = FALSE)
+plot(r2["quietness_segment"], add = TRUE)
 r3 = journey(from, to, silent = FALSE)
 r4 = journey(from, to, save_raw = TRUE)
 r5 = journey(from, to, cols = NULL)
+names(r5)
 r6 = journey(from, to, cols = "distances", cols_extra = "gradient_p75")
 plot(r6)
 r7 = journey(c(-1.524, 53.819), c(-1.556, 53.806), smooth_gradient = TRUE)
