@@ -80,6 +80,7 @@ journey <- function(from, to, plan = "fastest", silent = TRUE,
                       "finish_latitude"
                     ), cols_extra = c(
                       "gradient_segment",
+                      "elevation_change",
                       "provisionName",
                       "quietness",
                       "quietness_segment"
@@ -198,6 +199,7 @@ json2sf_cs <- function(
   "elevation_start",
   "elevation_end",
   "gradient_segment",
+  "elevation_change",
   "provisionName",
   "quietness_segment"
   ),
@@ -303,6 +305,8 @@ json2sf_cs <- function(
   # manually add records
   d_variable$gradient_segment = (vals_variable$elevation_max -
     vals_variable$elevation_min) / vals_variable$distances
+  d_variable$elevation_change = (vals_variable$elevation_max -
+    vals_variable$elevation_min)
 
   d_variable$provisionName = obj$marker$`@attributes`$provisionName[-1]
   d_variable$quietness_segment = d_variable$distances / d_variable$busynance
@@ -327,6 +331,7 @@ json2sf_cs <- function(
   if(smooth_gradient){
     r$gradient_smooth = smooth_with_cutoffs(
       r$gradient_segment,
+      r$elevation_change,
       r$distances,
       distance_cutoff,
       gradient_cutoff,
@@ -346,6 +351,7 @@ json2sf_cs <- function(
 #' segments closest to (in front of and behind) the offending segment.
 #'
 #' @param gradient_segment The gradient for each segment from CycleStreets.net
+#' @param elevation_change The difference between the maximum and minimum elevations within each segment
 #' @param distances The distance of each segment
 #' @param distance_cutoff Distance (m) used to identify anomalous gradients
 #' @param gradient_cutoff Gradient (%, e.g. 0.1 being 10%) used to identify anomalous gradients
@@ -357,13 +363,15 @@ json2sf_cs <- function(
 #' obj = jsonlite::read_json(f, simplifyVector = TRUE)
 #' rsf = json2sf_cs(obj, cols = c("distances"))
 #' rsf$gradient_segment
+#' rsf$elevation_change
 #' rsf$distances
-#' smooth_with_cutoffs(rsf$gradient_segment, rsf$distances)
-#' smooth_with_cutoffs(rsf$gradient_segment, rsf$distances, 20, 0.05)
-#' smooth_with_cutoffs(rsf$gradient_segment, rsf$distances, 200, 0.02)
-#' smooth_with_cutoffs(rsf$gradient_segment, rsf$distances, 200, 0.02, n = 5)
+#' smooth_with_cutoffs(rsf$gradient_segment, rsf$elevation_change, rsf$distances)
+#' smooth_with_cutoffs(rsf$gradient_segment, rsf$elevation_change, rsf$distances, 20, 0.05)
+#' smooth_with_cutoffs(rsf$gradient_segment, rsf$elevation_change, rsf$distances, 200, 0.02)
+#' smooth_with_cutoffs(rsf$gradient_segment, rsf$elevation_change, rsf$distances, 200, 0.02, n = 5)
 smooth_with_cutoffs = function(
   gradient_segment,
+  elevation_change,
   distances,
   distance_cutoff = 20,
   gradient_cutoff = 0.1,
@@ -373,7 +381,10 @@ smooth_with_cutoffs = function(
     distances <= distance_cutoff
   summary(sel)
   if(requireNamespace("stplanr"))
-    gradient_segment_smooth = stplanr::route_rolling_average(gradient_segment, n = n)
+    gradient_segment_smooth = {
+      stplanr::route_rolling_average(elevation_change, n = n)/
+        stplanr::route_rolling_average(distances, n = n)
+    }
   else
     message("Please install stplanr")
 
