@@ -1,12 +1,14 @@
 Package: cyclestreets
 Type: Package
 Title: Cycle Routing and Data for Cycling Advocacy
-Version: 0.2.0
+Version: 0.3.0
 Authors@R: c(
     person("Robin", "Lovelace", email = "rob00x@gmail.com", role = c("aut", "cre"),
-    comment = c(ORCID = "0000-0001-5679-6536")),
+      comment = c(ORCID = "0000-0001-5679-6536")),
     person("Martin", "Lucas-Smith", role = c("aut")),
-    person("Eric", "Krueger", role = c("ctb"))
+    person("Eric", "Krueger", role = c("ctb")),
+    person("Joey", "Talbot", email = "j.d.talbot@leeds.ac.uk", role = c("aut"), 
+      comment = c(ORCID = "0000-0002-6520-4560"))
     )
 Description: An interface to the cycle routing/data services provided by 'CycleStreets',
   a not-for-profit social enterprise and advocacy organisation.
