@@ -18,7 +18,7 @@ journey(
   cols_extra = c("gradient_segment", "elevation_change", "provisionName", "quietness",
     "quietness_segment"),
   smooth_gradient = FALSE,
-  distance_cutoff = 20,
+  distance_cutoff = 50,
   gradient_cutoff = 0.1,
   n = 3
 )

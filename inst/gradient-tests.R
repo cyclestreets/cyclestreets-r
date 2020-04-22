@@ -16,7 +16,7 @@ summary(r$distances)
 summary(r$gradient_segment)
 plot(r$distances, r$gradient_segment)
 
-distance_cutoff = 20
+distance_cutoff = 50
 gradient_cutoff = 0.1
 sel = r$gradient_segment > 0.1 &
   r$distances <= distance_cutoff
@@ -33,7 +33,7 @@ mapview::mapview(r["gradient_segment"])
 smooth_with_cutoffs = function(
   gradient_segment,
   distances,
-  distance_cutoff = 20,
+  distance_cutoff = 50,
   gradient_cutoff = 0.1
   ) {
   sel = gradient_segment > 0.1 &

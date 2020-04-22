@@ -8,7 +8,7 @@ smooth_with_cutoffs(
   gradient_segment,
   elevation_change,
   distances,
-  distance_cutoff = 20,
+  distance_cutoff = 50,
   gradient_cutoff = 0.1,
   n = 3
 )

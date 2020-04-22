@@ -10,7 +10,7 @@ json2sf_cs(
   cols_extra = c("elevation_start", "elevation_end", "gradient_segment",
     "elevation_change", "provisionName", "quietness_segment"),
   smooth_gradient = FALSE,
-  distance_cutoff = 20,
+  distance_cutoff = 50,
   gradient_cutoff = 0.1,
   n = 3
 )
@@ -56,5 +56,5 @@ names(rsf2)
 sf:::plot.sf(rsf)
 json2sf_cs(obj, cols = c("time", "busynance", "elevations"))
 json2sf_cs(obj, cols = c("distances"), smooth_gradient = TRUE,
-  gradient_cutoff = 0.05, distance_cutoff = 20)
+  gradient_cutoff = 0.05, distance_cutoff = 50)
 }
