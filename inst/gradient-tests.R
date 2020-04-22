@@ -1,10 +1,15 @@
 # Aim: test gradient calculations in CycleStreets
 
+remotes::install_github("joeytalbot/cyclestreets")
 library(cyclestreets)
+
 from = tmaptools::geocode_OSM("potternewton park")
 to = tmaptools::geocode_OSM("university of leeds")
 r = journey(from$coords, to$coords, cols = NULL, cols_extra = NULL)
 mapview::mapview(r["gradient_segment"])
+
+
+# single route ------------------------------------------------------------
 
 # smooth unwanted high gradients
 summary(r$distances)
@@ -45,6 +50,19 @@ smooth_with_cutoffs = function(
 
 r$gradient_segment
 smooth_with_cutoffs(gradient_segment = r$gradient_segment, distances = r$distances)
+
+# chapeltown dataset ------------------------------------------------------
+
+library(stplanr)
+l = od2line(od_data_sample, cents_sf)
+r = route(l = l, route_fun = cyclestreets::journey, smooth_gradient = TRUE, distance_cutoff = 50)
+nrow(l)
+nrow(r)
+length(unique(r$route_number)) # omits routes with zero length
+plot(r)
+mapview::mapview(r["gradient_smooth"])
+mapview::mapview(r[r$gradient_smooth > 0.1, "gradient_smooth"])
+summary(r$distances[r$gradient_smooth > 0.1])
 
 # with Lisbon data
 u = "http://web.tecnico.ulisboa.pt/~rosamfelix/gis/declives/RedeViaria_Lisboa_Declives.rar"
