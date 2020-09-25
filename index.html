@@ -73,7 +73,7 @@
 <div id="cyclestreets" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#cyclestreets" class="anchor"></a>cyclestreets</h1></div>
-<p>The goal of cyclestreets is to provide a simple R interface to the CycleStreets routing service.</p>
+<p>The goal of cyclestreets is to provide a simple R interface to the CycleStreets.net routing service.</p>
 <p>It was split-out from <strong>stplanr</strong> for modularity.</p>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
@@ -95,12 +95,7 @@
 <span class="co"># stplanr::geo_code ("leeds university") </span>
 <span class="va">to</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1.551</span>, <span class="fl">53.807</span><span class="op">)</span>
 <span class="va">r</span> <span class="op">=</span> <span class="fu">cyclestreets</span><span class="fu">::</span><span class="fu"><a href="reference/journey.html">journey</a></span><span class="op">(</span><span class="va">from</span>, <span class="va">to</span>, <span class="st">"balanced"</span><span class="op">)</span>
-<span class="co">#&gt; Loading required namespace: stplanr</span>
-<span class="fu">sf</span><span class="fu">:::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot.sf</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span>
-<span class="co">#&gt; Warning: plotting the first 10 out of 33 attributes; use max.plot = 33 to plot</span>
-<span class="co">#&gt; all</span>
-<span class="co">#&gt; Warning in min(x): no non-missing arguments to min; returning Inf</span>
-<span class="co">#&gt; Warning in max(x): no non-missing arguments to max; returning -Inf</span></pre></div>
+<span class="fu">sf</span><span class="fu">:::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot.sf</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span></pre></div>
 <p><img src="reference/figures/README-example-1.png" width="100%"></p>
 <p>To get a key go to <a href="https://www.cyclestreets.net/api/apply/" class="uri">https://www.cyclestreets.net/api/apply/</a></p>
 <p>Save the key as an environment varible using <code>export CYCLESTREETS=your_key_here</code> by adding <code>CYCLESTREETS=your_key_here</code> as a new line in your <code>.Renviron</code> file, e.g. with the following command:</p>
@@ -149,7 +144,7 @@
   <div class="dev-status">
 <h2>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/robinlovelace/cyclestreets/actions"><img src="https://github.com/robinlovelace/cyclestreets/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://ci.appveyor.com/project/robinlovelace/cyclestreets"><img src="https://ci.appveyor.com/api/projects/status/github/robinlovelace/cyclestreets?branch=master&amp;svg=true" alt="AppVeyor Build Status"></a></li>
 </ul>
 </div>
 </div>
