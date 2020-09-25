@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 ```
 # cyclestreets
 
-The goal of cyclestreets is to provide a simple R interface to the CycleStreets.net routing service.
+The goal of cyclestreets is to provide a simple R interface to the CycleStreets routing service.
 
 It was split-out from **stplanr** for modularity.
 
