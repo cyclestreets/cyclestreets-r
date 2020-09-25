@@ -1,5 +1,4 @@
-Note: CycleStreets.net is a not-for-profit organisation not software.
-This is clarified in the DESCRIPTION which has also received fixes to avoid or explain acronyms.
+This is a minor release with various improvements.
 
 ## Test environments
 
