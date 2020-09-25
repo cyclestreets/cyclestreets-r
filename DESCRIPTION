@@ -29,7 +29,7 @@ Imports:
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Depends: 
-    R (>= 2.10)
+    R (>= 3.6.0)
 Suggests: 
     stplanr,
     covr
