@@ -33,5 +33,3 @@ Depends:
 Suggests: 
     stplanr,
     covr
-Remotes: 
-    ropensci/stplanr
