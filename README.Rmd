@@ -2,8 +2,10 @@
 output: github_document
 ---
 
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/robinlovelace/cyclestreets?branch=master&svg=true)](https://ci.appveyor.com/project/robinlovelace/cyclestreets)
-
+ <!-- badges: start -->
+  [![R-CMD-check](https://github.com/robinlovelace/cyclestreets/workflows/R-CMD-check/badge.svg)](https://github.com/robinlovelace/cyclestreets/actions)
+  <!-- badges: end -->
+  
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 ```{r setup, include = FALSE}
