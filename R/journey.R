@@ -47,7 +47,7 @@
 #' names(r1)
 #' plot(r1[1:4])
 #' plot(r1[10:ncol(r1)])
-#' to = c(-2, 53.5) # towards manchester
+#' to = c(-2, 53.5) # towards Manchester
 #' r1 = journey(from, to)
 #' names(r1)
 #' r2 = journey(from, to, plan = "balanced")
@@ -55,10 +55,6 @@
 #' plot(r2["quietness_segment"], add = TRUE)
 #' r3 = journey(from, to, silent = FALSE)
 #' r4 = journey(from, to, save_raw = TRUE)
-#' r5 = journey(from, to, cols = NULL)
-#' names(r5)
-#' r6 = journey(from, to, cols = "distances", cols_extra = "gradient_p75")
-#' plot(r6)
 #' r7 = journey(c(-1.524, 53.819), c(-1.556, 53.806), smooth_gradient = TRUE)
 #' plot(r7["gradient_segment"])
 #' plot(r7["gradient_smooth"])
@@ -78,14 +74,15 @@ journey <- function(from, to, plan = "fastest", silent = TRUE,
                       "start_latitude",
                       "finish_longitude",
                       "finish_latitude"
-                    ), cols_extra = c(
+                    ),
+                    cols_extra = c(
                       "gradient_segment",
                       "elevation_change",
                       "provisionName",
                       "quietness",
                       "quietness_segment"
                     ),
-                    smooth_gradient = FALSE,
+                    smooth_gradient = TRUE,
                     distance_cutoff = 50,
                     gradient_cutoff = 0.1,
                     n = 3
@@ -377,12 +374,11 @@ smooth_with_cutoffs = function(
   gradient_cutoff = 0.1,
   n = 3
 ) {
-  sel = gradient_segment > gradient_cutoff &
-    distances <= distance_cutoff
-  summary(sel)
+  sel = gradient_segment > gradient_cutoff & distances <= distance_cutoff
+  # summary(sel)
   if(requireNamespace("stplanr"))
     gradient_segment_smooth = {
-      stplanr::route_rolling_average(elevation_change, n = n)/
+      stplanr::route_rolling_average(elevation_change, n = n) /
         stplanr::route_rolling_average(distances, n = n)
     }
   else
