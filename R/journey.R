@@ -45,6 +45,9 @@
 #' to = c(-1.76, 53.80) # geo_code("bradford uk")
 #' r1 = journey(from, to)
 #' names(r1)
+#' r1[1:2, ]
+#' r1$grammesCO2saved
+#' r1$calories
 #' plot(r1[1:4])
 #' plot(r1[10:ncol(r1)])
 #' to = c(-2, 53.5) # towards Manchester
@@ -55,9 +58,9 @@
 #' plot(r2["quietness_segment"], add = TRUE)
 #' r3 = journey(from, to, silent = FALSE)
 #' r4 = journey(from, to, save_raw = TRUE)
-#' r7 = journey(c(-1.524, 53.819), c(-1.556, 53.806), smooth_gradient = TRUE)
-#' plot(r7["gradient_segment"])
-#' plot(r7["gradient_smooth"])
+#' r5 = journey(c(-1.524, 53.819), c(-1.556, 53.806))
+#' plot(r5["gradient_segment"])
+#' plot(r5["gradient_smooth"])
 #' }
 journey <- function(from, to, plan = "fastest", silent = TRUE,
                     pat = NULL,
@@ -76,10 +79,13 @@ journey <- function(from, to, plan = "fastest", silent = TRUE,
                       "finish_latitude"
                     ),
                     cols_extra = c(
+                      "crow_fly_distance", "event", "whence", "speed",
+                      "itinerary", "clientRouteId", "plan", "note", "length", "quietness",
+                      "west", "south", "east", "north", "leaving", "arriving", "grammesCO2saved",
+                      "calories", "edition",
                       "gradient_segment",
                       "elevation_change",
                       "provisionName",
-                      "quietness",
                       "quietness_segment"
                     ),
                     smooth_gradient = TRUE,

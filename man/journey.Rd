@@ -15,8 +15,10 @@ journey(
   save_raw = "FALSE",
   cols = c("name", "distances", "time", "busynance", "elevations", "start_longitude",
     "start_latitude", "finish_longitude", "finish_latitude"),
-  cols_extra = c("gradient_segment", "elevation_change", "provisionName", "quietness",
-    "quietness_segment"),
+  cols_extra = c("crow_fly_distance", "event", "whence", "speed", "itinerary",
+    "clientRouteId", "plan", "note", "length", "quietness", "west", "south", "east",
+    "north", "leaving", "arriving", "grammesCO2saved", "calories", "edition",
+    "gradient_segment", "elevation_change", "provisionName", "quietness_segment"),
   smooth_gradient = TRUE,
   distance_cutoff = 50,
   gradient_cutoff = 0.1,
@@ -84,6 +86,9 @@ from = c(-1.55, 53.80) # geo_code("leeds")
 to = c(-1.76, 53.80) # geo_code("bradford uk")
 r1 = journey(from, to)
 names(r1)
+r1[1:2, ]
+r1$grammesCO2saved
+r1$calories
 plot(r1[1:4])
 plot(r1[10:ncol(r1)])
 to = c(-2, 53.5) # towards Manchester
