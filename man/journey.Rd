@@ -99,9 +99,9 @@ plot(r1["quietness_segment"], reset = FALSE)
 plot(r2["quietness_segment"], add = TRUE)
 r3 = journey(from, to, silent = FALSE)
 r4 = journey(from, to, save_raw = TRUE)
-r7 = journey(c(-1.524, 53.819), c(-1.556, 53.806), smooth_gradient = TRUE)
-plot(r7["gradient_segment"])
-plot(r7["gradient_smooth"])
+r5 = journey(c(-1.524, 53.819), c(-1.556, 53.806))
+plot(r5["gradient_segment"])
+plot(r5["gradient_smooth"])
 }
 }
 \seealso{
