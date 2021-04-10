@@ -1,6 +1,6 @@
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/robinlovelace/cyclestreets/workflows/R-CMD-check/badge.svg)](https://github.com/robinlovelace/cyclestreets/actions)
+[![R-CMD-check](https://github.com/cyclestreets/cyclestreets-r/workflows/R-CMD-check/badge.svg)](https://github.com/cyclestreets/cyclestreets-r/actions)
 <!-- badges: end -->
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
