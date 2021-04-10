@@ -33,3 +33,5 @@ Depends:
 Suggests: 
     stplanr,
     covr
+URL: https://github.com/cyclestreets/cyclestreets-r
+BugReports: https://github.com/cyclestreets/cyclestreets-r/issues
