@@ -14,13 +14,18 @@ It was split-out from **stplanr** for modularity.
 
 ## Installation
 
-<!-- You can install the released version of cyclestreets from [CRAN](https://CRAN.R-project.org) with: -->
+You can install the released version of cyclestreets from
+[CRAN](https://CRAN.R-project.org) with:
 
-Install the package with **devtools** as follows:
+``` r
+install.packages("cyclestreets")
+```
+
+Install the development version with **devtools** as follows:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("Robinlovelace/cyclestreets")
+devtools::install_github("cyclestreets/cyclestreets-r")
 ```
 
 ## Example
@@ -36,7 +41,7 @@ to = c(-1.551, 53.807)
 r = cyclestreets::journey(from, to, "balanced")
 #> Loading required namespace: stplanr
 sf:::plot.sf(r)
-#> Warning: plotting the first 10 out of 33 attributes; use max.plot = 33 to plot
+#> Warning: plotting the first 10 out of 32 attributes; use max.plot = 32 to plot
 #> all
 #> Warning in min(x): no non-missing arguments to min; returning Inf
 #> Warning in max(x): no non-missing arguments to max; returning -Inf
@@ -46,9 +51,10 @@ sf:::plot.sf(r)
 
 To get a key go to <https://www.cyclestreets.net/api/apply/>
 
-Save the key as an environment varible using `export
-CYCLESTREETS=your_key_here` by adding `CYCLESTREETS=your_key_here` as a
-new line in your `.Renviron` file, e.g. with the following command:
+Save the key as an environment varible using
+`export CYCLESTREETS=your_key_here` by adding
+`CYCLESTREETS=your_key_here` as a new line in your `.Renviron` file,
+e.g. with the following command:
 
 ``` r
 usethis::edit_r_environ()
@@ -66,6 +72,28 @@ leaflet(r) %>%
 ```
 
 <img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
+
+Or **tmap**, highlighting the recently added ‘quietness’ variable:
+
+``` r
+library(tmap)
+tmap_mode("view")
+#> tmap mode set to interactive viewing
+tm_shape(r) + tm_lines("quietness", palette = "RdYlBu", lwd = 3, popup.vars = names(r)[-32])
+```
+
+<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+
+See an interactive version of this map, showing all variables per
+segment, [here](https://rpubs.com/RobinLovelace/784236).
+
+Or **mapview**:
+
+``` r
+mapview::mapview(r)
+```
+
+<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 
 Route types available are: fastest, quietest, balanced. See help pages
 such as `?journey` and <https://www.cyclestreets.net/api/> for details.
