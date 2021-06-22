@@ -8,7 +8,7 @@ json2sf_cs(
   obj,
   cols = NULL,
   cols_extra = c("elevation_start", "elevation_end", "gradient_segment",
-    "elevation_change", "provisionName", "quietness_segment"),
+    "elevation_change", "provisionName"),
   smooth_gradient = FALSE,
   distance_cutoff = 50,
   gradient_cutoff = 0.1,

@@ -18,7 +18,7 @@ journey(
   cols_extra = c("crow_fly_distance", "event", "whence", "speed", "itinerary",
     "clientRouteId", "plan", "note", "length", "quietness", "west", "south", "east",
     "north", "leaving", "arriving", "grammesCO2saved", "calories", "edition",
-    "gradient_segment", "elevation_change", "provisionName", "quietness_segment"),
+    "gradient_segment", "elevation_change", "provisionName"),
   smooth_gradient = TRUE,
   distance_cutoff = 50,
   gradient_cutoff = 0.1,
@@ -79,6 +79,9 @@ A full list of variables (\code{cols}) available is represented by:\preformatted
 "west", "south", "east", "north", "leaving", "arriving", "grammesCO2saved",
 "calories", "edition", "geometry")
 }
+
+See \href{https://www.cyclestreets.net/help/journey/howitworks/}{www.cyclestreets.net/help/journey/howitworks/}
+for details on how these are calculated.
 }
 \examples{
 \dontrun{
@@ -95,8 +98,8 @@ to = c(-2, 53.5) # towards Manchester
 r1 = journey(from, to)
 names(r1)
 r2 = journey(from, to, plan = "balanced")
-plot(r1["quietness_segment"], reset = FALSE)
-plot(r2["quietness_segment"], add = TRUE)
+plot(r1["quietness"], reset = FALSE)
+plot(r2["quietness"], add = TRUE)
 r3 = journey(from, to, silent = FALSE)
 r4 = journey(from, to, save_raw = TRUE)
 r5 = journey(c(-1.524, 53.819), c(-1.556, 53.806))

@@ -23,6 +23,9 @@
 #' "calories", "edition", "geometry")
 #' ```
 #'
+#' See [www.cyclestreets.net/help/journey/howitworks/](https://www.cyclestreets.net/help/journey/howitworks/)
+#' for details on how these are calculated.
+#'
 #' @param from Longitude/Latitude pair, e.g. `c(-1.55, 53.80)`
 #' @param to Longitude/Latitude pair, e.g. `c(-1.55, 53.80)`
 #' @param plan Text strong of either "fastest" (default), "quietest" or "balanced"
@@ -54,8 +57,8 @@
 #' r1 = journey(from, to)
 #' names(r1)
 #' r2 = journey(from, to, plan = "balanced")
-#' plot(r1["quietness_segment"], reset = FALSE)
-#' plot(r2["quietness_segment"], add = TRUE)
+#' plot(r1["quietness"], reset = FALSE)
+#' plot(r2["quietness"], add = TRUE)
 #' r3 = journey(from, to, silent = FALSE)
 #' r4 = journey(from, to, save_raw = TRUE)
 #' r5 = journey(c(-1.524, 53.819), c(-1.556, 53.806))
@@ -85,8 +88,7 @@ journey <- function(from, to, plan = "fastest", silent = TRUE,
                       "calories", "edition",
                       "gradient_segment",
                       "elevation_change",
-                      "provisionName",
-                      "quietness_segment"
+                      "provisionName"
                     ),
                     smooth_gradient = TRUE,
                     distance_cutoff = 50,
@@ -203,8 +205,7 @@ json2sf_cs <- function(
   "elevation_end",
   "gradient_segment",
   "elevation_change",
-  "provisionName",
-  "quietness_segment"
+  "provisionName"
   ),
   smooth_gradient = FALSE,
   distance_cutoff = 50,
@@ -312,7 +313,6 @@ json2sf_cs <- function(
     vals_variable$elevation_min)
 
   d_variable$provisionName = obj$marker$`@attributes`$provisionName[-1]
-  d_variable$quietness_segment = d_variable$distances / d_variable$busynance
   if(!is.null(cols_extra)) {
     cols_extra_variable = c(cols, cols_extra)[c(cols, cols_extra) %in%
                                                 names(d_variable)]
