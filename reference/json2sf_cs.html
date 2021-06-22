@@ -124,7 +124,7 @@
   <span class='va'>obj</span>,
   cols <span class='op'>=</span> <span class='cn'>NULL</span>,
   cols_extra <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"elevation_start"</span>, <span class='st'>"elevation_end"</span>, <span class='st'>"gradient_segment"</span>,
-    <span class='st'>"elevation_change"</span>, <span class='st'>"provisionName"</span>, <span class='st'>"quietness_segment"</span><span class='op'>)</span>,
+    <span class='st'>"elevation_change"</span>, <span class='st'>"provisionName"</span><span class='op'>)</span>,
   smooth_gradient <span class='op'>=</span> <span class='cn'>FALSE</span>,
   distance_cutoff <span class='op'>=</span> <span class='fl'>50</span>,
   gradient_cutoff <span class='op'>=</span> <span class='fl'>0.1</span>,
@@ -181,10 +181,9 @@ The default is 3, meaning segments directly before, after and including the offe
 <span class='va'>obj</span> <span class='op'>=</span> <span class='fu'>jsonlite</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/jsonlite/man/read_json.html'>read_json</a></span><span class='op'>(</span><span class='va'>f</span>, simplifyVector <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
 <span class='va'>rsf</span> <span class='op'>=</span> <span class='fu'>json2sf_cs</span><span class='op'>(</span><span class='va'>obj</span>, cols <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"distances"</span><span class='op'>)</span><span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span><span class='op'>(</span><span class='va'>rsf</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; [1] "distances"         "elevation_start"   "elevation_end"    
-#&gt; [4] "gradient_segment"  "elevation_change"  "provisionName"    
-#&gt; [7] "quietness_segment" "geometry"         </div><div class='input'><span class='va'>rsf</span>
-</div><div class='output co'>#&gt; Simple feature collection with 5 features and 7 fields
+</div><div class='output co'>#&gt; [1] "distances"        "elevation_start"  "elevation_end"    "gradient_segment"
+#&gt; [5] "elevation_change" "provisionName"    "geometry"        </div><div class='input'><span class='va'>rsf</span>
+</div><div class='output co'>#&gt; Simple feature collection with 5 features and 6 fields
 #&gt; Geometry type: LINESTRING
 #&gt; Dimension:     XY
 #&gt; Bounding box:  xmin: -1.54802 ymin: 53.7936 xmax: -1.54324 ymax: 53.79618
@@ -195,12 +194,12 @@ The default is 3, meaning segments directly before, after and including the offe
 #&gt; 3        18              33            32       0.05555556                1
 #&gt; 4       131              32            34       0.01526718                2
 #&gt; 5        36              34            34       0.00000000                0
-#&gt;       provisionName quietness_segment                       geometry
-#&gt; 1 Unclassified road         0.2478632 LINESTRING (-1.54408 53.793...
-#&gt; 2         Main road         0.1800000 LINESTRING (-1.54324 53.794...
-#&gt; 3         Main road         0.5294118 LINESTRING (-1.54624 53.795...
-#&gt; 4         Main road         0.2330961 LINESTRING (-1.54649 53.795...
-#&gt; 5         Main road         0.2000000 LINESTRING (-1.54747 53.796...</div><div class='input'><span class='va'>rsf2</span> <span class='op'>=</span> <span class='fu'>json2sf_cs</span><span class='op'>(</span><span class='va'>obj</span>, cols <span class='op'>=</span> <span class='cn'>NULL</span>, cols_extra <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
+#&gt;       provisionName                       geometry
+#&gt; 1 Unclassified road LINESTRING (-1.54408 53.793...
+#&gt; 2         Main road LINESTRING (-1.54324 53.794...
+#&gt; 3         Main road LINESTRING (-1.54624 53.795...
+#&gt; 4         Main road LINESTRING (-1.54649 53.795...
+#&gt; 5         Main road LINESTRING (-1.54747 53.796...</div><div class='input'><span class='va'>rsf2</span> <span class='op'>=</span> <span class='fu'>json2sf_cs</span><span class='op'>(</span><span class='va'>obj</span>, cols <span class='op'>=</span> <span class='cn'>NULL</span>, cols_extra <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span><span class='op'>(</span><span class='va'>rsf2</span><span class='op'>)</span>
 </div><div class='output co'>#&gt;  [1] "time"               "busynance"          "signalledJunctions"
 #&gt;  [4] "signalledCrossings" "name"               "walk"              
@@ -208,20 +207,19 @@ The default is 3, meaning segments directly before, after and including the offe
 #&gt; [10] "elevation_start"    "elevation_end"      "elevation_max"     
 #&gt; [13] "elevation_min"      "gradient_mean"      "gradient_median"   
 #&gt; [16] "gradient_p75"       "gradient_max"       "gradient_segment"  
-#&gt; [19] "elevation_change"   "provisionName"      "quietness_segment" 
-#&gt; [22] "start"              "finish"             "startSpeed"        
-#&gt; [25] "start_longitude"    "start_latitude"     "finish_longitude"  
-#&gt; [28] "finish_latitude"    "crow_fly_distance"  "event"             
-#&gt; [31] "whence"             "speed"              "itinerary"         
-#&gt; [34] "clientRouteId"      "plan"               "note"              
-#&gt; [37] "length"             "quietness"          "west"              
-#&gt; [40] "south"              "east"               "north"             
-#&gt; [43] "leaving"            "arriving"           "grammesCO2saved"   
-#&gt; [46] "calories"           "edition"            "flow"              
-#&gt; [49] "geometry"          </div><div class='input'><span class='co'># stplanr::line2points(rsf) extract start and end points</span>
+#&gt; [19] "elevation_change"   "provisionName"      "start"             
+#&gt; [22] "finish"             "startSpeed"         "start_longitude"   
+#&gt; [25] "start_latitude"     "finish_longitude"   "finish_latitude"   
+#&gt; [28] "crow_fly_distance"  "event"              "whence"            
+#&gt; [31] "speed"              "itinerary"          "clientRouteId"     
+#&gt; [34] "plan"               "note"               "length"            
+#&gt; [37] "quietness"          "west"               "south"             
+#&gt; [40] "east"               "north"              "leaving"           
+#&gt; [43] "arriving"           "grammesCO2saved"    "calories"          
+#&gt; [46] "edition"            "flow"               "geometry"          </div><div class='input'><span class='co'># stplanr::line2points(rsf) extract start and end points</span>
 <span class='fu'>sf</span><span class='fu'>:::</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot.sf</a></span><span class='op'>(</span><span class='va'>rsf</span><span class='op'>)</span>
 </div><div class='img'><img src='json2sf_cs-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'>json2sf_cs</span><span class='op'>(</span><span class='va'>obj</span>, cols <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"time"</span>, <span class='st'>"busynance"</span>, <span class='st'>"elevations"</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; Simple feature collection with 5 features and 9 fields
+</div><div class='output co'>#&gt; Simple feature collection with 5 features and 8 fields
 #&gt; Geometry type: LINESTRING
 #&gt; Dimension:     XY
 #&gt; Bounding box:  xmin: -1.54802 ymin: 53.7936 xmax: -1.54324 ymax: 53.79618
@@ -232,20 +230,14 @@ The default is 3, meaning segments directly before, after and including the offe
 #&gt; 3    5        34         NA              33            32       0.05555556
 #&gt; 4   48       562         NA              32            34       0.01526718
 #&gt; 5    9       180         NA              34            34       0.00000000
-#&gt;   elevation_change     provisionName quietness_segment
-#&gt; 1                1 Unclassified road         0.2478632
-#&gt; 2                6         Main road         0.1800000
-#&gt; 3                1         Main road         0.5294118
-#&gt; 4                2         Main road         0.2330961
-#&gt; 5                0         Main road         0.2000000
-#&gt;                         geometry
-#&gt; 1 LINESTRING (-1.54408 53.793...
-#&gt; 2 LINESTRING (-1.54324 53.794...
-#&gt; 3 LINESTRING (-1.54624 53.795...
-#&gt; 4 LINESTRING (-1.54649 53.795...
-#&gt; 5 LINESTRING (-1.54747 53.796...</div><div class='input'><span class='fu'>json2sf_cs</span><span class='op'>(</span><span class='va'>obj</span>, cols <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"distances"</span><span class='op'>)</span>, smooth_gradient <span class='op'>=</span> <span class='cn'>TRUE</span>,
+#&gt;   elevation_change     provisionName                       geometry
+#&gt; 1                1 Unclassified road LINESTRING (-1.54408 53.793...
+#&gt; 2                6         Main road LINESTRING (-1.54324 53.794...
+#&gt; 3                1         Main road LINESTRING (-1.54624 53.795...
+#&gt; 4                2         Main road LINESTRING (-1.54649 53.795...
+#&gt; 5                0         Main road LINESTRING (-1.54747 53.796...</div><div class='input'><span class='fu'>json2sf_cs</span><span class='op'>(</span><span class='va'>obj</span>, cols <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"distances"</span><span class='op'>)</span>, smooth_gradient <span class='op'>=</span> <span class='cn'>TRUE</span>,
   gradient_cutoff <span class='op'>=</span> <span class='fl'>0.05</span>, distance_cutoff <span class='op'>=</span> <span class='fl'>50</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Loading required namespace: stplanr</span></div><div class='output co'>#&gt; Simple feature collection with 5 features and 8 fields
+</div><div class='output co'>#&gt; <span class='message'>Loading required namespace: stplanr</span></div><div class='output co'>#&gt; Simple feature collection with 5 features and 7 fields
 #&gt; Geometry type: LINESTRING
 #&gt; Dimension:     XY
 #&gt; Bounding box:  xmin: -1.54802 ymin: 53.7936 xmax: -1.54324 ymax: 53.79618
@@ -256,18 +248,12 @@ The default is 3, meaning segments directly before, after and including the offe
 #&gt; 3        18              33            32       0.05555556                1
 #&gt; 4       131              32            34       0.01526718                2
 #&gt; 5        36              34            34       0.00000000                0
-#&gt;       provisionName quietness_segment                       geometry
-#&gt; 1 Unclassified road         0.2478632 LINESTRING (-1.54408 53.793...
-#&gt; 2         Main road         0.1800000 LINESTRING (-1.54324 53.794...
-#&gt; 3         Main road         0.5294118 LINESTRING (-1.54624 53.795...
-#&gt; 4         Main road         0.2330961 LINESTRING (-1.54649 53.795...
-#&gt; 5         Main road         0.2000000 LINESTRING (-1.54747 53.796...
-#&gt;   gradient_smooth
-#&gt; 1      0.01149425
-#&gt; 2      0.02564103
-#&gt; 3      0.02349869
-#&gt; 4      0.01526718
-#&gt; 5      0.00000000</div></pre>
+#&gt;       provisionName                       geometry gradient_smooth
+#&gt; 1 Unclassified road LINESTRING (-1.54408 53.793...      0.01149425
+#&gt; 2         Main road LINESTRING (-1.54324 53.794...      0.02564103
+#&gt; 3         Main road LINESTRING (-1.54624 53.795...      0.02349869
+#&gt; 4         Main road LINESTRING (-1.54649 53.795...      0.01526718
+#&gt; 5         Main road LINESTRING (-1.54747 53.796...      0.00000000</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

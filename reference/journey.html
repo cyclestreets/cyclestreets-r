@@ -138,7 +138,7 @@ See <a href='https://www.cyclestreets.net/api/'>cyclestreets.net/api</a> for det
   cols_extra <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"crow_fly_distance"</span>, <span class='st'>"event"</span>, <span class='st'>"whence"</span>, <span class='st'>"speed"</span>, <span class='st'>"itinerary"</span>,
     <span class='st'>"clientRouteId"</span>, <span class='st'>"plan"</span>, <span class='st'>"note"</span>, <span class='st'>"length"</span>, <span class='st'>"quietness"</span>, <span class='st'>"west"</span>, <span class='st'>"south"</span>, <span class='st'>"east"</span>,
     <span class='st'>"north"</span>, <span class='st'>"leaving"</span>, <span class='st'>"arriving"</span>, <span class='st'>"grammesCO2saved"</span>, <span class='st'>"calories"</span>, <span class='st'>"edition"</span>,
-    <span class='st'>"gradient_segment"</span>, <span class='st'>"elevation_change"</span>, <span class='st'>"provisionName"</span>, <span class='st'>"quietness_segment"</span><span class='op'>)</span>,
+    <span class='st'>"gradient_segment"</span>, <span class='st'>"elevation_change"</span>, <span class='st'>"provisionName"</span><span class='op'>)</span>,
   smooth_gradient <span class='op'>=</span> <span class='cn'>TRUE</span>,
   distance_cutoff <span class='op'>=</span> <span class='fl'>50</span>,
   gradient_cutoff <span class='op'>=</span> <span class='fl'>0.1</span>,
@@ -226,6 +226,8 @@ This can be set with <code>usethis::edit_r_environ()</code>.</p>
 <span class='st'>"calories"</span>, <span class='st'>"edition"</span>, <span class='st'>"geometry"</span><span class='op'>)</span>
 </pre>
 
+<p>See <a href='https://www.cyclestreets.net/help/journey/howitworks/'>www.cyclestreets.net/help/journey/howitworks/</a>
+for details on how these are calculated.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>json2sf_cs</p></div>
@@ -245,8 +247,8 @@ This can be set with <code>usethis::edit_r_environ()</code>.</p>
 <span class='va'>r1</span> <span class='op'>=</span> <span class='fu'>journey</span><span class='op'>(</span><span class='va'>from</span>, <span class='va'>to</span><span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span><span class='op'>(</span><span class='va'>r1</span><span class='op'>)</span>
 <span class='va'>r2</span> <span class='op'>=</span> <span class='fu'>journey</span><span class='op'>(</span><span class='va'>from</span>, <span class='va'>to</span>, plan <span class='op'>=</span> <span class='st'>"balanced"</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>r1</span><span class='op'>[</span><span class='st'>"quietness_segment"</span><span class='op'>]</span>, reset <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>r2</span><span class='op'>[</span><span class='st'>"quietness_segment"</span><span class='op'>]</span>, add <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>r1</span><span class='op'>[</span><span class='st'>"quietness"</span><span class='op'>]</span>, reset <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>r2</span><span class='op'>[</span><span class='st'>"quietness"</span><span class='op'>]</span>, add <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
 <span class='va'>r3</span> <span class='op'>=</span> <span class='fu'>journey</span><span class='op'>(</span><span class='va'>from</span>, <span class='va'>to</span>, silent <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
 <span class='va'>r4</span> <span class='op'>=</span> <span class='fu'>journey</span><span class='op'>(</span><span class='va'>from</span>, <span class='va'>to</span>, save_raw <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
 <span class='va'>r5</span> <span class='op'>=</span> <span class='fu'>journey</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>1.524</span>, <span class='fl'>53.819</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>1.556</span>, <span class='fl'>53.806</span><span class='op'>)</span><span class='op'>)</span>
