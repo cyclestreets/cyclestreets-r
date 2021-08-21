@@ -216,7 +216,15 @@ The default is 3, meaning segments directly before, after and including the offe
 CycleStreets.net does not yet work worldwide.</p>
 <p>You need to have an api key for this code to run.
 By default it uses the CYCLESTREETS environment variable.
-This can be set with <code>usethis::edit_r_environ()</code>.</p>
+A quick way to set this is to install the <code>usethis</code> package and then
+executing the following command:</p>
+<p><code>usethis::edit_r_environ()</code></p>
+<p>That should open up a new file in your text editor where you
+can add the environment variable as follows
+(replace 1a... with your key for this to work):</p>
+<p>CYCLESTREETS=1a43ed677e5e6fe9</p>
+<p>After setting the environment variable, as outlined above,
+you need to restart your R session before the journey function will work.</p>
 <p>A full list of variables (<code>cols</code>) available is represented by:</p><pre><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"time"</span>, <span class='st'>"busynance"</span>, <span class='st'>"signalledJunctions"</span>, <span class='st'>"signalledCrossings"</span>,
 <span class='st'>"name"</span>, <span class='st'>"walk"</span>, <span class='st'>"elevations"</span>, <span class='st'>"distances"</span>, <span class='st'>"start"</span>, <span class='st'>"finish"</span>,
 <span class='st'>"startSpeed"</span>, <span class='st'>"start_longitude"</span>, <span class='st'>"start_latitude"</span>, <span class='st'>"finish_longitude"</span>,
