@@ -69,7 +69,19 @@ CycleStreets.net does not yet work worldwide.
 
 You need to have an api key for this code to run.
 By default it uses the CYCLESTREETS environment variable.
-This can be set with \code{usethis::edit_r_environ()}.
+A quick way to set this is to install the \code{usethis} package and then
+executing the following command:
+
+\code{usethis::edit_r_environ()}
+
+That should open up a new file in your text editor where you
+can add the environment variable as follows
+(replace 1a... with your key for this to work):
+
+CYCLESTREETS=1a43ed677e5e6fe9
+
+After setting the environment variable, as outlined above,
+you need to restart your R session before the journey function will work.
 
 A full list of variables (\code{cols}) available is represented by:\preformatted{c("time", "busynance", "signalledJunctions", "signalledCrossings",
 "name", "walk", "elevations", "distances", "start", "finish",
