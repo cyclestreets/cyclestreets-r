@@ -1,4 +1,4 @@
-# cyclestreets (development version)
+# cyclestreets 0.5.0
 
 # cyclestreets 0.4.0 (June 2021)
 

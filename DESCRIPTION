@@ -1,7 +1,7 @@
 Type: Package
 Package: cyclestreets
 Title: Cycle Routing and Data for Cycling Advocacy
-Version: 0.4.0.9000
+Version: 0.5.0
 Authors@R: 
     c(person(given = "Robin",
              family = "Lovelace",
