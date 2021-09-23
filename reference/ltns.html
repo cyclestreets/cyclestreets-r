@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Changelog • cyclestreets</title>
+<title>Download data on 'Low Traffic Neighbourhoods' or 'rat runs' from CycleStreets — ltns • cyclestreets</title>
 
 
 <!-- jquery -->
@@ -39,7 +39,11 @@
 
 
 
-<meta property="og:title" content="Changelog" />
+<meta property="og:title" content="Download data on 'Low Traffic Neighbourhoods' or 'rat runs' from CycleStreets — ltns" />
+<meta property="og:description" content="R interface to the CycleStreets.net LTN.
+See ltn API docs
+and an article on the methods for further details:
+https://www.cyclestreets.org/news/2021/07/25/mapping-ltns/" />
 
 
 
@@ -58,7 +62,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-news">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -110,71 +114,64 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-      <h1 data-toc-skip>Changelog <small></small></h1>
-      <small>Source: <a href='https://github.com/cyclestreets/cyclestreets-r/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
+    <h1>Download data on 'Low Traffic Neighbourhoods' or 'rat runs' from CycleStreets</h1>
+    <small class="dont-index">Source: <a href='https://github.com/cyclestreets/cyclestreets-r/blob/master/R/ltn.R'><code>R/ltn.R</code></a></small>
+    <div class="hidden name"><code>ltns.Rd</code></div>
     </div>
 
-    <div id="cyclestreets-050-september-2021" class="section level1">
-<h1 class="page-header" data-toc-text="0.5.0">
-<a href="#cyclestreets-050-september-2021" class="anchor"></a>cyclestreets 0.5.0 (September 2021)<small> Unreleased </small>
-</h1>
-<ul>
-<li>
-<code><a href="../reference/ltns.html">ltns()</a></code> function added</li>
-</ul>
-</div>
-    <div id="cyclestreets-040-june-2021" class="section level1">
-<h1 class="page-header" data-toc-text="0.4.0">
-<a href="#cyclestreets-040-june-2021" class="anchor"></a>cyclestreets 0.4.0 (June 2021)<small> 2021-06-22 </small>
-</h1>
-<ul>
-<li>
-<code>quietness_segment</code> variable removed</li>
-</ul>
-</div>
-    <div id="cyclestreets-030" class="section level1">
-<h1 class="page-header" data-toc-text="0.3.0">
-<a href="#cyclestreets-030" class="anchor"></a>cyclestreets 0.3.0<small> 2020-09-26 </small>
-</h1>
-<ul>
-<li>New functionality to estimate gradients</li>
-<li>Updated <code><a href="../reference/json2sf_cs.html">json2sf_cs()</a></code> function provides more columns</li>
-<li>All route-level data now returned by default</li>
-</ul>
-</div>
-    <div id="cyclestreets-015" class="section level1">
-<h1 class="page-header" data-toc-text="0.1.5">
-<a href="#cyclestreets-015" class="anchor"></a>cyclestreets 0.1.5<small> 2018-05-03 </small>
-</h1>
-<ul>
-<li>Update package description, title and other things in preparation for CRAN submission.</li>
-</ul>
-</div>
-    <div id="cyclestreets-011" class="section level1">
-<h1 class="page-header" data-toc-text="0.1.1">
-<a href="#cyclestreets-011" class="anchor"></a>cyclestreets 0.1.1<small> Unreleased </small>
-</h1>
-<ul>
-<li>New argument cols added to <code><a href="../reference/journey.html">journey()</a></code> function allowing control of the output.</li>
-<li>Many more columns can now be accessed as illustrated by new example: <code><a href="../reference/journey.html">journey(from, to, cols = NULL)</a></code>.</li>
-</ul>
-</div>
-    <div id="cyclestreets-010" class="section level1">
-<h1 class="page-header" data-toc-text="0.1.0">
-<a href="#cyclestreets-010" class="anchor"></a>cyclestreets 0.1.0<small> Unreleased </small>
-</h1>
-<ul>
-<li>Package created as part of the R for Transport Applications course at the University of Leeds.</li>
-</ul>
-</div>
-  </div>
+    <div class="ref-description">
+    <p>R interface to the CycleStreets.net LTN.
+See <a href='https://www.cyclestreets.net/api/v2/advocacydata.ltns/'>ltn API docs</a>
+and an article on the methods for further details:
+https://www.cyclestreets.org/news/2021/07/25/mapping-ltns/</p>
+    </div>
 
+    <pre class="usage"><span class='fu'>ltns</span><span class='op'>(</span><span class='va'>bb</span>, pat <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Sys.getenv.html'>Sys.getenv</a></span><span class='op'>(</span><span class='st'>"CYCLESTREETS"</span><span class='op'>)</span><span class='op'>)</span></pre>
+
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>bb</th>
+      <td><p>An sf or 'bounding box' like object</p></td>
+    </tr>
+    <tr>
+      <th>pat</th>
+      <td><p>The API key used. By default this uses <code><a href='https://rdrr.io/r/base/Sys.getenv.html'>Sys.getenv("CYCLESTREETS")</a></code>.</p></td>
+    </tr>
+    </table>
+
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>CycleStreets.net does not yet work worldwide.
+Requires the internet and a CycleStreets.net API key.</p>
+<p>A quick way to set this is to install the <code>usethis</code> package and then
+executing the following command:</p>
+<p><code>usethis::edit_r_environ()</code></p>
+<p>That should open up a new file in your text editor where you
+can add the environment variable as follows
+(replace 1a... with your key for this to work):</p>
+<p>CYCLESTREETS=1a43ed677e5e6fe9</p>
+<p>After setting the environment variable, as outlined above,
+you need to restart your R session before the journey function will work.</p>
+<p>A full list of variables (<code>cols</code>) available is represented by:</p>
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='va'>bb</span> <span class='op'>&lt;-</span> <span class='st'>"0.101131,52.195807,0.170288,52.209719"</span>
+<span class='va'>ltn_data</span> <span class='op'>&lt;-</span> <span class='fu'>ltns</span><span class='op'>(</span><span class='va'>bb</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>ltn_data</span><span class='op'>)</span>
+<span class='va'>bb</span> <span class='op'>&lt;-</span> <span class='fu'>stplanr</span><span class='fu'>::</span><span class='va'><a href='https://docs.ropensci.org/stplanr/reference/routes_fast.html'>routes_fast_sf</a></span>
+<span class='va'>ltn_data</span> <span class='op'>&lt;-</span> <span class='fu'>ltns</span><span class='op'>(</span><span class='va'>bb</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>ltn_data</span><span class='op'>)</span>
+<span class='op'>}</span>
+</div></pre>
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
       <h2 data-toc-skip>Contents</h2>
     </nav>
   </div>
-
 </div>
 
 
