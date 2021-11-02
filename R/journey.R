@@ -20,7 +20,7 @@
 #' (replace 1a... with your key for this to work):
 #'
 #' CYCLESTREETS=1a43ed677e5e6fe9
-#' 
+#'
 #' After setting the environment variable, as outlined above,
 #' you need to restart your R session before the journey function will work.
 #'
@@ -77,7 +77,10 @@
 #' plot(r5["gradient_segment"])
 #' plot(r5["gradient_smooth"])
 #' }
-journey <- function(from, to, plan = "fastest", silent = TRUE,
+journey <- function(from,
+                    to,
+                    plan = "fastest",
+                    silent = TRUE,
                     pat = NULL,
                     base_url = "https://www.cyclestreets.net",
                     reporterrors = TRUE,
@@ -94,10 +97,25 @@ journey <- function(from, to, plan = "fastest", silent = TRUE,
                       "finish_latitude"
                     ),
                     cols_extra = c(
-                      "crow_fly_distance", "event", "whence", "speed",
-                      "itinerary", "clientRouteId", "plan", "note", "length", "quietness",
-                      "west", "south", "east", "north", "leaving", "arriving", "grammesCO2saved",
-                      "calories", "edition",
+                      "crow_fly_distance",
+                      "event",
+                      "whence",
+                      "speed",
+                      "itinerary",
+                      "clientRouteId",
+                      "plan",
+                      "note",
+                      "length",
+                      "quietness",
+                      "west",
+                      "south",
+                      "east",
+                      "north",
+                      "leaving",
+                      "arriving",
+                      "grammesCO2saved",
+                      "calories",
+                      "edition",
                       "gradient_segment",
                       "elevation_change",
                       "provisionName"
@@ -105,10 +123,9 @@ journey <- function(from, to, plan = "fastest", silent = TRUE,
                     smooth_gradient = TRUE,
                     distance_cutoff = 50,
                     gradient_cutoff = 0.1,
-                    n = 3
-                    ) {
-
-  if(is.null(pat)) pat = Sys.getenv("CYCLESTREETS")
+                    n = 3) {
+  if (is.null(pat))
+    pat = Sys.getenv("CYCLESTREETS")
   orig <- paste0(from, collapse = ",")
   dest <- paste0(to, collapse = ",")
   ft_string <- paste(orig, dest, sep = "|")
@@ -145,24 +162,30 @@ journey <- function(from, to, plan = "fastest", silent = TRUE,
     stop(paste0("Error: ", obj$error))
   }
 
-  if(save_raw) {
+  if (save_raw) {
     return(obj)
   } else {
-    r = json2sf_cs(obj, cols = cols, cols_extra = cols_extra,
-                   smooth_gradient,
-                   distance_cutoff,
-                   gradient_cutoff,
-                   n
-                   )
+    r = json2sf_cs(
+      obj,
+      cols = cols,
+      cols_extra = cols_extra,
+      smooth_gradient,
+      distance_cutoff,
+      gradient_cutoff,
+      n
+    )
   }
   r
 }
 
 # obj = jsonlite::read_json(f, simplifyVector = TRUE)
 
-txt2coords = function(txt) { # helper function to document...
+txt2coords = function(txt) {
+  # helper function to document...
   coords_split <- stringr::str_split(txt, pattern = " |,")[[1]]
-  matrix(as.numeric(coords_split), ncol = 2, byrow = TRUE)
+  matrix(as.numeric(coords_split),
+         ncol = 2,
+         byrow = TRUE)
 }
 # txt2coords(obj$marker$`@attributes`$points[2])
 
@@ -170,7 +193,8 @@ txt2coords = function(txt) { # helper function to document...
 # e1 = obj$marker$`@attributes`$elevations[2] # for 1st segment
 # txt = obj$marker$`@attributes`$elevations[2] # for 2nd segment
 
-txt2elevations = function(txt) { # helper function to document...
+txt2elevations = function(txt) {
+  # helper function to document...
   coords_split <- stringr::str_split(txt, pattern = ",")[[1]]
   as.numeric(coords_split)
 }
@@ -205,41 +229,39 @@ txt2elevations = function(txt) { # helper function to document...
 #' json2sf_cs(obj, cols = c("time", "busynance", "elevations"))
 #' json2sf_cs(obj, cols = c("distances"), smooth_gradient = TRUE,
 #'   gradient_cutoff = 0.05, distance_cutoff = 50)
-json2sf_cs <- function(
-  obj,
-  cols = NULL,
-  cols_extra = c(
-  # "gradient_mean",
-  # "gradient_median",
-  # "gradient_p75",
-  # "gradient_max",
-  "elevation_start",
-  "elevation_end",
-  "gradient_segment",
-  "elevation_change",
-  "provisionName"
-  ),
-  smooth_gradient = FALSE,
-  distance_cutoff = 50,
-  gradient_cutoff = 0.1,
-  n = 3
-) {
+json2sf_cs <- function(obj,
+                       cols = NULL,
+                       cols_extra = c(
+                         # "gradient_mean",
+                         # "gradient_median",
+                         # "gradient_p75",
+                         # "gradient_max",
+                         "elevation_start",
+                         "elevation_end",
+                         "gradient_segment",
+                         "elevation_change",
+                         "provisionName"
+                       ),
+                       smooth_gradient = FALSE,
+                       distance_cutoff = 50,
+                       gradient_cutoff = 0.1,
+                       n = 3) {
   coord_list = lapply(obj$marker$`@attributes`$points[-1], txt2coords)
   elev_list = lapply(obj$marker$`@attributes`$elevations[-1], txt2elevations)
-  elev_diff_list = lapply(elev_list, function(x) diff(stats::lag(x, 1)))
+  elev_diff_list = lapply(elev_list, function(x)
+    diff(stats::lag(x, 1)))
   # dist_list1 = geodist::geodist(rbind(coord_list[[1]][1, ], coord_list[[1]][2, ]), sequential = TRUE)
   # dist_list2 = geodist::geodist(
   #   data.frame(x = coord_list[[1]][, 1], y = coord_list[[1]][, 2]),
   #   sequential = TRUE
   #   )
   dist_list = lapply(coord_list, function(x) {
-    geodist::geodist(
-      data.frame(x = x[, 1], y = x[, 2]),
-      sequential = TRUE
-      )}
-    )
+    geodist::geodist(data.frame(x = x[, 1], y = x[, 2]),
+                     sequential = TRUE)
+  })
   # gradient_list = purrr::map2(elev_diff_list, dist_list, ~.x / .y)
-  gradient_list = mapply(function(x, y) x / y, elev_diff_list, dist_list)
+  gradient_list = mapply(function(x, y)
+    x / y, elev_diff_list, dist_list)
   rsfl = lapply(coord_list, sf::st_linestring) %>%
     sf::st_sfc()
 
@@ -248,7 +270,8 @@ json2sf_cs <- function(
   # cols_lengths = sapply(obj$marker$`@attributes`, length)
   # cyclestreets_column_names = names(cols_lengths)
   # usethis::use_data(cyclestreets_column_names)
-  cols_na = sapply(obj$marker$`@attributes`, function(x) sum(is.na(x)))
+  cols_na = sapply(obj$marker$`@attributes`, function(x)
+    sum(is.na(x)))
   sel_constant = cols_na == n_segs &
     names(cols_na) != "coordinates"
   cols_constant = names(cols_na)[sel_constant]
@@ -260,7 +283,7 @@ json2sf_cs <- function(
   })
   sel_numeric = !is.na(vals_numeric)
   vals_constant[sel_numeric] = vals_numeric[sel_numeric]
-  d_constant = data.frame(vals_constant)[rep(1, n_segs), ]
+  d_constant = data.frame(vals_constant)[rep(1, n_segs),]
 
   # useful cols: busynance, name, elevations, distances, turn,provisionName
 
@@ -291,22 +314,20 @@ json2sf_cs <- function(
     lapply(as.numeric) %>%
     lapply(min) %>%
     unlist()
-  vals_variable$gradient_mean = lapply(gradient_list, function(x) mean(abs(x))) %>%
+  vals_variable$gradient_mean = lapply(gradient_list, function(x)
+    mean(abs(x))) %>%
     unlist()
-  vals_variable$gradient_median = lapply(
-    gradient_list,
-    function(x) stats::median(abs(x))
-  ) %>%
+  vals_variable$gradient_median = lapply(gradient_list,
+                                         function(x)
+                                           stats::median(abs(x))) %>%
     unlist()
-  vals_variable$gradient_p75 = lapply(
-    gradient_list,
-    function(x) stats::quantile(abs(x), probs = 0.75)
-  ) %>%
+  vals_variable$gradient_p75 = lapply(gradient_list,
+                                      function(x)
+                                        stats::quantile(abs(x), probs = 0.75)) %>%
     unlist()
-  vals_variable$gradient_max = lapply(
-    gradient_list,
-    function(x) max(abs(x))
-  ) %>%
+  vals_variable$gradient_max = lapply(gradient_list,
+                                      function(x)
+                                        max(abs(x))) %>%
     unlist()
   vals_variable$distances = stringr::str_split(vals_variable$distances, pattern = ",") %>%
     lapply(as.numeric) %>%
@@ -320,19 +341,19 @@ json2sf_cs <- function(
 
   # manually add records
   d_variable$gradient_segment = (vals_variable$elevation_max -
-    vals_variable$elevation_min) / vals_variable$distances
+                                   vals_variable$elevation_min) / vals_variable$distances
   d_variable$elevation_change = (vals_variable$elevation_max -
-    vals_variable$elevation_min)
+                                   vals_variable$elevation_min)
 
   d_variable$provisionName = obj$marker$`@attributes`$provisionName[-1]
-  if(!is.null(cols_extra)) {
+  if (!is.null(cols_extra)) {
     cols_extra_variable = c(cols, cols_extra)[c(cols, cols_extra) %in%
                                                 names(d_variable)]
     d_variable = d_variable[cols_extra_variable]
   }
   d_all = cbind(d_variable, d_constant)
 
-  if(!is.null(cols)) {
+  if (!is.null(cols)) {
     # names(d_all)[! names(d_all) %in% c(cols, cols_extra)]
     # c(cols, cols_extra)[! c(cols, cols_extra) %in% names(d_all)]
     d_all = d_all[c(cols, cols_extra)]
@@ -343,7 +364,7 @@ json2sf_cs <- function(
 
   r = sf::st_sf(d_all, geometry = rsfl, crs = 4326)
 
-  if(smooth_gradient){
+  if (smooth_gradient) {
     r$gradient_smooth = smooth_with_cutoffs(
       r$gradient_segment,
       r$elevation_change,
@@ -384,32 +405,28 @@ json2sf_cs <- function(
 #' smooth_with_cutoffs(rsf$gradient_segment, rsf$elevation_change, rsf$distances, 20, 0.05)
 #' smooth_with_cutoffs(rsf$gradient_segment, rsf$elevation_change, rsf$distances, 200, 0.02)
 #' smooth_with_cutoffs(rsf$gradient_segment, rsf$elevation_change, rsf$distances, 200, 0.02, n = 5)
-smooth_with_cutoffs = function(
-  gradient_segment,
-  elevation_change,
-  distances,
-  distance_cutoff = 50,
-  gradient_cutoff = 0.1,
-  n = 3
-) {
-  sel = gradient_segment > gradient_cutoff & distances <= distance_cutoff
-  # summary(sel)
-  if(requireNamespace("stplanr"))
-    gradient_segment_smooth = {
-      stplanr::route_rolling_average(elevation_change, n = n) /
-        stplanr::route_rolling_average(distances, n = n)
-    }
-  else
-    message("Please install stplanr")
+smooth_with_cutoffs = function(gradient_segment,
+                               elevation_change,
+                               distances,
+                               distance_cutoff = 50,
+                               gradient_cutoff = 0.1,
+                               n = 3) {
+  sel = gradient_segment > gradient_cutoff &
+    distances <= distance_cutoff
+  gradient_segment_smooth =
+    route_rolling_average(elevation_change, n = n) /
+    route_rolling_average(distances, n = n)
 
   gradient_segment[sel] = gradient_segment_smooth[sel]
 
-  if(any(is.na(gradient_segment))) {
+  if (any(is.na(gradient_segment))) {
     message("NA values detected")
     gradient_segment[is.na(gradient_segment)] =
       mean(gradient_segment, na.rm = TRUE)
   }
   gradient_segment
-
 }
 
+route_rolling_average <- function(x, n = 3) {
+  as.numeric(stats::filter(x, rep(1 / n, n), sides = 2))
+}

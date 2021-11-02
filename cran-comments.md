@@ -1,4 +1,4 @@
-Minor release reducing duplicated documentation and refactoring a function
+No longer depends on `stplanr` for tests to pass, new internal function
 
 ## Test environments
 

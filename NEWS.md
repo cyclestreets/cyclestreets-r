@@ -1,4 +1,6 @@
-# cyclestreets 0.5.2
+# cyclestreets 0.5.2 (November 2021)
+
+* No longer depends on `stplanr` for tests to pass, new internal function
 
 # cyclestreets 0.5.1 (November 2021)
 

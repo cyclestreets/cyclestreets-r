@@ -17,26 +17,6 @@ See \href{https://www.cyclestreets.net/api/v2/advocacydata.ltns/}{ltn API docs}
 and an article on the methods for further details:
 https://www.cyclestreets.org/news/2021/07/25/mapping-ltns/
 }
-\details{
-CycleStreets.net does not yet work worldwide.
-Requires the internet and a CycleStreets.net API key.
-
-A quick way to set this is to install the \code{usethis} package and then
-executing the following command:
-
-\code{usethis::edit_r_environ()}
-
-That should open up a new file in your text editor where you
-can add the environment variable as follows
-(replace 1a... with your key for this to work):
-
-CYCLESTREETS=1a43ed677e5e6fe9
-
-After setting the environment variable, as outlined above,
-you need to restart your R session before the journey function will work.
-
-A full list of variables (\code{cols}) available is represented by:
-}
 \examples{
 \dontrun{
 bb <- "0.101131,52.195807,0.170288,52.209719"
