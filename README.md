@@ -97,3 +97,12 @@ mapview::mapview(r)
 
 Route types available are: fastest, quietest, balanced. See help pages
 such as `?journey` and <https://www.cyclestreets.net/api/> for details.
+
+You can also get streets by LTN status.
+
+``` r
+network_ltns <- ltns(r)
+plot(network_ltns)
+```
+
+<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />

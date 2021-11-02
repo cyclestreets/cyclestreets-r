@@ -1,4 +1,4 @@
-This is a minor release with one new function.
+Minor release reducing duplicated documentation and refactoring a function
 
 ## Test environments
 

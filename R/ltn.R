@@ -5,26 +5,6 @@
 #' and an article on the methods for further details:
 #' https://www.cyclestreets.org/news/2021/07/25/mapping-ltns/
 #'
-#' @details
-#' CycleStreets.net does not yet work worldwide.
-#' Requires the internet and a CycleStreets.net API key.
-#'
-#' A quick way to set this is to install the `usethis` package and then
-#' executing the following command:
-#'
-#' `usethis::edit_r_environ()`
-#'
-#' That should open up a new file in your text editor where you
-#' can add the environment variable as follows
-#' (replace 1a... with your key for this to work):
-#'
-#' CYCLESTREETS=1a43ed677e5e6fe9
-#'
-#' After setting the environment variable, as outlined above,
-#' you need to restart your R session before the journey function will work.
-#'
-#' A full list of variables (`cols`) available is represented by:
-#'
 #' @param bb An sf or 'bounding box' like object
 #' @inheritParams journey
 #' @export
@@ -39,8 +19,7 @@
 #' }
 ltns <- function(bb, pat = Sys.getenv("CYCLESTREETS")) {
   if(any(grepl(pattern = "sf", class(bb)))) {
-    bb <- sf::st_bbox(bb)
-    bb <- paste0(bb, collapse = ",")
+    bb <- bb_to_character(bb)
   }
   u <- paste0("https://api.cyclestreets.net/v2/advocacydata.ltns?key=",
              Sys.getenv("CYCLESTREETS"),
@@ -48,4 +27,9 @@ ltns <- function(bb, pat = Sys.getenv("CYCLESTREETS")) {
              bb)
   # browseURL(u)
   sf::read_sf(u)
+}
+
+bb_to_character <- function(bb) {
+  bb <- sf::st_bbox(bb)
+  paste0(bb, collapse = ",")
 }
