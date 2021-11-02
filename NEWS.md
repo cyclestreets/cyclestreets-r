@@ -1,8 +1,6 @@
-# cyclestreets 0.5.1
-
 # cyclestreets 0.5.1 (November 2021)
 
-* `ltns()` function added
+* Updated docs
 
 # cyclestreets 0.5.0 (September 2021)
 
