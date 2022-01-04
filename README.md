@@ -1,6 +1,9 @@
 
 <!-- badges: start -->
+
 [![R-CMD-check](https://github.com/cyclestreets/cyclestreets-r/workflows/R-CMD-check/badge.svg)](https://github.com/cyclestreets/cyclestreets-r/actions)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/cyclestreets)](https://CRAN.R-project.org/package=cyclestreets)
 <!-- badges: end -->
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -39,7 +42,6 @@ from = c(-1.544, 53.794)
 # stplanr::geo_code ("leeds university") 
 to = c(-1.551, 53.807)
 r = cyclestreets::journey(from, to, "balanced")
-#> Loading required namespace: stplanr
 sf:::plot.sf(r)
 #> Warning: plotting the first 10 out of 32 attributes; use max.plot = 32 to plot
 #> all
