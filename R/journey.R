@@ -81,6 +81,7 @@
 #'   "releases/download/v0.4.0/line_with_single_segment.geojson")
 #' desire_line = sf::read_sf(u)
 #' r = stplanr::route(l = desire_line, route_fun = journey)
+#' r
 #' }
 journey <- function(from,
                     to,
@@ -380,15 +381,19 @@ json2sf_cs <- function(obj,
 
   r = sf::st_sf(d_all, geometry = rsfl, crs = 4326)
 
-  if (smooth_gradient && n_segs > 1) {
-    r$gradient_smooth = smooth_with_cutoffs(
-      r$gradient_segment,
-      r$elevation_change,
-      r$distances,
-      distance_cutoff,
-      gradient_cutoff,
-      n
-    )
+  if (smooth_gradient) {
+    if(n_segs > 1) {
+      r$gradient_smooth = smooth_with_cutoffs(
+        r$gradient_segment,
+        r$elevation_change,
+        r$distances,
+        distance_cutoff,
+        gradient_cutoff,
+        n
+      )
+    } else {
+      r$gradient_smooth = r$gradient_segment
+    }
   }
 
   return(r)

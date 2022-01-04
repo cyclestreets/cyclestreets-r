@@ -117,6 +117,12 @@ r4 = journey(from, to, save_raw = TRUE)
 r5 = journey(c(-1.524, 53.819), c(-1.556, 53.806))
 plot(r5["gradient_segment"])
 plot(r5["gradient_smooth"])
+
+u = paste0("https://github.com/cyclestreets/cyclestreets-r/",
+  "releases/download/v0.4.0/line_with_single_segment.geojson")
+desire_line = sf::read_sf(u)
+r = stplanr::route(l = desire_line, route_fun = journey)
+r
 }
 }
 \seealso{
