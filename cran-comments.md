@@ -1,4 +1,4 @@
-No longer depends on `stplanr` for tests to pass, new internal function
+Minor update with a bug fix.
 
 ## Test environments
 
@@ -7,7 +7,7 @@ No longer depends on `stplanr` for tests to pass, new internal function
 
 ## R CMD check results
 
-0 errors | 0 warnings | 1 note
+0 errors | 0 warnings | 0 notes
 
 ## Reverse dependencies
 
