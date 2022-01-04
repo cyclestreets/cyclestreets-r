@@ -76,6 +76,11 @@
 #' r5 = journey(c(-1.524, 53.819), c(-1.556, 53.806))
 #' plot(r5["gradient_segment"])
 #' plot(r5["gradient_smooth"])
+#'
+#' u = paste0("https://github.com/cyclestreets/cyclestreets-r/",
+#'   "releases/download/v0.4.0/line_with_single_segment.geojson")
+#' desire_line = sf::read_sf(u)
+#' r = stplanr::route(l = desire_line, route_fun = journey)
 #' }
 journey <- function(from,
                     to,
@@ -246,6 +251,7 @@ json2sf_cs <- function(obj,
                        distance_cutoff = 50,
                        gradient_cutoff = 0.1,
                        n = 3) {
+
   coord_list = lapply(obj$marker$`@attributes`$points[-1], txt2coords)
   elev_list = lapply(obj$marker$`@attributes`$elevations[-1], txt2elevations)
   elev_diff_list = lapply(elev_list, function(x)
@@ -314,29 +320,39 @@ json2sf_cs <- function(obj,
     lapply(as.numeric) %>%
     lapply(min) %>%
     unlist()
-  vals_variable$gradient_mean = lapply(gradient_list, function(x)
-    mean(abs(x))) %>%
-    unlist()
-  vals_variable$gradient_median = lapply(gradient_list,
-                                         function(x)
-                                           stats::median(abs(x))) %>%
-    unlist()
-  vals_variable$gradient_p75 = lapply(gradient_list,
-                                      function(x)
-                                        stats::quantile(abs(x), probs = 0.75)) %>%
-    unlist()
-  vals_variable$gradient_max = lapply(gradient_list,
-                                      function(x)
-                                        max(abs(x))) %>%
-    unlist()
+
+  if(n_segs == 1) {
+    vals_variable$gradient_mean = mean(abs(gradient_list))
+    vals_variable$gradient_median = stats::median(abs(gradient_list))
+    vals_variable$gradient_p75 = stats::quantile(abs(gradient_list), probs = 0.75)
+    vals_variable$gradient_max = max(abs(gradient_list))
+  } else {
+    vals_variable$gradient_mean = lapply(gradient_list, function(x)
+      mean(abs(x))) %>%
+      unlist()
+    vals_variable$gradient_median = lapply(gradient_list,
+                                           function(x)
+                                             stats::median(abs(x))) %>%
+      unlist()
+    vals_variable$gradient_p75 = lapply(gradient_list,
+                                        function(x)
+                                          stats::quantile(abs(x), probs = 0.75)) %>%
+      unlist()
+    vals_variable$gradient_max = lapply(gradient_list,
+                                        function(x)
+                                          max(abs(x))) %>%
+      unlist()
+  }
   vals_variable$distances = stringr::str_split(vals_variable$distances, pattern = ",") %>%
     lapply(as.numeric) %>%
     lapply(sum) %>%
     unlist()
+
   suppressWarnings({
     vals_vnumeric = lapply(vals_variable, as.numeric)
   })
   vals_vnumeric$name = vals_variable$name
+
   d_variable = data.frame(vals_vnumeric)
 
   # manually add records
@@ -364,7 +380,7 @@ json2sf_cs <- function(obj,
 
   r = sf::st_sf(d_all, geometry = rsfl, crs = 4326)
 
-  if (smooth_gradient) {
+  if (smooth_gradient && n_segs > 1) {
     r$gradient_smooth = smooth_with_cutoffs(
       r$gradient_segment,
       r$elevation_change,
