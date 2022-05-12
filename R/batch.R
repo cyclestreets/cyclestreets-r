@@ -27,11 +27,12 @@
 #'   terminate: Terminate job and delete data
 #' @inheritParams journey
 #' @export
-batchroutes = function(
+batch_routes = function(
     desire_lines,
     name = "test batch",
     serverId = 21,
     strategies = "quietest",
+    bothDirections = 1,
     minDistance = 50,
     maxDistance = 5000,
     filename = "test",
@@ -39,7 +40,8 @@ batchroutes = function(
     emailOnCompletion = "you@example.com",
     username = "yourname",
     password = Sys.getenv("CYCLESTREETS_PW"),
-    base_url = "https://api.cyclestreets.net/v2/batchroutes.createjob"
+    base_url = "https://api.cyclestreets.net/v2/batchroutes.createjob",
+    id = 1
     ) {
   batch_url = paste0(base_url, "?key=", Sys.getenv("CYCLESTREETS"))
   body = list(
@@ -51,7 +53,7 @@ batchroutes = function(
       {"type": "Feature", "id": 56, "properties": {}, "geometry": {"type": "Point", "coordinates": [0.11638, 52.20360]}}
     ]}',
     strategies = "fastest,quietest",
-    bothDirections = 1,
+    bothDirections = bothDirections,
     minDistance = 50,
     maxDistance = 5000,
     filename = "cambridge",
@@ -64,7 +66,7 @@ batchroutes = function(
   # return_url = ""
 }
 
-batchcontrol = function(base_url = "https://api.cyclestreets.net/v2/batchroutes.controljob") {
+batch_control = function(base_url = "https://api.cyclestreets.net/v2/batchroutes.controljob") {
   # POST https://api.cyclestreets.net/v2/batchroutes.controljob?key=...
   batch_url = paste0(base_url, "?key=", Sys.getenv("CYCLESTREETS"))
   body = list(
@@ -76,14 +78,7 @@ batchcontrol = function(base_url = "https://api.cyclestreets.net/v2/batchroutes.
   httr::POST(url = batch_url, body = body)
 }
 
-# POST https://api.cyclestreets.net/v2/batchroutes.jobdata?key=...
-# (
-#   [id] => 69158
-#   [username] => myusername
-#   [password] => mypassword
-# )
-
-batchroutes = function(base_url = "https://api.cyclestreets.net/v2/batchroutes.jobdata", poll_interval = 60) {
+batch_jobdata = function(base_url = "https://api.cyclestreets.net/v2/batchroutes.jobdata", poll_interval = 60) {
   # POST https://api.cyclestreets.net/v2/batchroutes.controljob?key=...
   batch_url = paste0(base_url, "?key=", Sys.getenv("CYCLESTREETS"))
   body = list(
@@ -96,13 +91,34 @@ batchroutes = function(base_url = "https://api.cyclestreets.net/v2/batchroutes.j
   res = httr::POST(url = batch_url, body = body)
   res_json = httr::content(res, "parsed")
   if(res_json$ready) {
-    message("Congrats, you data is ready 🎉")
+    message("Congrats, you data is ready")
     data_res = httr::GET(url = res_json$files$dataCsv)
   }
 }
 
-batch_read = function(file = "cambridge-data.csv.gz") {
-  R.utils::gunzip("cambridge-data.csv.gz")
-  res = readr::read_csv("cambridge-data.csv")
-  jsonlite::parse_json(res$json[1])
+# Tests:
+# u = "https://github.com/cyclestreets/cyclestreets-r/releases/download/v0.5.3/cambridge-data.csv.gz"
+# file = basename(u)
+# download.file(u, file)
+# batch_read(file)
+batch_read = function(file) {
+  file_csv = gsub(pattern = ".gz", replacement = "", x = file)
+  if(file.exists(file_csv)) {
+    file.remove(file_csv)
+  }
+  R.utils::gunzip(file)
+  # res = readr::read_csv(file_csv)
+  res = utils::read.csv(file_csv)
+  res$id = seq(nrow(res))
+  res_list = lapply(res$json, function(x) jsonlite::parse_json(x, simplifyVector = TRUE))
+  elev_df = purrr::map_dfr(res_list, .id = "id", .f = function(x) {
+    l = lapply(x$marker$`@attributes`$elevations[-1], txt2elevations)
+    l_mean = lapply(l, mean)
+    data.frame(mean_elev = unlist(l_mean))
+  })
+  res_df = purrr::map_dfr(res_list, .f = json2sf_cs)
+  res_df$id = elev_df$id
+  # plot(res_df["id"])
+  res_df
 }
+
