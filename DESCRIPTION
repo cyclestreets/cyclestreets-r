@@ -39,6 +39,8 @@ Imports:
     httr,
     jsonlite,
     magrittr,
+    purrr,
+    R.utils,
     sf,
     stringr
 Suggests: 
