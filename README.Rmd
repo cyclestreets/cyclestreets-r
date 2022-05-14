@@ -3,11 +3,11 @@ output: github_document
 ---
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/cyclestreets/cyclestreets-r/workflows/R-CMD-check/badge.svg)](https://github.com/cyclestreets/cyclestreets-r/actions)
-[![CRAN status](https://www.r-pkg.org/badges/version/cyclestreets)](https://CRAN.R-project.org/package=cyclestreets)
+
+[![R-CMD-check](https://github.com/cyclestreets/cyclestreets-r/workflows/R-CMD-check/badge.svg)](https://github.com/cyclestreets/cyclestreets-r/actions) [![CRAN status](https://www.r-pkg.org/badges/version/cyclestreets)](https://CRAN.R-project.org/package=cyclestreets)
+
 <!-- badges: end -->
-  
-  
+
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 ```{r setup, include = FALSE}
@@ -18,6 +18,7 @@ knitr::opts_chunk$set(
   out.width = "100%"
 )
 ```
+
 # cyclestreets
 
 The goal of cyclestreets is to provide a simple R interface to the CycleStreets routing service.
@@ -53,7 +54,7 @@ r = cyclestreets::journey(from, to, "balanced")
 sf:::plot.sf(r)
 ```
 
-To get a key go to https://www.cyclestreets.net/api/apply/
+To get a key go to <https://www.cyclestreets.net/api/apply/>
 
 Save the key as an environment varible using `export CYCLESTREETS=your_key_here` by adding `CYCLESTREETS=your_key_here` as a new line in your `.Renviron` file, e.g. with the following command:
 
@@ -89,7 +90,7 @@ mapview::mapview(r)
 ```
 
 Route types available are: fastest, quietest, balanced.
-See help pages such as `?journey` and https://www.cyclestreets.net/api/ for details.
+See help pages such as `?journey` and <https://www.cyclestreets.net/api/> for details.
 
 You can also get streets by LTN status.
 
@@ -97,4 +98,3 @@ You can also get streets by LTN status.
 network_ltns <- ltns(r)
 plot(network_ltns)
 ```
-

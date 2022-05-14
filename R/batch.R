@@ -27,7 +27,13 @@
 #'   terminate: Terminate job and delete data
 #' @inheritParams journey
 #' @export
-batch_routes = function(
+#' @examples
+#' if(FALSE) {
+#' library(sf)
+#' # desire_lines = od::od_to_sf(od::od_data_df, od::od_data_zones)
+#' # batch(desire_lines, username = "robinlovelace")
+#' }
+batch = function(
     desire_lines,
     name = "test batch",
     serverId = 21,
@@ -45,22 +51,18 @@ batch_routes = function(
     ) {
   batch_url = paste0(base_url, "?key=", Sys.getenv("CYCLESTREETS"))
   body = list(
-    name = "Journey matrix for Cambridge",
-    serverId = 21,
-    geometry = '{"type": "FeatureCollection", "features": [
-      {"type": "Feature", "id": 1, "properties": {}, "geometry": {"type": "Point", "coordinates": [0.14187, 52.20303]}},
-      {"type": "Feature", "id": "a", "properties": {}, "geometry": {"type": "Point", "coordinates": [0.14711, 52.20061]}},
-      {"type": "Feature", "id": 56, "properties": {}, "geometry": {"type": "Point", "coordinates": [0.11638, 52.20360]}}
-    ]}',
-    strategies = "fastest,quietest",
+    name = name,
+    serverId = serverId,
+    geometry = geojsonsf::sfc_geojson(sf::st_geometry(desire_lines)),
+    strategies = strategies,
     bothDirections = bothDirections,
-    minDistance = 50,
-    maxDistance = 5000,
-    filename = "cambridge",
-    includeJsonOutput = 1,
-    emailOnCompletion = "webmaster@example.com",
-    username = "robinlovelace",
-    password = Sys.getenv("CYCLESTREETS_PW")
+    minDistance = minDistance,
+    maxDistance = maxDistance,
+    filename = filename,
+    includeJsonOutput = includeJsonOutput,
+    emailOnCompletion = emailOnCompletion,
+    username = username,
+    password = password
   )
   httr::POST(url = batch_url, body = body)
   # return_url = ""
