@@ -30,7 +30,7 @@
 #' @examples
 #' if(FALSE) {
 #' library(sf)
-#' # desire_lines = od::od_to_sf(od::od_data_df, od::od_data_zones)
+#' # desire_lines = od::od_to_sf(od::od_data_df, od::od_data_zones)[2:3, ]
 #' # batch(desire_lines, username = "robinlovelace")
 #' }
 batch = function(
@@ -53,6 +53,12 @@ batch = function(
   body = list(
     name = name,
     serverId = serverId,
+    # tested:
+    # geometry = '{"type": "FeatureCollection", "features": [
+    #   {"type": "Feature", "id": 1, "properties": {}, "geometry": {"type": "Point", "coordinates": [0.14187, 52.20303]}},
+    #   {"type": "Feature", "id": "a", "properties": {}, "geometry": {"type": "Point", "coordinates": [0.14711, 52.20061]}},
+    #   {"type": "Feature", "id": 56, "properties": {}, "geometry": {"type": "Point", "coordinates": [0.11638, 52.20360]}}
+    # ]}',
     geometry = geojsonsf::sfc_geojson(sf::st_geometry(desire_lines)),
     strategies = strategies,
     bothDirections = bothDirections,
