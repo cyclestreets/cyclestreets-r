@@ -23,6 +23,10 @@ coord_example = od::od_coordinates(od_geo)
 readr::write_csv(as.data.frame(coord_example), "data-raw/coord_example.csv")
 file.remove("data-raw/coord_example.geojson")
 sf::write_sf(od_geo, "data-raw/coord_example.geojson")
+od_jittered %>%
+  transmute(id = paste0(geo_code1, geo_code2)) %>%
+  slice(1:3) %>%
+  sf::write_sf("data-raw/coord_example2.geojson")
 coord_example_sf = sf::st_sf(coord_example, geometry = od_geo$geometry)
 coord_example_cs = route(coord_example_sf, route_fun = journey)
 sf::write_sf(coord_example_cs, "data-raw/batch_output_example_route_stplanr.geojson")
