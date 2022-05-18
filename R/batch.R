@@ -4,8 +4,8 @@
 #' @param name The name of the batch routing job for CycleStreets
 #' @param serverId The server ID to use (21 by default)
 #' @param strategies Route plan types, e.g. `"fastest"`
-#' @param minDistance Min distance
-#' @param maxDistance Max distance
+#' @param minDistance Min Euclidean distance of routes to be calculated
+#' @param maxDistance Maximum Euclidean distance of routes to be calculated
 #' @param bothDirections int (1|0)
 #'   Whether to plan in both directions, i.e. A-B as well as B-A.
 #' @param filename Character string
@@ -30,8 +30,9 @@
 #' @examples
 #' if(FALSE) {
 #' library(sf)
-#' # desire_lines = od::od_to_sf(od::od_data_df, od::od_data_zones)[2:3, ]
-#' # batch(desire_lines, username = "robinlovelace")
+#' desire_lines = od::od_to_sf(od::od_data_df, od::od_data_zones)[2:3, 1:3]
+#' desire_lines$id = 1:2
+#' batch(desire_lines, username = "robinlovelace")
 #' }
 batch = function(
     desire_lines,
@@ -49,17 +50,12 @@ batch = function(
     base_url = "https://api.cyclestreets.net/v2/batchroutes.createjob",
     id = 1
     ) {
+  browser()
   batch_url = paste0(base_url, "?key=", Sys.getenv("CYCLESTREETS"))
   body = list(
     name = name,
     serverId = serverId,
-    # tested:
-    # geometry = '{"type": "FeatureCollection", "features": [
-    #   {"type": "Feature", "id": 1, "properties": {}, "geometry": {"type": "Point", "coordinates": [0.14187, 52.20303]}},
-    #   {"type": "Feature", "id": "a", "properties": {}, "geometry": {"type": "Point", "coordinates": [0.14711, 52.20061]}},
-    #   {"type": "Feature", "id": 56, "properties": {}, "geometry": {"type": "Point", "coordinates": [0.11638, 52.20360]}}
-    # ]}',
-    geometry = geojsonsf::sfc_geojson(sf::st_geometry(desire_lines)),
+    geometry = geojsonsf::sf_geojson(desire_lines),
     strategies = strategies,
     bothDirections = bothDirections,
     minDistance = minDistance,
