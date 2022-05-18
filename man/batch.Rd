@@ -6,6 +6,8 @@
 \usage{
 batch(
   desire_lines,
+  directory = tempdir(),
+  wait_time = 20,
   name = "test batch",
   serverId = 21,
   strategies = "quietest",
@@ -18,11 +20,15 @@ batch(
   username = "yourname",
   password = Sys.getenv("CYCLESTREETS_PW"),
   base_url = "https://api.cyclestreets.net/v2/batchroutes.createjob",
-  id = 1
+  id = NULL
 )
 }
 \arguments{
 \item{desire_lines}{Geographic desire lines representing origin-destination data}
+
+\item{directory}{Where to save the data? \code{tempdir()} by default}
+
+\item{wait_time}{How long to wait before getting the data? 20 seconds by default.}
 
 \item{name}{The name of the batch routing job for CycleStreets}
 
@@ -33,9 +39,9 @@ batch(
 \item{bothDirections}{int (1|0)
 Whether to plan in both directions, i.e. A-B as well as B-A.}
 
-\item{minDistance}{Min distance}
+\item{minDistance}{Min Euclidean distance of routes to be calculated}
 
-\item{maxDistance}{Max distance}
+\item{maxDistance}{Maximum Euclidean distance of routes to be calculated}
 
 \item{filename}{Character string}
 
@@ -69,7 +75,10 @@ Interface to CycleStreets Batch Routing API
 \examples{
 if(FALSE) {
 library(sf)
-# desire_lines = od::od_to_sf(od::od_data_df, od::od_data_zones)
-# batch(desire_lines, username = "robinlovelace")
+desire_lines = od::od_to_sf(od::od_data_df, od::od_data_zones)[4:5, 1:3]
+desire_lines$id = 1:2
+routes = batch(desire_lines, username = "robinlovelace")
+plot(routes$geometry)
+plot(desire_lines$geometry, add = TRUE, col = "red")
 }
 }

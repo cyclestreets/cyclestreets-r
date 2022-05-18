@@ -2,6 +2,8 @@
 #'
 #' @param desire_lines Geographic desire lines representing origin-destination data
 #' @param name The name of the batch routing job for CycleStreets
+#' @param directory Where to save the data? `tempdir()` by default
+#' @param wait_time How long to wait before getting the data? 20 seconds by default.
 #' @param serverId The server ID to use (21 by default)
 #' @param strategies Route plan types, e.g. `"fastest"`
 #' @param minDistance Min Euclidean distance of routes to be calculated
@@ -30,11 +32,58 @@
 #' @examples
 #' if(FALSE) {
 #' library(sf)
-#' desire_lines = od::od_to_sf(od::od_data_df, od::od_data_zones)[2:3, 1:3]
+#' desire_lines = od::od_to_sf(od::od_data_df, od::od_data_zones)[4:5, 1:3]
 #' desire_lines$id = 1:2
-#' batch(desire_lines, username = "robinlovelace")
+#' routes = batch(desire_lines, username = "robinlovelace")
+#' plot(routes$geometry)
+#' plot(desire_lines$geometry, add = TRUE, col = "red")
 #' }
 batch = function(
+    desire_lines,
+    directory = tempdir(),
+    wait_time = 20,
+    name = "test batch",
+    serverId = 21,
+    strategies = "quietest",
+    bothDirections = 1,
+    minDistance = 50,
+    maxDistance = 5000,
+    filename = "test",
+    includeJsonOutput = 1,
+    emailOnCompletion = "you@example.com",
+    username = "yourname",
+    password = Sys.getenv("CYCLESTREETS_PW"),
+    base_url = "https://api.cyclestreets.net/v2/batchroutes.createjob",
+    id = NULL
+) {
+  id = batch_routes(
+    desire_lines,
+    name,
+    serverId,
+    strategies,
+    bothDirections,
+    minDistance,
+    maxDistance,
+    filename,
+    includeJsonOutput,
+    emailOnCompletion,
+    username,
+    password,
+    base_url,
+    id
+  )
+  message("Wating to request the data...")
+  Sys.sleep(time = wait_time)
+  res_joburls = batch_jobdata(
+    username = username,
+    password = password,
+    id = id
+    )
+  filename_local = file.path(directory, paste0(filename, ".csv.gz"))
+  httr::GET(res_joburls$dataGz, httr::write_disk(filename_local))
+  batch_read(filename_local)
+}
+batch_routes = function(
     desire_lines,
     name = "test batch",
     serverId = 21,
@@ -50,7 +99,6 @@ batch = function(
     base_url = "https://api.cyclestreets.net/v2/batchroutes.createjob",
     id = 1
     ) {
-  browser()
   batch_url = paste0(base_url, "?key=", Sys.getenv("CYCLESTREETS"))
   body = list(
     name = name,
@@ -66,8 +114,12 @@ batch = function(
     username = username,
     password = password
   )
-  httr::POST(url = batch_url, body = body)
-  # return_url = ""
+  message("POSTing the request to create and start the job")
+  res = httr::POST(url = batch_url, body = body)
+  res_json = httr::content(res, "parsed")
+  id = res_json$id
+  message("Job id: ", id)
+  id
 }
 
 batch_control = function(base_url = "https://api.cyclestreets.net/v2/batchroutes.controljob") {
@@ -82,11 +134,16 @@ batch_control = function(base_url = "https://api.cyclestreets.net/v2/batchroutes
   httr::POST(url = batch_url, body = body)
 }
 
-batch_jobdata = function(base_url = "https://api.cyclestreets.net/v2/batchroutes.jobdata", poll_interval = 60) {
+batch_jobdata = function(
+    base_url = "https://api.cyclestreets.net/v2/batchroutes.jobdata",
+    username = "yourname",
+    password = Sys.getenv("CYCLESTREETS_PW"),
+    id
+) {
   # POST https://api.cyclestreets.net/v2/batchroutes.controljob?key=...
   batch_url = paste0(base_url, "?key=", Sys.getenv("CYCLESTREETS"))
   body = list(
-    id = 196,
+    id = id,
     username = "robinlovelace",
     password = Sys.getenv("CYCLESTREETS_PW")
   )
@@ -96,7 +153,10 @@ batch_jobdata = function(base_url = "https://api.cyclestreets.net/v2/batchroutes
   res_json = httr::content(res, "parsed")
   if(res_json$ready) {
     message("Congrats, you data is ready")
-    data_res = httr::GET(url = res_json$files$dataCsv)
+    res_joburls = res_json$files
+    return(res_joburls)
+  } else {
+    message("Routing not complete")
   }
 }
 

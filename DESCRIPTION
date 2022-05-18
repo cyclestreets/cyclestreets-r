@@ -46,6 +46,7 @@ Imports:
     stringr
 Suggests: 
     covr,
+    od,
     stplanr
 Encoding: UTF-8
 LazyData: true
