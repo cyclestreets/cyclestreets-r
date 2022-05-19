@@ -60,7 +60,7 @@
   name <span class="op">=</span> <span class="st">"test batch"</span>,
   serverId <span class="op">=</span> <span class="fl">21</span>,
   strategies <span class="op">=</span> <span class="st">"quietest"</span>,
-  bothDirections <span class="op">=</span> <span class="fl">1</span>,
+  bothDirections <span class="op">=</span> <span class="fl">0</span>,
   minDistance <span class="op">=</span> <span class="fl">50</span>,
   maxDistance <span class="op">=</span> <span class="fl">5000</span>,
   filename <span class="op">=</span> <span class="st">"test"</span>,
@@ -89,7 +89,8 @@
 <dd><p>Route plan types, e.g. <code>"fastest"</code></p></dd>
 <dt>bothDirections</dt>
 <dd><p>int (1|0)
-Whether to plan in both directions, i.e. A-B as well as B-A.</p></dd>
+Whether to plan in both directions, i.e. A-B as well as B-A.
+0, meaning only one way routes, is the default in the R default.</p></dd>
 <dt>minDistance</dt>
 <dd><p>Min Euclidean distance of routes to be calculated</p></dd>
 <dt>maxDistance</dt>
@@ -107,7 +108,8 @@ information like distance and time.</p></dd>
 Your CycleStreets account username. In due course this will be replaced with an OAuth token.</p></dd>
 <dt>password</dt>
 <dd><p>string
-Your CycleStreets account password.</p></dd>
+Your CycleStreets account password. You can set it with
+Sys.setenv(CYCLESTREETS_PW="xxxxxx")</p></dd>
 <dt>base_url</dt>
 <dd><p>The base url from which to construct API requests
 (with default set to main server)</p></dd>
@@ -127,10 +129,16 @@ terminate: Terminate job and delete data</p></dd>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span><span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
 <span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
 <span class="r-in"><span class="va">desire_lines</span> <span class="op">=</span> <span class="fu">od</span><span class="fu">::</span><span class="fu"><a href="https://itsleeds.github.io/od/reference/od_to_sf.html" class="external-link">od_to_sf</a></span><span class="op">(</span><span class="fu">od</span><span class="fu">::</span><span class="va"><a href="https://itsleeds.github.io/od/reference/od_data_df.html" class="external-link">od_data_df</a></span>, <span class="fu">od</span><span class="fu">::</span><span class="va"><a href="https://itsleeds.github.io/od/reference/od_data_zones.html" class="external-link">od_data_zones</a></span><span class="op">)</span><span class="op">[</span><span class="fl">4</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span></span>
-<span class="r-in"><span class="va">desire_lines</span><span class="op">$</span><span class="va">id</span> <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span></span>
+<span class="r-in"><span class="va">desire_lines</span><span class="op">$</span><span class="va">id</span> <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">desire_lines</span><span class="op">)</span></span>
 <span class="r-in"><span class="va">routes</span> <span class="op">=</span> <span class="fu">batch</span><span class="op">(</span><span class="va">desire_lines</span>, username <span class="op">=</span> <span class="st">"robinlovelace"</span><span class="op">)</span></span>
 <span class="r-in"><span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">routes</span><span class="op">$</span><span class="va">geometry</span><span class="op">)</span></span>
 <span class="r-in"><span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">desire_lines</span><span class="op">$</span><span class="va">geometry</span>, add <span class="op">=</span> <span class="cn">TRUE</span>, col <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">routes</span> <span class="op">=</span> <span class="fu">batch</span><span class="op">(</span><span class="va">desire_lines</span>, username <span class="op">=</span> <span class="st">"robinlovelace"</span>, wait_time <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span class="r-in"><span class="co"># try again with ID provided:</span></span>
+<span class="r-in"><span class="co"># routes = batch(desire_lines, username = "robinlovelace", id = routes)</span></span>
+<span class="r-in"><span class="va">desire_lines</span> <span class="op">=</span> <span class="fu">od</span><span class="fu">::</span><span class="fu"><a href="https://itsleeds.github.io/od/reference/od_to_sf.html" class="external-link">od_to_sf</a></span><span class="op">(</span><span class="fu">od</span><span class="fu">::</span><span class="va"><a href="https://itsleeds.github.io/od/reference/od_data_df.html" class="external-link">od_data_df</a></span>, <span class="fu">od</span><span class="fu">::</span><span class="va"><a href="https://itsleeds.github.io/od/reference/od_data_zones.html" class="external-link">od_data_zones</a></span><span class="op">)</span><span class="op">[</span><span class="fl">4</span><span class="op">:</span><span class="fl">100</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span></span>
+<span class="r-in"><span class="va">desire_lines</span><span class="op">$</span><span class="va">id</span> <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">desire_lines</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">routes</span> <span class="op">=</span> <span class="fu">batch</span><span class="op">(</span><span class="va">desire_lines</span>, username <span class="op">=</span> <span class="st">"robinlovelace"</span><span class="op">)</span></span>
 <span class="r-in"><span class="op">}</span></span>
 </code></pre></div>
     </div>
