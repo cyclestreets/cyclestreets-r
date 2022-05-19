@@ -17,14 +17,20 @@ names(routes_batch)
 waldo::compare(names(routes_stplanr), names(routes_batch))
 waldo::compare(routes_stplanr, routes_batch)
 
+# Test outputs
+res = read.csv("https://github.com/cyclestreets/cyclestreets-r/releases/download/v0.5.3/test-data.csv")
+nrow(res)
+for(i in 1:1) {print(i); jsonlite::parse_json(res$json[i], simplifyVector = T)}
+for(i in 1:3) {print(i); jsonlite::parse_json(res$json[i], simplifyVector = T)}
+for(i in 1:nrow(res)) {print(i); jsonlite::parse_json(res$json[i], simplifyVector = T)}
+txt = res$json[147]
 
-
-nrows_batch = table(routes_batch$id)
-df_batch = sf::st_drop_geometry(routes_batch)
-inds = rep(seq(nrow(desire_lines)), times = nrows_batch)
-df_routes_expanded = sf::st_drop_geometry(desire_lines)[inds, ]
-df_batch = cbind(df_routes_expanded, df_batch)
-routes_batch_updated = sf::st_sf(df_batch, geometry = routes_batch$geometry)
-waldo::compare(names(routes_stplanr), names(routes_batch_updated))
-setdiff(names(routes_stplanr), names(routes_batch_updated))
-setdiff(names(routes_batch_updated), names(routes_stplanr))
+# nrows_batch = table(routes_batch$id)
+# df_batch = sf::st_drop_geometry(routes_batch)
+# inds = rep(seq(nrow(desire_lines)), times = nrows_batch)
+# df_routes_expanded = sf::st_drop_geometry(desire_lines)[inds, ]
+# df_batch = cbind(df_routes_expanded, df_batch)
+# routes_batch_updated = sf::st_sf(df_batch, geometry = routes_batch$geometry)
+# waldo::compare(names(routes_stplanr), names(routes_batch_updated))
+# setdiff(names(routes_stplanr), names(routes_batch_updated))
+# setdiff(names(routes_batch_updated), names(routes_stplanr))
