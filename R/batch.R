@@ -63,6 +63,9 @@ batch = function(
     base_url = "https://api.cyclestreets.net/v2/batchroutes.createjob",
     id = NULL
 ) {
+  if(is.null(desire_lines$id)) {
+    stop("No id column in the input desire_lines data")
+  }
   if(is.null(id)) {
     id = batch_routes(
       desire_lines,
@@ -97,8 +100,16 @@ batch = function(
     message(filename, " already exists, overwriting it")
   }
   httr::GET(res_joburls$dataGz, httr::write_disk(filename_local))
-  batch_read(filename_local)
+  routes = batch_read(filename_local)
+  nrows = table(routes$id)
+  df = sf::st_drop_geometry(routes)
+  inds = rep(seq(nrow(desire_lines)), times = nrows)
+  df_routes_expanded = sf::st_drop_geometry(desire_lines)[inds, ]
+  df = cbind(df_routes_expanded, df[-ncol(df)])
+  routes_updated = sf::st_sf(df, geometry = routes$geometry)
+  routes_updated
 }
+
 batch_routes = function(
     desire_lines,
     name = "test batch",

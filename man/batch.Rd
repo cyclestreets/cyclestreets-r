@@ -7,7 +7,7 @@
 batch(
   desire_lines,
   directory = tempdir(),
-  wait_time = 20,
+  wait_time = 30,
   name = "test batch",
   serverId = 21,
   strategies = "quietest",
@@ -28,7 +28,7 @@ batch(
 
 \item{directory}{Where to save the data? \code{tempdir()} by default}
 
-\item{wait_time}{How long to wait before getting the data? 20 seconds by default.}
+\item{wait_time}{How long to wait before getting the data? 30 seconds by default.}
 
 \item{name}{The name of the batch routing job for CycleStreets}
 
@@ -85,8 +85,7 @@ plot(desire_lines$geometry, add = TRUE, col = "red")
 routes = batch(desire_lines, username = "robinlovelace", wait_time = 1)
 # try again with ID provided:
 # routes = batch(desire_lines, username = "robinlovelace", id = routes)
-desire_lines = od::od_to_sf(od::od_data_df, od::od_data_zones)[4:100, 1:3]
-desire_lines$id = 1:nrow(desire_lines)
-routes = batch(desire_lines, username = "robinlovelace")
+# Compare with stplanr's route() approach:
+
 }
 }
