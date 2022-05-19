@@ -197,12 +197,16 @@ batch_jobdata = function(
 # download.file(u, file)
 # batch_read(file)
 batch_read = function(file) {
-  file_csv = gsub(pattern = ".gz", replacement = "", x = file)
-  if(file.exists(file_csv)) {
-    message(".csv File already exists. Removing it.")
-    file.remove(file_csv)
+  if(grepl(pattern = ".gz", x = file)) {
+    file_csv = gsub(pattern = ".gz", replacement = "", x = file)
+    if(file.exists(file_csv)) {
+      message(".csv File already exists. Removing it.")
+      file.remove(file_csv)
+    }
+    R.utils::gunzip(file)
+  } else {
+    file_csv = file
   }
-  R.utils::gunzip(file)
   # res = readr::read_csv(file_csv)
   message("Reading in the following file:\n", file_csv)
   res = utils::read.csv(file_csv)
