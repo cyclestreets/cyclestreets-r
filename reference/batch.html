@@ -56,7 +56,7 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">batch</span><span class="op">(</span>
   <span class="va">desire_lines</span>,
   directory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>,
-  wait_time <span class="op">=</span> <span class="fl">20</span>,
+  wait_time <span class="op">=</span> <span class="fl">30</span>,
   name <span class="op">=</span> <span class="st">"test batch"</span>,
   serverId <span class="op">=</span> <span class="fl">21</span>,
   strategies <span class="op">=</span> <span class="st">"quietest"</span>,
@@ -80,7 +80,7 @@
 <dt>directory</dt>
 <dd><p>Where to save the data? <code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir()</a></code> by default</p></dd>
 <dt>wait_time</dt>
-<dd><p>How long to wait before getting the data? 20 seconds by default.</p></dd>
+<dd><p>How long to wait before getting the data? 30 seconds by default.</p></dd>
 <dt>name</dt>
 <dd><p>The name of the batch routing job for CycleStreets</p></dd>
 <dt>serverId</dt>
@@ -136,9 +136,8 @@ terminate: Terminate job and delete data</p></dd>
 <span class="r-in"><span class="va">routes</span> <span class="op">=</span> <span class="fu">batch</span><span class="op">(</span><span class="va">desire_lines</span>, username <span class="op">=</span> <span class="st">"robinlovelace"</span>, wait_time <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span class="r-in"><span class="co"># try again with ID provided:</span></span>
 <span class="r-in"><span class="co"># routes = batch(desire_lines, username = "robinlovelace", id = routes)</span></span>
-<span class="r-in"><span class="va">desire_lines</span> <span class="op">=</span> <span class="fu">od</span><span class="fu">::</span><span class="fu"><a href="https://itsleeds.github.io/od/reference/od_to_sf.html" class="external-link">od_to_sf</a></span><span class="op">(</span><span class="fu">od</span><span class="fu">::</span><span class="va"><a href="https://itsleeds.github.io/od/reference/od_data_df.html" class="external-link">od_data_df</a></span>, <span class="fu">od</span><span class="fu">::</span><span class="va"><a href="https://itsleeds.github.io/od/reference/od_data_zones.html" class="external-link">od_data_zones</a></span><span class="op">)</span><span class="op">[</span><span class="fl">4</span><span class="op">:</span><span class="fl">100</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span></span>
-<span class="r-in"><span class="va">desire_lines</span><span class="op">$</span><span class="va">id</span> <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">desire_lines</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">routes</span> <span class="op">=</span> <span class="fu">batch</span><span class="op">(</span><span class="va">desire_lines</span>, username <span class="op">=</span> <span class="st">"robinlovelace"</span><span class="op">)</span></span>
+<span class="r-in"><span class="co"># Compare with stplanr's route() approach:</span></span>
+<span class="r-in"></span>
 <span class="r-in"><span class="op">}</span></span>
 </code></pre></div>
     </div>
