@@ -64,7 +64,7 @@ batch = function(
     id = NULL
 ) {
   if(is.null(desire_lines$id)) {
-    stop("No id column in the input desire_lines data")
+    desire_lines$id = 1:nrow(desire_lines)
   }
   if(is.null(id)) {
     id = batch_routes(
