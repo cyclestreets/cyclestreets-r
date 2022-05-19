@@ -11,7 +11,7 @@ batch(
   name = "test batch",
   serverId = 21,
   strategies = "quietest",
-  bothDirections = 1,
+  bothDirections = 0,
   minDistance = 50,
   maxDistance = 5000,
   filename = "test",
@@ -37,7 +37,8 @@ batch(
 \item{strategies}{Route plan types, e.g. \code{"fastest"}}
 
 \item{bothDirections}{int (1|0)
-Whether to plan in both directions, i.e. A-B as well as B-A.}
+Whether to plan in both directions, i.e. A-B as well as B-A.
+0, meaning only one way routes, is the default in the R default.}
 
 \item{minDistance}{Min Euclidean distance of routes to be calculated}
 
@@ -55,7 +56,8 @@ information like distance and time.}
 Your CycleStreets account username. In due course this will be replaced with an OAuth token.}
 
 \item{password}{string
-Your CycleStreets account password.}
+Your CycleStreets account password. You can set it with
+Sys.setenv(CYCLESTREETS_PW="xxxxxx")}
 
 \item{base_url}{The base url from which to construct API requests
 (with default set to main server)}
@@ -76,9 +78,15 @@ Interface to CycleStreets Batch Routing API
 if(FALSE) {
 library(sf)
 desire_lines = od::od_to_sf(od::od_data_df, od::od_data_zones)[4:5, 1:3]
-desire_lines$id = 1:2
+desire_lines$id = 1:nrow(desire_lines)
 routes = batch(desire_lines, username = "robinlovelace")
 plot(routes$geometry)
 plot(desire_lines$geometry, add = TRUE, col = "red")
+routes = batch(desire_lines, username = "robinlovelace", wait_time = 1)
+# try again with ID provided:
+# routes = batch(desire_lines, username = "robinlovelace", id = routes)
+desire_lines = od::od_to_sf(od::od_data_df, od::od_data_zones)[4:100, 1:3]
+desire_lines$id = 1:nrow(desire_lines)
+routes = batch(desire_lines, username = "robinlovelace")
 }
 }

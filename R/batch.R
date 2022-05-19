@@ -10,6 +10,7 @@
 #' @param maxDistance Maximum Euclidean distance of routes to be calculated
 #' @param bothDirections int (1|0)
 #'   Whether to plan in both directions, i.e. A-B as well as B-A.
+#'   0, meaning only one way routes, is the default in the R default.
 #' @param filename Character string
 #' @param includeJsonOutput int (1|0)
 #'   Whether to include a column in the resulting CSV data giving the full JSON output from the API, rather than just summary
@@ -18,7 +19,8 @@
 #' @param username string
 #'   Your CycleStreets account username. In due course this will be replaced with an OAuth token.
 #' @param password string
-#'   Your CycleStreets account password.
+#'   Your CycleStreets account password. You can set it with
+#'   Sys.setenv(CYCLESTREETS_PW="xxxxxx")
 #' @param id int
 #'   Batch job ID, as returned from batchroutes.createjob.
 #'   action string (start|pause|continue|terminate)
@@ -33,10 +35,16 @@
 #' if(FALSE) {
 #' library(sf)
 #' desire_lines = od::od_to_sf(od::od_data_df, od::od_data_zones)[4:5, 1:3]
-#' desire_lines$id = 1:2
+#' desire_lines$id = 1:nrow(desire_lines)
 #' routes = batch(desire_lines, username = "robinlovelace")
 #' plot(routes$geometry)
 #' plot(desire_lines$geometry, add = TRUE, col = "red")
+#' routes = batch(desire_lines, username = "robinlovelace", wait_time = 1)
+#' # try again with ID provided:
+#' # routes = batch(desire_lines, username = "robinlovelace", id = routes)
+#' desire_lines = od::od_to_sf(od::od_data_df, od::od_data_zones)[4:100, 1:3]
+#' desire_lines$id = 1:nrow(desire_lines)
+#' routes = batch(desire_lines, username = "robinlovelace")
 #' }
 batch = function(
     desire_lines,
@@ -45,7 +53,7 @@ batch = function(
     name = "test batch",
     serverId = 21,
     strategies = "quietest",
-    bothDirections = 1,
+    bothDirections = 0,
     minDistance = 50,
     maxDistance = 5000,
     filename = "test",
@@ -56,30 +64,39 @@ batch = function(
     base_url = "https://api.cyclestreets.net/v2/batchroutes.createjob",
     id = NULL
 ) {
-  id = batch_routes(
-    desire_lines,
-    name,
-    serverId,
-    strategies,
-    bothDirections,
-    minDistance,
-    maxDistance,
-    filename,
-    includeJsonOutput,
-    emailOnCompletion,
-    username,
-    password,
-    base_url,
-    id
-  )
-  message("Wating to request the data...")
-  Sys.sleep(time = wait_time)
+  if(is.null(id)) {
+    id = batch_routes(
+      desire_lines,
+      name,
+      serverId,
+      strategies,
+      bothDirections,
+      minDistance,
+      maxDistance,
+      filename,
+      includeJsonOutput,
+      emailOnCompletion,
+      username,
+      password,
+      base_url,
+      id
+    )
+    message("Wating to request the data...")
+    Sys.sleep(time = wait_time)
+  }
   res_joburls = batch_jobdata(
     username = username,
     password = password,
     id = id
-    )
+  )
+  if(is.null(res_joburls)) {
+    message("No data returned yet. Try again later with the following id: ", id)
+    return(id)
+  }
   filename_local = file.path(directory, paste0(filename, ".csv.gz"))
+  if(file.exists(filename_local)) {
+    message(filename, " already exists, overwriting it")
+  }
   httr::GET(res_joburls$dataGz, httr::write_disk(filename_local))
   batch_read(filename_local)
 }
@@ -98,7 +115,7 @@ batch_routes = function(
     password = Sys.getenv("CYCLESTREETS_PW"),
     base_url = "https://api.cyclestreets.net/v2/batchroutes.createjob",
     id = 1
-    ) {
+) {
   batch_url = paste0(base_url, "?key=", Sys.getenv("CYCLESTREETS"))
   body = list(
     name = name,
@@ -151,10 +168,14 @@ batch_jobdata = function(
   message("Sending data, wait...")
   res = httr::POST(url = batch_url, body = body)
   res_json = httr::content(res, "parsed")
-  if(res_json$ready) {
-    message("Congrats, you data is ready")
-    res_joburls = res_json$files
-    return(res_joburls)
+  if(!is.null(res_json$ready)) {
+    if(res_json$ready) {
+      message("Congrats, you data is ready")
+      res_joburls = res_json$files
+      return(res_joburls)
+    } else {
+      message("Routing not complete")
+    }
   } else {
     message("Routing not complete")
   }
@@ -168,10 +189,12 @@ batch_jobdata = function(
 batch_read = function(file) {
   file_csv = gsub(pattern = ".gz", replacement = "", x = file)
   if(file.exists(file_csv)) {
+    message(".csv File already exists. Removing it.")
     file.remove(file_csv)
   }
   R.utils::gunzip(file)
   # res = readr::read_csv(file_csv)
+  message("Reading in the following file:\n", file_csv)
   res = utils::read.csv(file_csv)
   res$id = seq(nrow(res))
   res_list = lapply(res$json, function(x) jsonlite::parse_json(x, simplifyVector = TRUE))
