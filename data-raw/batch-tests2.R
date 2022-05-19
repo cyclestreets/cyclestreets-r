@@ -1,16 +1,23 @@
+remotes::install_github("cyclestreets/cyclestreets-r")
 library(sf)
 library(stplanr)
-desire_lines = od::od_to_sf(od::od_data_df, od::od_data_zones)[4:5, 1:3]
+library(cyclestreets)
+desire_lines = od::od_to_sf(od::od_data_df, od::od_data_zones)[4:7, 1:3]
 routes_stplanr = route(l = desire_lines, route_fun = journey, plan = "quietest")
-plot(routes_stplanr$geometry[1])
+plot(routes_stplanr$geometry)
 desire_lines$id = 1:nrow(desire_lines)
 routes_batch = batch(desire_lines, username = "robinlovelace", wait_time = 30)
 # routes_batch = batch(desire_lines, username = "robinlovelace", wait_time = 30, id = 218)
-plot(routes_batch$geometry[1])
+plot(routes_batch$geometry)
 identical(routes_stplanr$geometry, routes_batch$geometry)
-names(routes_stplanr)[-c(1:4)]
+routes_stplanr
+routes_batch
+names(routes_stplanr)
 names(routes_batch)
 waldo::compare(names(routes_stplanr), names(routes_batch))
+waldo::compare(routes_stplanr, routes_batch)
+
+
 
 nrows_batch = table(routes_batch$id)
 df_batch = sf::st_drop_geometry(routes_batch)

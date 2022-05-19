@@ -83,7 +83,7 @@ batch = function(
       base_url,
       id
     )
-    message("Wating to request the data...")
+    message("Wating to request the data for ", wait_time, " seconds.")
     Sys.sleep(time = wait_time)
   }
   res_joburls = batch_jobdata(
