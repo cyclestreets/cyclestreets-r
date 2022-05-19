@@ -3,7 +3,7 @@
 #' @param desire_lines Geographic desire lines representing origin-destination data
 #' @param name The name of the batch routing job for CycleStreets
 #' @param directory Where to save the data? `tempdir()` by default
-#' @param wait_time How long to wait before getting the data? 20 seconds by default.
+#' @param wait_time How long to wait before getting the data? 30 seconds by default.
 #' @param serverId The server ID to use (21 by default)
 #' @param strategies Route plan types, e.g. `"fastest"`
 #' @param minDistance Min Euclidean distance of routes to be calculated
@@ -42,14 +42,13 @@
 #' routes = batch(desire_lines, username = "robinlovelace", wait_time = 1)
 #' # try again with ID provided:
 #' # routes = batch(desire_lines, username = "robinlovelace", id = routes)
-#' desire_lines = od::od_to_sf(od::od_data_df, od::od_data_zones)[4:100, 1:3]
-#' desire_lines$id = 1:nrow(desire_lines)
-#' routes = batch(desire_lines, username = "robinlovelace")
+#' # Compare with stplanr's route() approach:
+#'
 #' }
 batch = function(
     desire_lines,
     directory = tempdir(),
-    wait_time = 20,
+    wait_time = 30,
     name = "test batch",
     serverId = 21,
     strategies = "quietest",
@@ -203,7 +202,45 @@ batch_read = function(file) {
     l_mean = lapply(l, mean)
     data.frame(mean_elev = unlist(l_mean))
   })
-  res_df = purrr::map_dfr(res_list, .f = json2sf_cs)
+  res_df = purrr::map_dfr(res_list, .f = json2sf_cs, cols = c(
+    "name",
+    "distances",
+    "time",
+    "busynance",
+    "elevations",
+    "start_longitude",
+    "start_latitude",
+    "finish_longitude",
+    "finish_latitude"
+  ),
+  cols_extra = c(
+    "crow_fly_distance",
+    "event",
+    "whence",
+    "speed",
+    "itinerary",
+    "clientRouteId",
+    "plan",
+    "note",
+    "length",
+    "quietness",
+    "west",
+    "south",
+    "east",
+    "north",
+    "leaving",
+    "arriving",
+    "grammesCO2saved",
+    "calories",
+    "edition",
+    "gradient_segment",
+    "elevation_change",
+    "provisionName"
+  ),
+  smooth_gradient = TRUE,
+  distance_cutoff = 50,
+  gradient_cutoff = 0.1,
+  n = 3)
   res_df$id = elev_df$id
   # plot(res_df["id"])
   res_df
