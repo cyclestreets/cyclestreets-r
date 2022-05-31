@@ -61,7 +61,8 @@ batch = function(
     username = "yourname",
     password = Sys.getenv("CYCLESTREETS_PW"),
     base_url = "https://api.cyclestreets.net/v2/batchroutes.createjob",
-    id = NULL
+    id = NULL,
+    pat = Sys.getenv("CYCLESTREETS")
 ) {
   if(is.null(desire_lines$id)) {
     desire_lines$id = 1:nrow(desire_lines)
@@ -126,7 +127,7 @@ batch_routes = function(
     base_url = "https://api.cyclestreets.net/v2/batchroutes.createjob",
     id = 1
 ) {
-  batch_url = paste0(base_url, "?key=", Sys.getenv("CYCLESTREETS"))
+  batch_url = paste0(base_url, "?key=", pat)
   body = list(
     name = name,
     serverId = serverId,
@@ -151,7 +152,7 @@ batch_routes = function(
 
 batch_control = function(base_url = "https://api.cyclestreets.net/v2/batchroutes.controljob") {
   # POST https://api.cyclestreets.net/v2/batchroutes.controljob?key=...
-  batch_url = paste0(base_url, "?key=", Sys.getenv("CYCLESTREETS"))
+  batch_url = paste0(base_url, "?key=", pat)
   body = list(
     id = 196,
     action = "start",
@@ -168,7 +169,7 @@ batch_jobdata = function(
     id
 ) {
   # POST https://api.cyclestreets.net/v2/batchroutes.controljob?key=...
-  batch_url = paste0(base_url, "?key=", Sys.getenv("CYCLESTREETS"))
+  batch_url = paste0(base_url, "?key=", pat)
   body = list(
     id = id,
     username = "robinlovelace",
