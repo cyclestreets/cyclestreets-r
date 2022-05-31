@@ -448,6 +448,12 @@ smooth_with_cutoffs = function(gradient_segment,
   gradient_segment
 }
 
+# x = 1:2
+# route_rolling_average(x)
 route_rolling_average <- function(x, n = 3) {
-  as.numeric(stats::filter(x, rep(1 / n, n), sides = 2))
+  if(length(x) >= n) {
+    as.numeric(stats::filter(x, rep(1 / n, n), sides = 2))
+  } else {
+    x
+  }
 }
