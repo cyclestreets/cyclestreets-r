@@ -3,7 +3,9 @@
 #' @param desire_lines Geographic desire lines representing origin-destination data
 #' @param name The name of the batch routing job for CycleStreets
 #' @param directory Where to save the data? `tempdir()` by default
-#' @param wait_time How long to wait before getting the data? 30 seconds by default.
+#' @param wait_time How long to wait before getting the data in seconds?
+#'   NULL by default, meaning it will be calculated by the private function
+#'   `wait_s()`.
 #' @param serverId The server ID to use (21 by default)
 #' @param strategies Route plan types, e.g. `"fastest"`
 #' @param minDistance Min Euclidean distance of routes to be calculated
@@ -40,7 +42,7 @@
 #' routes = batch(desire_lines, username = "robinlovelace")
 #' plot(routes$geometry)
 #' plot(desire_lines$geometry, add = TRUE, col = "red")
-#' routes = batch(desire_lines, username = "robinlovelace", wait_time = 30)
+#' routes = batch(desire_lines, username = "robinlovelace", wait_time = 5)
 #' # try again with ID provided:
 #' # routes = batch(desire_lines, username = "robinlovelace", id = 232)
 #' # Compare with stplanr's route() approach:
@@ -49,7 +51,7 @@
 batch = function(
     desire_lines,
     directory = tempdir(),
-    wait_time = 30,
+    wait_time = NULL,
     name = "test batch",
     serverId = 21,
     strategies = "quietest",
@@ -66,6 +68,10 @@ batch = function(
     pat = Sys.getenv("CYCLESTREETS_BATCH"),
     silent = TRUE
 ) {
+  sys_time = Sys.time()
+  if(is.null(wait_time)) {
+    wait_time = wait_s(n = nrow(desire_lines))
+  }
   if(is.null(desire_lines$id)) {
     desire_lines$id = 1:nrow(desire_lines)
   }
@@ -88,7 +94,7 @@ batch = function(
       pat
     )
     # browser()
-    message("Wating to request the data for ", wait_time, " seconds.")
+    message("Waiting to request the data for ", wait_time, " seconds.")
     Sys.sleep(time = wait_time)
   }
   res_joburls = batch_jobdata(
@@ -98,8 +104,18 @@ batch = function(
     pat = pat
   )
   if(is.null(res_joburls)) {
-    message("No data returned yet. Try again later with the following id: ", id)
-    return(id)
+    message("No data returned yet. Trying again id ", id, " every 10 seconds")
+    while(is.null(res_joburls)) {
+      sys_time_taken = round(as.numeric(Sys.time() - sys_time) / 60)
+      message(sys_time_taken, " minutes taken, waiting another 10 s")
+      Sys.sleep(10)
+      res_joburls = batch_jobdata(
+        username = username,
+        password = password,
+        id = id,
+        pat = pat
+      )
+    }
   }
   filename_local = file.path(directory, paste0(filename, ".csv.gz"))
   if(file.exists(filename_local)) {
@@ -113,6 +129,9 @@ batch = function(
   df_routes_expanded = sf::st_drop_geometry(desire_lines)[inds, ]
   df = cbind(df_routes_expanded, df[-ncol(df)])
   routes_updated = sf::st_sf(df, geometry = routes$geometry)
+  time_taken_s = as.numeric(Sys.time() - sys_time)
+  rps = round(nrow(routes_updated) / time_taken_s)
+  message("Routes calculated in ", time_taken_s, ", ", rps, " routes/s")
   routes_updated
 }
 
@@ -274,3 +293,6 @@ batch_read = function(file) {
   res_df
 }
 
+wait_s = function(n) {
+  30 + n / 20
+}

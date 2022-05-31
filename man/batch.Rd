@@ -7,7 +7,7 @@
 batch(
   desire_lines,
   directory = tempdir(),
-  wait_time = 30,
+  wait_time = NULL,
   name = "test batch",
   serverId = 21,
   strategies = "quietest",
@@ -30,7 +30,9 @@ batch(
 
 \item{directory}{Where to save the data? \code{tempdir()} by default}
 
-\item{wait_time}{How long to wait before getting the data? 30 seconds by default.}
+\item{wait_time}{How long to wait before getting the data in seconds?
+NULL by default, meaning it will be calculated by the private function
+\code{wait_s()}.}
 
 \item{name}{The name of the batch routing job for CycleStreets}
 
@@ -89,7 +91,7 @@ desire_lines = readRDS(url("https://github.com/cyclestreets/cyclestreets-r/relea
 routes = batch(desire_lines, username = "robinlovelace")
 plot(routes$geometry)
 plot(desire_lines$geometry, add = TRUE, col = "red")
-routes = batch(desire_lines, username = "robinlovelace", wait_time = 30)
+routes = batch(desire_lines, username = "robinlovelace", wait_time = 5)
 # try again with ID provided:
 # routes = batch(desire_lines, username = "robinlovelace", id = 232)
 # Compare with stplanr's route() approach:
