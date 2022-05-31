@@ -69,7 +69,8 @@
   username <span class="op">=</span> <span class="st">"yourname"</span>,
   password <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"CYCLESTREETS_PW"</span><span class="op">)</span>,
   base_url <span class="op">=</span> <span class="st">"https://api.cyclestreets.net/v2/batchroutes.createjob"</span>,
-  id <span class="op">=</span> <span class="cn">NULL</span>
+  id <span class="op">=</span> <span class="cn">NULL</span>,
+  pat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"CYCLESTREETS"</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
     </div>
 
@@ -122,6 +123,8 @@ start: Start (open) job
 pause: Pause job
 continue: Continue (re-open) job
 terminate: Terminate job and delete data</p></dd>
+<dt>pat</dt>
+<dd><p>The API key used. By default this uses <code>Sys.getenv("CYCLESTREETS")</code>.</p></dd>
 </dl></div>
 
     <div id="ref-examples">
@@ -130,6 +133,7 @@ terminate: Terminate job and delete data</p></dd>
 <span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
 <span class="r-in"><span class="va">desire_lines</span> <span class="op">=</span> <span class="fu">od</span><span class="fu">::</span><span class="fu"><a href="https://itsleeds.github.io/od/reference/od_to_sf.html" class="external-link">od_to_sf</a></span><span class="op">(</span><span class="fu">od</span><span class="fu">::</span><span class="va"><a href="https://itsleeds.github.io/od/reference/od_data_df.html" class="external-link">od_data_df</a></span>, <span class="fu">od</span><span class="fu">::</span><span class="va"><a href="https://itsleeds.github.io/od/reference/od_data_zones.html" class="external-link">od_data_zones</a></span><span class="op">)</span><span class="op">[</span><span class="fl">4</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span></span>
 <span class="r-in"><span class="va">desire_lines</span><span class="op">$</span><span class="va">id</span> <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">desire_lines</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">desire_lines</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/connections.html" class="external-link">url</a></span><span class="op">(</span><span class="st">"https://github.com/cyclestreets/cyclestreets-r/releases/download/v0.5.3/od-longford-10-test.Rds"</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-in"><span class="va">routes</span> <span class="op">=</span> <span class="fu">batch</span><span class="op">(</span><span class="va">desire_lines</span>, username <span class="op">=</span> <span class="st">"robinlovelace"</span><span class="op">)</span></span>
 <span class="r-in"><span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">routes</span><span class="op">$</span><span class="va">geometry</span><span class="op">)</span></span>
 <span class="r-in"><span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">desire_lines</span><span class="op">$</span><span class="va">geometry</span>, add <span class="op">=</span> <span class="cn">TRUE</span>, col <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></span>
