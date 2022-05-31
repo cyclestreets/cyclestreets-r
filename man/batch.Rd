@@ -21,7 +21,8 @@ batch(
   password = Sys.getenv("CYCLESTREETS_PW"),
   base_url = "https://api.cyclestreets.net/v2/batchroutes.createjob",
   id = NULL,
-  pat = Sys.getenv("CYCLESTREETS")
+  pat = Sys.getenv("CYCLESTREETS_BATCH"),
+  silent = TRUE
 )
 }
 \arguments{
@@ -73,6 +74,8 @@ continue: Continue (re-open) job
 terminate: Terminate job and delete data}
 
 \item{pat}{The API key used. By default this uses \code{Sys.getenv("CYCLESTREETS")}.}
+
+\item{silent}{Logical (default is FALSE). TRUE hides request sent.}
 }
 \description{
 Interface to CycleStreets Batch Routing API
@@ -86,9 +89,9 @@ desire_lines = readRDS(url("https://github.com/cyclestreets/cyclestreets-r/relea
 routes = batch(desire_lines, username = "robinlovelace")
 plot(routes$geometry)
 plot(desire_lines$geometry, add = TRUE, col = "red")
-routes = batch(desire_lines, username = "robinlovelace", wait_time = 1)
+routes = batch(desire_lines, username = "robinlovelace", wait_time = 30)
 # try again with ID provided:
-# routes = batch(desire_lines, username = "robinlovelace", id = routes)
+# routes = batch(desire_lines, username = "robinlovelace", id = 232)
 # Compare with stplanr's route() approach:
 
 }
