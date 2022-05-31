@@ -20,7 +20,8 @@ batch(
   username = "yourname",
   password = Sys.getenv("CYCLESTREETS_PW"),
   base_url = "https://api.cyclestreets.net/v2/batchroutes.createjob",
-  id = NULL
+  id = NULL,
+  pat = Sys.getenv("CYCLESTREETS")
 )
 }
 \arguments{
@@ -70,6 +71,8 @@ start: Start (open) job
 pause: Pause job
 continue: Continue (re-open) job
 terminate: Terminate job and delete data}
+
+\item{pat}{The API key used. By default this uses \code{Sys.getenv("CYCLESTREETS")}.}
 }
 \description{
 Interface to CycleStreets Batch Routing API
@@ -79,6 +82,7 @@ if(FALSE) {
 library(sf)
 desire_lines = od::od_to_sf(od::od_data_df, od::od_data_zones)[4:5, 1:3]
 desire_lines$id = 1:nrow(desire_lines)
+desire_lines = readRDS(url("https://github.com/cyclestreets/cyclestreets-r/releases/download/v0.5.3/od-longford-10-test.Rds"))
 routes = batch(desire_lines, username = "robinlovelace")
 plot(routes$geometry)
 plot(desire_lines$geometry, add = TRUE, col = "red")

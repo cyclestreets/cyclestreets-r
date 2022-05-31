@@ -36,12 +36,13 @@
 #' library(sf)
 #' desire_lines = od::od_to_sf(od::od_data_df, od::od_data_zones)[4:5, 1:3]
 #' desire_lines$id = 1:nrow(desire_lines)
+#' desire_lines = readRDS(url("https://github.com/cyclestreets/cyclestreets-r/releases/download/v0.5.3/od-longford-10-test.Rds"))
 #' routes = batch(desire_lines, username = "robinlovelace")
 #' plot(routes$geometry)
 #' plot(desire_lines$geometry, add = TRUE, col = "red")
-#' routes = batch(desire_lines, username = "robinlovelace", wait_time = 1)
+#' routes = batch(desire_lines, username = "robinlovelace", wait_time = 30)
 #' # try again with ID provided:
-#' # routes = batch(desire_lines, username = "robinlovelace", id = routes)
+#' # routes = batch(desire_lines, username = "robinlovelace", id = 232)
 #' # Compare with stplanr's route() approach:
 #'
 #' }
@@ -62,7 +63,8 @@ batch = function(
     password = Sys.getenv("CYCLESTREETS_PW"),
     base_url = "https://api.cyclestreets.net/v2/batchroutes.createjob",
     id = NULL,
-    pat = Sys.getenv("CYCLESTREETS")
+    pat = Sys.getenv("CYCLESTREETS_BATCH"),
+    silent = TRUE
 ) {
   if(is.null(desire_lines$id)) {
     desire_lines$id = 1:nrow(desire_lines)
@@ -82,15 +84,18 @@ batch = function(
       username,
       password,
       base_url,
-      id
+      id,
+      pat
     )
+    # browser()
     message("Wating to request the data for ", wait_time, " seconds.")
     Sys.sleep(time = wait_time)
   }
   res_joburls = batch_jobdata(
     username = username,
     password = password,
-    id = id
+    id = id,
+    pat = pat
   )
   if(is.null(res_joburls)) {
     message("No data returned yet. Try again later with the following id: ", id)
@@ -125,7 +130,9 @@ batch_routes = function(
     username = "yourname",
     password = Sys.getenv("CYCLESTREETS_PW"),
     base_url = "https://api.cyclestreets.net/v2/batchroutes.createjob",
-    id = 1
+    id = 1,
+    pat,
+    silent = TRUE
 ) {
   batch_url = paste0(base_url, "?key=", pat)
   body = list(
@@ -142,7 +149,11 @@ batch_routes = function(
     username = username,
     password = password
   )
+  # browser()
   message("POSTing the request to create and start the job")
+  if(!silent) {
+    message("Posting to: ", batch_url)
+  }
   res = httr::POST(url = batch_url, body = body)
   res_json = httr::content(res, "parsed")
   id = res_json$id
@@ -150,7 +161,7 @@ batch_routes = function(
   id
 }
 
-batch_control = function(base_url = "https://api.cyclestreets.net/v2/batchroutes.controljob") {
+batch_control = function(base_url = "https://api.cyclestreets.net/v2/batchroutes.controljob", pat) {
   # POST https://api.cyclestreets.net/v2/batchroutes.controljob?key=...
   batch_url = paste0(base_url, "?key=", pat)
   body = list(
@@ -166,7 +177,8 @@ batch_jobdata = function(
     base_url = "https://api.cyclestreets.net/v2/batchroutes.jobdata",
     username = "yourname",
     password = Sys.getenv("CYCLESTREETS_PW"),
-    id
+    id,
+    pat
 ) {
   # POST https://api.cyclestreets.net/v2/batchroutes.controljob?key=...
   batch_url = paste0(base_url, "?key=", pat)
