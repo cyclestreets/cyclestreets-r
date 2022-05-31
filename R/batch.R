@@ -106,7 +106,7 @@ batch = function(
   if(is.null(res_joburls)) {
     message("No data returned yet. Trying again id ", id, " every 10 seconds")
     while(is.null(res_joburls)) {
-      sys_time_taken = round(as.numeric(Sys.time() - sys_time) / 60)
+      sys_time_taken = round(difftime(time1 = Sys.time(), time2 = sys_time, units = "secs") / 60)
       message(sys_time_taken, " minutes taken, waiting another 10 s")
       Sys.sleep(10)
       res_joburls = batch_jobdata(
@@ -129,7 +129,7 @@ batch = function(
   df_routes_expanded = sf::st_drop_geometry(desire_lines)[inds, ]
   df = cbind(df_routes_expanded, df[-ncol(df)])
   routes_updated = sf::st_sf(df, geometry = routes$geometry)
-  time_taken_s = as.numeric(Sys.time() - sys_time)
+  time_taken_s = round(as.numeric(difftime(time1 = Sys.time(), time2 = sys_time, units = "secs")))
   rps = round(nrow(routes_updated) / time_taken_s)
   message("Routes calculated in ", time_taken_s, ", ", rps, " routes/s")
   routes_updated
