@@ -70,7 +70,8 @@
   password <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"CYCLESTREETS_PW"</span><span class="op">)</span>,
   base_url <span class="op">=</span> <span class="st">"https://api.cyclestreets.net/v2/batchroutes.createjob"</span>,
   id <span class="op">=</span> <span class="cn">NULL</span>,
-  pat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"CYCLESTREETS"</span><span class="op">)</span>
+  pat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"CYCLESTREETS_BATCH"</span><span class="op">)</span>,
+  silent <span class="op">=</span> <span class="cn">TRUE</span>
 <span class="op">)</span></code></pre></div>
     </div>
 
@@ -125,6 +126,8 @@ continue: Continue (re-open) job
 terminate: Terminate job and delete data</p></dd>
 <dt>pat</dt>
 <dd><p>The API key used. By default this uses <code>Sys.getenv("CYCLESTREETS")</code>.</p></dd>
+<dt>silent</dt>
+<dd><p>Logical (default is FALSE). TRUE hides request sent.</p></dd>
 </dl></div>
 
     <div id="ref-examples">
@@ -137,9 +140,9 @@ terminate: Terminate job and delete data</p></dd>
 <span class="r-in"><span class="va">routes</span> <span class="op">=</span> <span class="fu">batch</span><span class="op">(</span><span class="va">desire_lines</span>, username <span class="op">=</span> <span class="st">"robinlovelace"</span><span class="op">)</span></span>
 <span class="r-in"><span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">routes</span><span class="op">$</span><span class="va">geometry</span><span class="op">)</span></span>
 <span class="r-in"><span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">desire_lines</span><span class="op">$</span><span class="va">geometry</span>, add <span class="op">=</span> <span class="cn">TRUE</span>, col <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">routes</span> <span class="op">=</span> <span class="fu">batch</span><span class="op">(</span><span class="va">desire_lines</span>, username <span class="op">=</span> <span class="st">"robinlovelace"</span>, wait_time <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">routes</span> <span class="op">=</span> <span class="fu">batch</span><span class="op">(</span><span class="va">desire_lines</span>, username <span class="op">=</span> <span class="st">"robinlovelace"</span>, wait_time <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span>
 <span class="r-in"><span class="co"># try again with ID provided:</span></span>
-<span class="r-in"><span class="co"># routes = batch(desire_lines, username = "robinlovelace", id = routes)</span></span>
+<span class="r-in"><span class="co"># routes = batch(desire_lines, username = "robinlovelace", id = 232)</span></span>
 <span class="r-in"><span class="co"># Compare with stplanr's route() approach:</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="op">}</span></span>
