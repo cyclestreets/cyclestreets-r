@@ -288,6 +288,7 @@ batch_read = function(file) {
   distance_cutoff = 50,
   gradient_cutoff = 0.1,
   n = 3)
+  browser()
   res_df$id = elev_df$id
   # plot(res_df["id"])
   res_df
