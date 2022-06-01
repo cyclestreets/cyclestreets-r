@@ -94,6 +94,9 @@ batch = function(
       pat
     )
     # browser()
+    if(is.null(id)) {
+      stop("Check your credentials, try again, and maybe contact CycleStreets")
+    }
     message("Waiting to request the data for ", wait_time, " seconds.")
     Sys.sleep(time = wait_time)
   }
