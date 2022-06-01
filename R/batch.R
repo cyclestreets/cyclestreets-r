@@ -40,6 +40,7 @@
 #' desire_lines$id = 1:nrow(desire_lines)
 #' desire_lines = readRDS(url("https://github.com/cyclestreets/cyclestreets-r/releases/download/v0.5.3/od-longford-10-test.Rds"))
 #' routes = batch(desire_lines, username = "robinlovelace")
+#' names(routes)
 #' plot(routes$geometry)
 #' plot(desire_lines$geometry, add = TRUE, col = "red")
 #' routes = batch(desire_lines, username = "robinlovelace", wait_time = 5)
@@ -134,8 +135,8 @@ batch = function(
   df = cbind(df_routes_expanded, df[-1])
   routes_updated = sf::st_sf(df, geometry = routes$geometry)
   time_taken_s = round(as.numeric(difftime(time1 = Sys.time(), time2 = sys_time, units = "secs")))
-  rps = round(nrow(routes_updated) / time_taken_s, 1)
-  message(nrow(routes_updated), " routes, ", time_taken_s, "s, ", rps, " routes/s")
+  rps = round(nrow(desire_lines) / time_taken_s, 1)
+  message(nrow(desire_lines), " routes, ", time_taken_s, "s, ", rps, " routes/s")
   routes_updated
 }
 
