@@ -125,12 +125,13 @@ batch = function(
     message(filename, " already exists, overwriting it")
   }
   httr::GET(res_joburls$dataGz, httr::write_disk(filename_local))
+  # browser()
   routes = batch_read(filename_local)
   nrows = table(routes$id)
   df = sf::st_drop_geometry(routes)
   inds = rep(seq(nrow(desire_lines)), times = nrows)
   df_routes_expanded = sf::st_drop_geometry(desire_lines)[inds, ]
-  df = cbind(df_routes_expanded, df[-ncol(df)])
+  df = cbind(df_routes_expanded, df[-1])
   routes_updated = sf::st_sf(df, geometry = routes$geometry)
   time_taken_s = round(as.numeric(difftime(time1 = Sys.time(), time2 = sys_time, units = "secs")))
   rps = round(nrow(routes_updated) / time_taken_s, 1)
