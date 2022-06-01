@@ -244,11 +244,6 @@ batch_read = function(file) {
   res = utils::read.csv(file_csv)
   res$id = seq(nrow(res))
   res_list = lapply(res$json, function(x) jsonlite::parse_json(x, simplifyVector = TRUE))
-  elev_df = purrr::map_dfr(res_list, .id = "id", .f = function(x) {
-    l = lapply(x$marker$`@attributes`$elevations[-1], txt2elevations)
-    l_mean = lapply(l, mean)
-    data.frame(mean_elev = unlist(l_mean))
-  })
   res_df = purrr::map_dfr(res_list, .f = json2sf_cs, cols = c(
     "name",
     "distances",
@@ -287,10 +282,9 @@ batch_read = function(file) {
   smooth_gradient = TRUE,
   distance_cutoff = 50,
   gradient_cutoff = 0.1,
-  n = 3)
-  browser()
-  res_df$id = elev_df$id
-  # plot(res_df["id"])
+  n = 3,
+  .id = "id"
+  )
   res_df
 }
 
