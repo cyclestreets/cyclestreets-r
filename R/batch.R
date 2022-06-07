@@ -47,7 +47,12 @@
 #' # try again with ID provided:
 #' # routes = batch(desire_lines, username = "robinlovelace", id = 232)
 #' # Compare with stplanr's route() approach:
+#' # Test with broken data:
+#' u = "https://github.com/cyclestreets/cyclestreets-r/files/8853002/test-data.csv.gz"
+#' f = basename(u)
 #'
+#' download.file(u, f)
+#' batch_read(f)
 #' }
 batch = function(
     desire_lines,
@@ -248,7 +253,26 @@ batch_read = function(file) {
   message("Reading in the following file:\n", file_csv)
   res = utils::read.csv(file_csv)
   res$id = seq(nrow(res))
-  res_list = lapply(res$json, function(x) jsonlite::parse_json(x, simplifyVector = TRUE))
+  n_char = nchar(res$json)
+  min_nchar = min(n_char)
+  if(min_nchar == 0) {
+    which_min_ncar = which(n_char == 0)
+    warning("These contain no data: ", paste(which_min_ncar, collapse = " "))
+    warning("Removing the failing desire lines")
+    res = res[-which_min_ncar, ]
+  }
+  # Commented debugging code to identify the failing line:
+  # try({
+    res_list = lapply(res$json, function(x) {
+  #     if(exists("i_line")) {
+  #       i_line <<- i_line + 1
+  #     } else {
+  #       i_line <<- 1
+  #     }
+      # message("Line number ", i_line)
+      jsonlite::parse_json(x, simplifyVector = TRUE)
+    } )
+  # })
   res_df = purrr::map_dfr(res_list, .f = json2sf_cs, cols = c(
     "name",
     "distances",

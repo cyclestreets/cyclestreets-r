@@ -89,12 +89,18 @@ desire_lines = od::od_to_sf(od::od_data_df, od::od_data_zones)[4:5, 1:3]
 desire_lines$id = 1:nrow(desire_lines)
 desire_lines = readRDS(url("https://github.com/cyclestreets/cyclestreets-r/releases/download/v0.5.3/od-longford-10-test.Rds"))
 routes = batch(desire_lines, username = "robinlovelace")
+names(routes)
 plot(routes$geometry)
 plot(desire_lines$geometry, add = TRUE, col = "red")
 routes = batch(desire_lines, username = "robinlovelace", wait_time = 5)
 # try again with ID provided:
 # routes = batch(desire_lines, username = "robinlovelace", id = 232)
 # Compare with stplanr's route() approach:
+# Test with broken data:
+u = "https://github.com/cyclestreets/cyclestreets-r/files/8853002/test-data.csv.gz"
+f = basename(u)
 
+download.file(u, f)
+batch_read(f)
 }
 }
