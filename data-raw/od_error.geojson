@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "od_error",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "geo_code1": "06040", "geo_code2": "06039", "foot": 0.33443096035094988, "cyclists": 1.0095523506274584, "public_transport": 3.6903728856190661, "drivers": 2.770406408177307, "passengers": 11.178932012745213, "other": 0.28133971291866039, "primary": 11.666666666666666, "all_modes": 19.265034330438656, "all_purposes": 141.0, "length_km": 5.6617613240506648, "all_primary": 22.955407216057722 }, "geometry": { "type": "LineString", "coordinates": [ [ -6.5969, 53.38165 ], [ -6.513869066962588, 53.370572450993457 ] ] } }
+]
+}
