@@ -79,44 +79,74 @@
     <h2>Arguments</h2>
     <dl><dt>desire_lines</dt>
 <dd><p>Geographic desire lines representing origin-destination data</p></dd>
+
+
 <dt>directory</dt>
 <dd><p>Where to save the data? <code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir()</a></code> by default</p></dd>
+
+
 <dt>wait_time</dt>
 <dd><p>How long to wait before getting the data in seconds?
 NULL by default, meaning it will be calculated by the private function
 <code>wait_s()</code>.</p></dd>
+
+
 <dt>name</dt>
 <dd><p>The name of the batch routing job for CycleStreets</p></dd>
+
+
 <dt>serverId</dt>
 <dd><p>The server ID to use (21 by default)</p></dd>
+
+
 <dt>strategies</dt>
 <dd><p>Route plan types, e.g. <code>"fastest"</code></p></dd>
+
+
 <dt>bothDirections</dt>
 <dd><p>int (1|0)
 Whether to plan in both directions, i.e. A-B as well as B-A.
 0, meaning only one way routes, is the default in the R default.</p></dd>
+
+
 <dt>minDistance</dt>
 <dd><p>Min Euclidean distance of routes to be calculated</p></dd>
+
+
 <dt>maxDistance</dt>
 <dd><p>Maximum Euclidean distance of routes to be calculated</p></dd>
+
+
 <dt>filename</dt>
 <dd><p>Character string</p></dd>
+
+
 <dt>includeJsonOutput</dt>
 <dd><p>int (1|0)
 Whether to include a column in the resulting CSV data giving the full JSON output from the API, rather than just summary
 information like distance and time.</p></dd>
+
+
 <dt>emailOnCompletion</dt>
 <dd><p>Email on completion?</p></dd>
+
+
 <dt>username</dt>
 <dd><p>string
 Your CycleStreets account username. In due course this will be replaced with an OAuth token.</p></dd>
+
+
 <dt>password</dt>
 <dd><p>string
 Your CycleStreets account password. You can set it with
 Sys.setenv(CYCLESTREETS_PW="xxxxxx")</p></dd>
+
+
 <dt>base_url</dt>
 <dd><p>The base url from which to construct API requests
 (with default set to main server)</p></dd>
+
+
 <dt>id</dt>
 <dd><p>int
 Batch job ID, as returned from batchroutes.createjob.
@@ -126,10 +156,15 @@ start: Start (open) job
 pause: Pause job
 continue: Continue (re-open) job
 terminate: Terminate job and delete data</p></dd>
+
+
 <dt>pat</dt>
 <dd><p>The API key used. By default this uses <code>Sys.getenv("CYCLESTREETS")</code>.</p></dd>
+
+
 <dt>silent</dt>
 <dd><p>Logical (default is FALSE). TRUE hides request sent.</p></dd>
+
 </dl></div>
 
     <div id="ref-examples">
@@ -138,7 +173,9 @@ terminate: Terminate job and delete data</p></dd>
 <span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
 <span class="r-in"><span class="va">desire_lines</span> <span class="op">=</span> <span class="fu">od</span><span class="fu">::</span><span class="fu"><a href="https://itsleeds.github.io/od/reference/od_to_sf.html" class="external-link">od_to_sf</a></span><span class="op">(</span><span class="fu">od</span><span class="fu">::</span><span class="va"><a href="https://itsleeds.github.io/od/reference/od_data_df.html" class="external-link">od_data_df</a></span>, <span class="fu">od</span><span class="fu">::</span><span class="va"><a href="https://itsleeds.github.io/od/reference/od_data_zones.html" class="external-link">od_data_zones</a></span><span class="op">)</span><span class="op">[</span><span class="fl">4</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span></span>
 <span class="r-in"><span class="va">desire_lines</span><span class="op">$</span><span class="va">id</span> <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">desire_lines</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">desire_lines</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/connections.html" class="external-link">url</a></span><span class="op">(</span><span class="st">"https://github.com/cyclestreets/cyclestreets-r/releases/download/v0.5.3/od-longford-10-test.Rds"</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">u</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"https://github.com/cyclestreets/cyclestreets-r/"</span>,</span>
+<span class="r-in">  <span class="st">"releases/download/v0.5.3/od-longford-10-test.Rds"</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">desire_lines</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/connections.html" class="external-link">url</a></span><span class="op">(</span><span class="va">u</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-in"><span class="va">routes</span> <span class="op">=</span> <span class="fu">batch</span><span class="op">(</span><span class="va">desire_lines</span>, username <span class="op">=</span> <span class="st">"robinlovelace"</span><span class="op">)</span></span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">routes</span><span class="op">)</span></span>
 <span class="r-in"><span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">routes</span><span class="op">$</span><span class="va">geometry</span><span class="op">)</span></span>
@@ -168,7 +205,7 @@ terminate: Terminate job and delete data</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

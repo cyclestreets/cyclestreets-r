@@ -83,36 +83,63 @@ See <a href="https://www.cyclestreets.net/api/" class="external-link">cyclestree
     <h2>Arguments</h2>
     <dl><dt>from</dt>
 <dd><p>Longitude/Latitude pair, e.g. <code>c(-1.55, 53.80)</code></p></dd>
+
+
 <dt>to</dt>
 <dd><p>Longitude/Latitude pair, e.g. <code>c(-1.55, 53.80)</code></p></dd>
+
+
 <dt>plan</dt>
 <dd><p>Text strong of either "fastest" (default), "quietest" or "balanced"</p></dd>
+
+
 <dt>silent</dt>
 <dd><p>Logical (default is FALSE). TRUE hides request sent.</p></dd>
+
+
 <dt>pat</dt>
 <dd><p>The API key used. By default this uses <code>Sys.getenv("CYCLESTREETS")</code>.</p></dd>
+
+
 <dt>base_url</dt>
 <dd><p>The base url from which to construct API requests
 (with default set to main server)</p></dd>
+
+
 <dt>reporterrors</dt>
 <dd><p>Boolean value (TRUE/FALSE) indicating if cyclestreets (TRUE by default).
 should report errors (FALSE by default).</p></dd>
+
+
 <dt>save_raw</dt>
 <dd><p>Boolean value which returns raw list from the json if TRUE (FALSE by default).</p></dd>
+
+
 <dt>cols</dt>
 <dd><p>Columns to be included in the result, a character vector or <code>NULL</code> for all available columns (see details for default)</p></dd>
+
+
 <dt>cols_extra</dt>
 <dd><p>Additional columns to be added providing summaries of gradient and other variables</p></dd>
+
+
 <dt>smooth_gradient</dt>
 <dd><p>Identify and fix anomalous gradients? TRUE by default. See
 https://github.com/Robinlovelace/cyclestreets/issues/14</p></dd>
+
+
 <dt>distance_cutoff</dt>
 <dd><p>Distance (m) used to identify anomalous gradients</p></dd>
+
+
 <dt>gradient_cutoff</dt>
 <dd><p>Gradient (%, e.g. 0.1 being 10%) used to identify anomalous gradients</p></dd>
+
+
 <dt>n</dt>
 <dd><p>The number of segments to use to smooth anomalous gradents.
 The default is 3, meaning segments directly before, after and including the offending segment.</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -130,7 +157,13 @@ can add the environment variable as follows
 <p>After setting the environment variable, as outlined above,
 you need to restart your R session before the journey function will work.</p>
 <p>A full list of variables (<code>cols</code>) available is represented by:</p>
-<p></p><div class="sourceCode"><pre><code></code></pre><p></p></div>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">c</span>(<span class="st">"time"</span>, <span class="st">"busynance"</span>, <span class="st">"signalledJunctions"</span>, <span class="st">"signalledCrossings"</span>,</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="st">"name"</span>, <span class="st">"walk"</span>, <span class="st">"elevations"</span>, <span class="st">"distances"</span>, <span class="st">"start"</span>, <span class="st">"finish"</span>,</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="st">"startSpeed"</span>, <span class="st">"start_longitude"</span>, <span class="st">"start_latitude"</span>, <span class="st">"finish_longitude"</span>,</span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="st">"finish_latitude"</span>, <span class="st">"crow_fly_distance"</span>, <span class="st">"event"</span>, <span class="st">"whence"</span>, <span class="st">"speed"</span>,</span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="st">"itinerary"</span>, <span class="st">"clientRouteId"</span>, <span class="st">"plan"</span>, <span class="st">"note"</span>, <span class="st">"length"</span>, <span class="st">"quietness"</span>,</span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="st">"west"</span>, <span class="st">"south"</span>, <span class="st">"east"</span>, <span class="st">"north"</span>, <span class="st">"leaving"</span>, <span class="st">"arriving"</span>, <span class="st">"grammesCO2saved"</span>,</span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="st">"calories"</span>, <span class="st">"edition"</span>, <span class="st">"geometry"</span>)</span></code></pre><p></p></div>
 <p>See <a href="https://www.cyclestreets.net/help/journey/howitworks/" class="external-link">www.cyclestreets.net/help/journey/howitworks/</a>
 for details on how these are calculated.</p>
     </div>
@@ -183,7 +216,7 @@ for details on how these are calculated.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>
