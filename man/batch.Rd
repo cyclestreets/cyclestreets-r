@@ -80,7 +80,9 @@ terminate: Terminate job and delete data}
 \item{silent}{Logical (default is FALSE). TRUE hides request sent.}
 }
 \description{
-Interface to CycleStreets Batch Routing API
+Note: set \code{CYCLESTREETS_BATCH} and \code{CYCLESTREETS_PW}
+environment variables, e.g. with \code{usethis::edit_r_environ()}
+before trying this.
 }
 \examples{
 if(FALSE) {

@@ -1,5 +1,9 @@
 #' Interface to CycleStreets Batch Routing API
 #'
+#' Note: set `CYCLESTREETS_BATCH` and `CYCLESTREETS_PW`
+#' environment variables, e.g. with `usethis::edit_r_environ()`
+#' before trying this.
+#'
 #' @param desire_lines Geographic desire lines representing origin-destination data
 #' @param name The name of the batch routing job for CycleStreets
 #' @param directory Where to save the data? `tempdir()` by default
@@ -99,7 +103,6 @@ batch = function(
       id,
       pat
     )
-    # browser()
     if(is.null(id)) {
       stop("Check your credentials, try again, and maybe contact CycleStreets")
     }
@@ -131,7 +134,6 @@ batch = function(
     message(filename, " already exists, overwriting it")
   }
   httr::GET(res_joburls$dataGz, httr::write_disk(filename_local))
-  # browser()
   routes = batch_read(filename_local)
   nrows = table(routes$id)
   df = sf::st_drop_geometry(routes)
@@ -178,12 +180,11 @@ batch_routes = function(
     username = username,
     password = password
   )
-  # browser()
   message("POSTing the request to create and start the job")
   if(!silent) {
     message("Posting to: ", batch_url)
   }
-  res = httr::POST(url = batch_url, body = body)
+  res = httr::POST(url = batch_url, body = body, )
   res_json = httr::content(res, "parsed")
   id = res_json$id
   message("Job id: ", id)
