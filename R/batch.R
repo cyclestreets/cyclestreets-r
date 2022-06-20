@@ -38,7 +38,9 @@
 #' library(sf)
 #' desire_lines = od::od_to_sf(od::od_data_df, od::od_data_zones)[4:5, 1:3]
 #' desire_lines$id = 1:nrow(desire_lines)
-#' desire_lines = readRDS(url("https://github.com/cyclestreets/cyclestreets-r/releases/download/v0.5.3/od-longford-10-test.Rds"))
+#' u = paste0("https://github.com/cyclestreets/cyclestreets-r/",
+#'   "releases/download/v0.5.3/od-longford-10-test.Rds")
+#' desire_lines = readRDS(url(u))
 #' routes = batch(desire_lines, username = "robinlovelace")
 #' names(routes)
 #' plot(routes$geometry)
