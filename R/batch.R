@@ -143,7 +143,7 @@ batch = function(
   desire_lines = desire_lines[routes_id_names, ]
   message(n_routes_removed, " routes removed")
   df = sf::st_drop_geometry(routes)
-  inds = rep(seq(nrow(desire_lines)), times = as.numeric(nrows))
+  inds = rep(seq(nrow(desire_lines)), times = as.numeric(routes_id_table))
   df_routes_expanded = sf::st_drop_geometry(desire_lines)[inds, ]
   df = cbind(df_routes_expanded, df[-1])
   routes_updated = sf::st_sf(df, geometry = routes$geometry)
