@@ -2,16 +2,28 @@ library(cyclestreets)
 library(tidyverse)
 library(stplanr)
 library(sf)
-l_desire = readRDS("~/OneDrive/projects-all/tiicycling/atumie/outputs/2022-05-31/rds/kildare/od_jittered_work.Rds")
-l_desire_30 = l_desire[1:30, ]
-sf::write_sf(l_desire_30, "ld30.geojson")
-piggyback::pb_upload("ld30.geojson") # fails
-piggyback::pb_releases()
-system("gh release upload v0.5.3 ld30.geojson")
+# l_desire = readRDS("~/OneDrive/projects-all/tiicycling/atumie/outputs/2022-05-31/rds/kildare/od_jittered_work.Rds")
+# l_desire_30 = l_desire[1:30, ]
+# sf::write_sf(l_desire_30, "ld30.geojson")
+# piggyback::pb_upload("ld30.geojson") # fails
+# piggyback::pb_releases()
+# system("gh release upload v0.5.3 ld30.geojson")
+# sf::write_sf(routes_route_30, "ld30-route-output.geojson")
+# l_desire_30 = sf::read_sf("ld30.geojson")
+l_desire_30 = sf::read_sf("https://github.com/cyclestreets/cyclestreets-r/releases/download/v0.5.3/ld30.geojson")
 routes_route_30 = route(l = l_desire_30, route_fun = journey, plan = "quietest")
-sf::write_sf(routes_route_30, "ld30-route-output.geojson")
 summary(routes_route_30$route_number)
 routes_batch_30 = batch(l_desire_30, strategies = "quietest", username = "robinlovelace")
+
+identical(routes_route_30$geometry[1], routes_batch_30$geometry[1]) # first 1 are identical
+identical(routes_route_30$geometry, routes_batch_30$geometry) # all are identical
+identical(routes_route_30$geo_code1, routes_batch_30$geo_code1) # all are identical
+identical(routes_route_30$geo_code2, routes_batch_30$geo_code2) # false
+identical(routes_route_30$foot, routes_batch_30$foot) # false
+plot(1:nrow(routes_route_30), routes_route_30$cyclists)
+plot(1:nrow(routes_route_30), routes_batch_30$cyclists)
+
+
 
 file.copy("/tmp/Rtmp1E6NTc/test.csv", "ld30-batch-output.csv")
 system("gh release upload v0.5.3 ld30-batch-output.csv")
