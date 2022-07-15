@@ -127,8 +127,11 @@ batch = function(
   }
   httr::GET(res_joburls$dataGz, httr::write_disk(filename_local))
   routes = batch_read(filename_local)
-  routes$route_number = as.numeric(routes$route_number)
-  routes_id_table = table(routes$route_number)
+  route_number = as.numeric(routes$id)
+  if (!any(is.na(route_number))) {
+    routes$id = route_number
+  }
+  routes_id_table = table(routes$id)
   routes_id_names = sort(as.numeric(names(routes_id_table)))
   n_routes_removed = nrow(desire_lines) - length(routes_id_names)
   desire_lines = desire_lines[routes_id_names, ]
@@ -261,7 +264,7 @@ batch_read = function(file) {
   # res = readr::read_csv(file_csv)
   message("Reading in the following file:\n", file_csv)
   res = utils::read.csv(file_csv)
-  res$route_number = seq(nrow(res))
+  res$id = seq(nrow(res))
   n_char = nchar(res$json)
   if(all(is.na(n_char))) {
     stop("No routes returned: does CycleStreets operate where you requested data?")

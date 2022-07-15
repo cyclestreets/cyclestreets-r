@@ -15,6 +15,7 @@ nrow(l_desire_30)
 routes_route_30 = route(l = l_desire_30, route_fun = journey, plan = "quietest")
 summary(routes_route_30$route_number)
 routes_batch_30 = batch(l_desire_30, strategies = "quietest", username = "robinlovelace")
+setdiff(names(routes_batch_30), names(routes_route_30))
 
 identical(routes_route_30$geometry[1], routes_batch_30$geometry[1]) # first 1 are identical
 identical(routes_route_30$geometry, routes_batch_30$geometry) # all are identical
