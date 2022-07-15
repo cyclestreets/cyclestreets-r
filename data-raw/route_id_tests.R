@@ -4,13 +4,14 @@ library(stplanr)
 library(sf)
 # l_desire = readRDS("~/OneDrive/projects-all/tiicycling/atumie/outputs/2022-05-31/rds/kildare/od_jittered_work.Rds")
 # l_desire_30 = l_desire[1:30, ]
-# sf::write_sf(l_desire_30, "ld30.geojson")
+# sf::write_sf(l_desire_30, "ld30.geojson", delete_dsn = TRUE)
 # piggyback::pb_upload("ld30.geojson") # fails
 # piggyback::pb_releases()
-# system("gh release upload v0.5.3 ld30.geojson")
+# system("gh release upload v0.5.3 ld30.geojson --clobber")
 # sf::write_sf(routes_route_30, "ld30-route-output.geojson")
 # l_desire_30 = sf::read_sf("ld30.geojson")
 l_desire_30 = sf::read_sf("https://github.com/cyclestreets/cyclestreets-r/releases/download/v0.5.3/ld30.geojson")
+nrow(l_desire_30)
 routes_route_30 = route(l = l_desire_30, route_fun = journey, plan = "quietest")
 summary(routes_route_30$route_number)
 routes_batch_30 = batch(l_desire_30, strategies = "quietest", username = "robinlovelace")
@@ -22,7 +23,23 @@ identical(routes_route_30$geo_code2, routes_batch_30$geo_code2) # false
 identical(routes_route_30$foot, routes_batch_30$foot) # false
 plot(1:nrow(routes_route_30), routes_route_30$cyclists)
 plot(1:nrow(routes_route_30), routes_batch_30$cyclists)
+head(which(routes_batch_30$id != routes_route_30$route_number))
+# [1] 42 43 44 45 46 47
+routes_route_30$route_number[41] # 2
+routes_route_30$route_number[42] # 2
+routes_route_30$route_number[43] # 2
 
+routes_batch_30$id[41] # 2
+routes_batch_30$id[42] # 3
+routes_batch_30$id[43] # 3
+
+head(which(routes_batch_30$foot != routes_route_30$foot))
+# 63 is the first one out
+routes_route_30[63, ]
+routes_batch_30[63, ]
+
+# Re-run batch command with browser() at breakpoint:
+routes_batch_30 = batch(l_desire_30, strategies = "quietest", username = "robinlovelace")
 
 
 file.copy("/tmp/Rtmp1E6NTc/test.csv", "ld30-batch-output.csv")

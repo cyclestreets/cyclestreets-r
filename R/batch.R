@@ -137,12 +137,13 @@ batch = function(
   }
   httr::GET(res_joburls$dataGz, httr::write_disk(filename_local))
   routes = batch_read(filename_local)
-  routes_id_table = table(routes$id)
+  routes_id_table = table(as.numeric(routes$id))
   routes_id_names = sort(as.numeric(names(routes_id_table)))
   n_routes_removed = nrow(desire_lines) - length(routes_id_names)
   desire_lines = desire_lines[routes_id_names, ]
   message(n_routes_removed, " routes removed")
   df = sf::st_drop_geometry(routes)
+  # browser()
   inds = rep(seq(nrow(desire_lines)), times = as.numeric(routes_id_table))
   df_routes_expanded = sf::st_drop_geometry(desire_lines)[inds, ]
   df = cbind(df_routes_expanded, df[-1])
