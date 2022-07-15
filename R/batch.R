@@ -41,7 +41,6 @@
 #' if(FALSE) {
 #' library(sf)
 #' desire_lines = od::od_to_sf(od::od_data_df, od::od_data_zones)[4:5, 1:3]
-#' desire_lines$id = 1:nrow(desire_lines)
 #' u = paste0("https://github.com/cyclestreets/cyclestreets-r/",
 #'   "releases/download/v0.5.3/od-longford-10-test.Rds")
 #' desire_lines = readRDS(url(u))
@@ -50,15 +49,6 @@
 #' plot(routes$geometry)
 #' plot(desire_lines$geometry, add = TRUE, col = "red")
 #' routes = batch(desire_lines, username = "robinlovelace", wait_time = 5)
-#' # try again with ID provided:
-#' # routes = batch(desire_lines, username = "robinlovelace", id = 232)
-#' # Compare with stplanr's route() approach:
-#' # Test with broken data:
-#' u = "https://github.com/cyclestreets/cyclestreets-r/files/8853002/test-data.csv.gz"
-#' f = basename(u)
-#'
-#' download.file(u, f)
-#' batch_read(f)
 #' }
 batch = function(
     desire_lines,
@@ -85,7 +75,7 @@ batch = function(
     wait_time = wait_s(n = nrow(desire_lines))
   }
   if(is.null(desire_lines$id)) {
-    desire_lines$id = 1:nrow(desire_lines)
+    desire_lines$id = seq(nrow(desire_lines))
   }
   if(is.null(id)) {
     id = batch_routes(
@@ -137,7 +127,8 @@ batch = function(
   }
   httr::GET(res_joburls$dataGz, httr::write_disk(filename_local))
   routes = batch_read(filename_local)
-  routes_id_table = table(as.numeric(routes$id))
+  routes$route_number = as.numeric(routes$route_number)
+  routes_id_table = table(routes$route_number)
   routes_id_names = sort(as.numeric(names(routes_id_table)))
   n_routes_removed = nrow(desire_lines) - length(routes_id_names)
   desire_lines = desire_lines[routes_id_names, ]
@@ -270,7 +261,7 @@ batch_read = function(file) {
   # res = readr::read_csv(file_csv)
   message("Reading in the following file:\n", file_csv)
   res = utils::read.csv(file_csv)
-  res$id = seq(nrow(res))
+  res$route_number = seq(nrow(res))
   n_char = nchar(res$json)
   if(all(is.na(n_char))) {
     stop("No routes returned: does CycleStreets operate where you requested data?")

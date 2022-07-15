@@ -41,6 +41,9 @@ routes_batch_30[63, ]
 # Re-run batch command with browser() at breakpoint:
 routes_batch_30 = batch(l_desire_30, strategies = "quietest", username = "robinlovelace")
 
+# Source of the problem is basically this:
+table(1:10)
+table(as.character(1:10))
 
 file.copy("/tmp/Rtmp1E6NTc/test.csv", "ld30-batch-output.csv")
 system("gh release upload v0.5.3 ld30-batch-output.csv")
