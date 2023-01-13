@@ -1,4 +1,7 @@
-# cyclestreets 0.5.4
+# cyclestreets 0.5.4 (January 2023)
+
+* Batch routing implemented
+* Remove unused field (#43)
 
 # cyclestreets 0.5.3 (January 2022)
 
