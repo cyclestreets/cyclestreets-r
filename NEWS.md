@@ -1,3 +1,5 @@
+# cyclestreets 0.5.4
+
 # cyclestreets 0.5.3 (January 2022)
 
 * Fixed issue with returning multiple identical routes when route consists of a single segment
