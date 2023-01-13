@@ -30,7 +30,7 @@
 #' "name", "walk", "elevations", "distances", "start", "finish",
 #' "startSpeed", "start_longitude", "start_latitude", "finish_longitude",
 #' "finish_latitude", "crow_fly_distance", "event", "whence", "speed",
-#' "itinerary", "clientRouteId", "plan", "note", "length", "quietness",
+#' "itinerary", "plan", "note", "length", "quietness",
 #' "west", "south", "east", "north", "leaving", "arriving", "grammesCO2saved",
 #' "calories", "edition", "geometry")
 #' ```
@@ -108,7 +108,6 @@ journey <- function(from,
                       "whence",
                       "speed",
                       "itinerary",
-                      "clientRouteId",
                       "plan",
                       "note",
                       "length",

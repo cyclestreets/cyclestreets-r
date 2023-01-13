@@ -306,7 +306,6 @@ batch_read = function(file) {
     "whence",
     "speed",
     "itinerary",
-    "clientRouteId",
     "plan",
     "note",
     "length",
