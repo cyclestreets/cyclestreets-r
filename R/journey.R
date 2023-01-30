@@ -128,7 +128,8 @@ journey <- function(from,
                     smooth_gradient = TRUE,
                     distance_cutoff = 50,
                     gradient_cutoff = 0.1,
-                    n = 3) {
+                    n = 3,
+                    warnNA = FALSE) {
   if (is.null(pat))
     pat = Sys.getenv("CYCLESTREETS")
   orig <- paste0(from, collapse = ",")
@@ -177,7 +178,8 @@ journey <- function(from,
       smooth_gradient,
       distance_cutoff,
       gradient_cutoff,
-      n
+      n,
+      warnNA = warnNA
     )
   }
   r
@@ -250,7 +252,8 @@ json2sf_cs <- function(obj,
                        smooth_gradient = FALSE,
                        distance_cutoff = 50,
                        gradient_cutoff = 0.1,
-                       n = 3) {
+                       n = 3,
+                       warnNA = TRUE) {
 
   coord_list = lapply(obj$marker$`@attributes`$points[-1], txt2coords)
   elev_list = lapply(obj$marker$`@attributes`$elevations[-1], txt2elevations)
@@ -388,7 +391,8 @@ json2sf_cs <- function(obj,
         r$distances,
         distance_cutoff,
         gradient_cutoff,
-        n
+        n,
+        warnNA = warnNA
       )
     } else {
       r$gradient_smooth = r$gradient_segment
@@ -412,6 +416,7 @@ json2sf_cs <- function(obj,
 #' @param distance_cutoff Distance (m) used to identify anomalous gradients
 #' @param gradient_cutoff Gradient (%, e.g. 0.1 being 10%) used to identify anomalous gradients
 #' @param n The number of segments to use to smooth anomalous gradents.
+#' @param warnNA Logical should NA warning be given?
 #' The default is 3, meaning segments directly before, after and including the offending segment.
 #' @export
 #' @examples
@@ -430,7 +435,8 @@ smooth_with_cutoffs = function(gradient_segment,
                                distances,
                                distance_cutoff = 50,
                                gradient_cutoff = 0.1,
-                               n = 3) {
+                               n = 3,
+                               warnNA = TRUE) {
   sel = gradient_segment > gradient_cutoff &
     distances <= distance_cutoff
   gradient_segment_smooth =
@@ -440,7 +446,9 @@ smooth_with_cutoffs = function(gradient_segment,
   gradient_segment[sel] = gradient_segment_smooth[sel]
 
   if (any(is.na(gradient_segment))) {
-    message("NA values detected")
+    if(warnNA){
+      message("NA values detected")
+    }
     gradient_segment[is.na(gradient_segment)] =
       mean(gradient_segment, na.rm = TRUE)
   }

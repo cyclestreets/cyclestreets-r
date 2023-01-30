@@ -10,8 +10,8 @@ ways(
   base_url = "https://api.cyclestreets.net/v2/mapdata?",
   limit = 400,
   types = "way",
- 
-    wayFields = "name,ridingSurface,id,cyclableText,quietness,speedMph,speedKmph,pause,color",
+  wayFields =
+    "name,ridingSurface,id,cyclableText,quietness,speedMph,speedKmph,pause,color",
   zoom = 16
 )
 }
@@ -30,12 +30,13 @@ See \href{https://www.cyclestreets.net/api/v2/}{API docs}.
 \examples{
 \dontrun{
 
-u = paste0("https://api.cyclestreets.net/v2/mapdata?key=c047ed46f7b50b18",
+u_test = paste0("https://api.cyclestreets.net/v2/mapdata?key=c047ed46f7b50b18",
   "&limit=400&types=way&wayFields=name,ridingSurface,id,cyclableText,",
   "quietness,speedMph,speedKmph,pause,color&zoom=16&",
   "bbox=-9.160863,38.754642,-9.150128,38.75764")
-ways_test = sf::read_sf(u)
+ways_test = sf::read_sf(u_test)
 bb <- "0.101131,52.195807,0.170288,52.209719"
+bb <- "-9.160863,38.754642,-9.150128,38.75764"
 way_data <- ways(bb)
 plot(way_data)
 bb <- stplanr::routes_fast_sf
