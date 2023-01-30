@@ -15,14 +15,15 @@ journey(
   save_raw = "FALSE",
   cols = c("name", "distances", "time", "busynance", "elevations", "start_longitude",
     "start_latitude", "finish_longitude", "finish_latitude"),
-  cols_extra = c("crow_fly_distance", "event", "whence", "speed", "itinerary",
-    "clientRouteId", "plan", "note", "length", "quietness", "west", "south", "east",
-    "north", "leaving", "arriving", "grammesCO2saved", "calories", "edition",
-    "gradient_segment", "elevation_change", "provisionName"),
+  cols_extra = c("crow_fly_distance", "event", "whence", "speed", "itinerary", "plan",
+    "note", "length", "quietness", "west", "south", "east", "north", "leaving",
+    "arriving", "grammesCO2saved", "calories", "edition", "gradient_segment",
+    "elevation_change", "provisionName"),
   smooth_gradient = TRUE,
   distance_cutoff = 50,
   gradient_cutoff = 0.1,
-  n = 3
+  n = 3,
+  warnNA = TRUE
 )
 }
 \arguments{
@@ -55,7 +56,9 @@ https://github.com/Robinlovelace/cyclestreets/issues/14}
 
 \item{gradient_cutoff}{Gradient (\%, e.g. 0.1 being 10\%) used to identify anomalous gradients}
 
-\item{n}{The number of segments to use to smooth anomalous gradents.
+\item{n}{The number of segments to use to smooth anomalous gradents.}
+
+\item{warnNA}{Logical should NA warning be given?
 The default is 3, meaning segments directly before, after and including the offending segment.}
 }
 \description{
@@ -89,7 +92,7 @@ A full list of variables (\code{cols}) available is represented by:
 "name", "walk", "elevations", "distances", "start", "finish",
 "startSpeed", "start_longitude", "start_latitude", "finish_longitude",
 "finish_latitude", "crow_fly_distance", "event", "whence", "speed",
-"itinerary", "clientRouteId", "plan", "note", "length", "quietness",
+"itinerary", "plan", "note", "length", "quietness",
 "west", "south", "east", "north", "leaving", "arriving", "grammesCO2saved",
 "calories", "edition", "geometry")
 }\if{html}{\out{</div>}}

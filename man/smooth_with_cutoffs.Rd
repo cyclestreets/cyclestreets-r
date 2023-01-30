@@ -10,7 +10,8 @@ smooth_with_cutoffs(
   distances,
   distance_cutoff = 50,
   gradient_cutoff = 0.1,
-  n = 3
+  n = 3,
+  warnNA = TRUE
 )
 }
 \arguments{
@@ -24,7 +25,9 @@ smooth_with_cutoffs(
 
 \item{gradient_cutoff}{Gradient (\%, e.g. 0.1 being 10\%) used to identify anomalous gradients}
 
-\item{n}{The number of segments to use to smooth anomalous gradents.
+\item{n}{The number of segments to use to smooth anomalous gradents.}
+
+\item{warnNA}{Logical should NA warning be given?
 The default is 3, meaning segments directly before, after and including the offending segment.}
 }
 \description{
