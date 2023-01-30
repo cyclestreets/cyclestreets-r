@@ -129,7 +129,7 @@ journey <- function(from,
                     distance_cutoff = 50,
                     gradient_cutoff = 0.1,
                     n = 3,
-                    warnNA = TRUE) {
+                    warnNA = FALSE) {
   if (is.null(pat))
     pat = Sys.getenv("CYCLESTREETS")
   orig <- paste0(from, collapse = ",")
