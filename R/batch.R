@@ -92,6 +92,7 @@ batch = function(
       username,
       password,
       base_url,
+      id,
       pat,
       silent = silent
     )
