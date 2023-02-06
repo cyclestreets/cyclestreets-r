@@ -92,8 +92,8 @@ batch = function(
       username,
       password,
       base_url,
-      id,
-      pat
+      pat,
+      silent = silent
     )
     if(is.null(id)) {
       stop("Check your credentials, try again, and maybe contact CycleStreets")
