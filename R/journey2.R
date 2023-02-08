@@ -101,7 +101,9 @@ journey2 <- function(fromPlace = NA,
   # Process Marker
   #names(results) <- as.character(seq_len(length(results)))
   results <- lapply(results, `[[`, "@attributes")
-  names(results) <- as.character(id)
+  if(!is.null(id)){
+    names(results) <- as.character(id)
+  }
   results <- lapply(results, dplyr::bind_rows)
   results <- dplyr::bind_rows(results, .id = "id")
 
