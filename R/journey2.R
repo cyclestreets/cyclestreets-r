@@ -209,13 +209,13 @@ otp_async <- function(urls, host_con, id){
 
   # Success Function
   otp_success <- function(res){
-    #p()
+    p()
     data <<- c(data, list(rawToChar(res$content)))
     urls2 <<- c(urls2, res$url)
   }
   # Fail Function
   otp_failure <- function(msg){
-    #p()
+    p()
     cat("Error: ", msg, "\n")
     urls2 <<- c(urls2, msg$url)
   }
