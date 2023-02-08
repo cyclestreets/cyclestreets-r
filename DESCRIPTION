@@ -18,7 +18,11 @@ Authors@R:
              family = "Talbot",
              role = "aut",
              email = "j.d.talbot@leeds.ac.uk",
-             comment = c(ORCID = "0000-0002-6520-4560")))
+             comment = c(ORCID = "0000-0002-6520-4560")),
+      person(given = "Malcolm", 
+             family = "Morgan", 
+             role = "ctb", 
+             comment = c(ORCID = "0000-0002-9488-9183")))
 Description: An interface to the cycle routing/data services provided by
     'CycleStreets', a not-for-profit social enterprise and advocacy
     organisation.  The application programming interfaces (APIs) provided
@@ -42,6 +46,11 @@ Imports:
     magrittr,
     purrr,
     R.utils,
+    progressr,
+    RcppSimdJson,
+    dplyr,
+    curl,
+    checkmate,
     sf,
     stringr
 Suggests: 
@@ -51,4 +60,4 @@ Suggests:
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3

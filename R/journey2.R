@@ -24,31 +24,21 @@
 #' After setting the environment variable, as outlined above,
 #' you need to restart your R session before the journey function will work.
 #'
-#' A full list of variables (`cols`) available is represented by:
-#' ```
-#' c("time", "busynance", "signalledJunctions", "signalledCrossings",
-#' "name", "walk", "elevations", "distances", "start", "finish",
-#' "startSpeed", "start_longitude", "start_latitude", "finish_longitude",
-#' "finish_latitude", "crow_fly_distance", "event", "whence", "speed",
-#' "itinerary", "plan", "note", "length", "quietness",
-#' "west", "south", "east", "north", "leaving", "arriving", "grammesCO2saved",
-#' "calories", "edition", "geometry")
-#' ```
 #'
 #' See [www.cyclestreets.net/help/journey/howitworks/](https://www.cyclestreets.net/help/journey/howitworks/)
 #' for details on how these are calculated.
 #'
-#' @param from sf points
-#' @param to sf points
+#' @param fromPlace sf points, matrix, or vector of lng/lat coordinates
+#' @param toPlace sf points, matrix, or vector of lng/lat coordinates
+#' @param id a character ID value to be attached to the results
 #' @param plan Text strong of either "fastest" (default), "quietest" or "balanced"
-#' @param silent Logical (default is FALSE). TRUE hides request sent.
 #' @param pat The API key used. By default this uses `Sys.getenv("CYCLESTREETS")`.
 #' @param base_url The base url from which to construct API requests
 #' (with default set to main server)
+#' @param host_con number of threads to use passed to curl::new_pool
 #' @param reporterrors Boolean value (TRUE/FALSE) indicating if cyclestreets (TRUE by default).
 #' should report errors (FALSE by default).
-#' @inheritParams json2sf_cs
-#' @inheritParams smooth_with_cutoffs
+#' @param segments Logical, if true route segments returned otherwise whole routes
 #' @seealso json2sf_cs
 #' @export
 #' @examples
@@ -60,65 +50,16 @@
 #' r1[1:2, ]
 #' r1$grammesCO2saved
 #' r1$calories
-#' plot(r1[1:4])
-#' plot(r1[10:ncol(r1)])
-#' to = c(-2, 53.5) # towards Manchester
-#' r1 = journey(from, to)
-#' names(r1)
-#' r2 = journey(from, to, plan = "balanced")
-#' plot(r1["quietness"], reset = FALSE)
-#' plot(r2["quietness"], add = TRUE)
-#' r3 = journey(from, to, silent = FALSE)
-#' r4 = journey(from, to, save_raw = TRUE)
-#' r5 = journey(c(-1.524, 53.819), c(-1.556, 53.806))
-#' plot(r5["gradient_segment"])
-#' plot(r5["gradient_smooth"])
-#'
-#' u = paste0("https://github.com/cyclestreets/cyclestreets-r/",
-#'   "releases/download/v0.4.0/line_with_single_segment.geojson")
-#' desire_line = sf::read_sf(u)
-#' r = stplanr::route(l = desire_line, route_fun = journey)
-#' r
 #' }
 journey2 <- function(fromPlace = NA,
                     toPlace = NA,
+                    id = NULL,
                     plan = "fastest",
                     pat = NULL,
                     base_url = "https://www.cyclestreets.net",
-                    ncores = 10,
+                    host_con = 1,
                     reporterrors = TRUE,
-                    cols = c(
-                      "name",
-                      "distances",
-                      "time",
-                      "busynance",
-                      "elevations",
-                      "start_longitude",
-                      "start_latitude",
-                      "finish_longitude",
-                      "finish_latitude"
-                    ),
-                    cols_extra = c(
-                      "crow_fly_distance",
-                      "event",
-                      "whence",
-                      "speed",
-                      "itinerary",
-                      "plan",
-                      "note",
-                      "length",
-                      "quietness",
-                      "west",
-                      "south",
-                      "east",
-                      "north",
-                      "leaving",
-                      "arriving",
-                      "grammesCO2saved",
-                      "calories",
-                      "edition"
-
-                    )) {
+                    segments = FALSE) {
   if (is.null(pat))
     pat = Sys.getenv("CYCLESTREETS")
 
@@ -142,31 +83,58 @@ journey2 <- function(fromPlace = NA,
   )
 
   urls <- build_urls(routerUrl, itinerarypoints, query)
-  message(Sys.time()," sending ",length(urls)," routes requests using ",ncores," threads")
+  if(any(duplicated(urls))){
+    stop("You are sending duplicated requests")
+  }
+
+  message(Sys.time()," sending ",length(urls)," routes requests using ",host_con," threads")
   progressr::handlers("cli")
-  results <- progressr::with_progress(otp_async(urls, ncores))
+  results <- progressr::with_progress(otp_async(urls, host_con))
 
   if(length(results) == 0){
     stop("No results returned, check your connection")
   }
 
   message(Sys.time()," processing results")
-  results_marker <- RcppSimdJson::fparse(results, query = "/marker", query_error_ok = TRUE, always_list = TRUE)
+  results <- RcppSimdJson::fparse(results, query = "/marker", query_error_ok = TRUE, always_list = TRUE)
 
   # Process Marker
-  names(results_marker) <- as.character(seq_len(length(results_marker)))
-  results_marker <- lapply(results_marker, `[[`, "@attributes")
+  #names(results) <- as.character(seq_len(length(results)))
+  results <- lapply(results, `[[`, "@attributes")
+  names(results) <- as.character(id)
+  results <- lapply(results, dplyr::bind_rows)
+  results <- dplyr::bind_rows(results, .id = "id")
 
-  results_marker <- lapply(results_marker, dplyr::bind_rows)
-  results_marker <- dplyr::bind_rows(results_marker)
+  route_variables <- c("start","finish","start_longitude","start_latitude","finish_longitude","finish_latitude",
+                       "crow_fly_distance","event","whence","speed","itinerary","plan",
+                       "note","length","west","south","east","north","leaving","arriving",
+                       "grammesCO2saved","calories","edition")
 
-  geom_coordinates <- lapply(results_marker$coordinates, txt2coords2)
-  geom_points <- lapply(results_marker$points, txt2coords2)
+  if(segments){
+    results$SPECIALIDFORINTERNAL2 <- cumsum(!is.na(results$start))
 
-  results_marker$coordinates <- sf::st_sfc(geom_coordinates, crs = 4326)
-  results_marker$points <- sf::st_sfc(geom_points, crs = 4326)
+    results_seg <- results[results$type == "segment",]
+    results_seg$geometry <- sf::st_sfc(lapply(results_seg$points, txt2coords2), crs = 4326)
 
-  return(results_marker)
+    results_rt <- results[results$type == "route",]
+    results_rt <- results_rt[,names(results_rt) %in% c(route_variables,"SPECIALIDFORINTERNAL2")]
+
+    results_seg <- results_seg[,!names(results_seg) %in% route_variables]
+    results_seg <- dplyr::left_join(results_seg, results_rt, by = "SPECIALIDFORINTERNAL2")
+
+    results <- results_seg
+
+  } else {
+    results <- results[results$type == "route",]
+    results$geometry <- sf::st_sfc(lapply(results$coordinates, txt2coords2), crs = 4326)
+  }
+
+  results$points <- NULL
+  results$coordinates <- NULL
+  results <- sf::st_as_sf(results)
+
+  message("results may not be in the order they were provided")
+  return(results)
 
 }
 
@@ -237,26 +205,29 @@ otp_clean_input <- function(imp, imp_name) {
   ))
 }
 
-otp_async <- function(urls, ncores){
+otp_async <- function(urls, host_con, id){
 
   # Success Function
   otp_success <- function(res){
-    p()
-    data <<- c(data, rawToChar(res$content))
+    #p()
+    data <<- c(data, list(rawToChar(res$content)))
+    urls2 <<- c(urls2, res$url)
   }
   # Fail Function
   otp_failure <- function(msg){
-    p()
+    #p()
     cat("Error: ", msg, "\n")
+    urls2 <<- c(urls2, msg$url)
   }
 
   t1 <- Sys.time()
 
-  pool <- curl::new_pool(host_con = ncores)
+  pool <- curl::new_pool(host_con = host_con)
   data <- list()
+  urls2 <- list()
 
   for(i in seq_len(length(urls))){
-    h <- curl::new_handle()
+    h <- make_handle(i)
     curl::curl_fetch_multi(urls[i],
                            otp_success,
                            otp_failure ,
@@ -264,8 +235,18 @@ otp_async <- function(urls, ncores){
                            handle = h)
   }
   p <- progressr::progressor(length(urls))
-  curl::multi_run(timeout = Inf, pool = pool)
+  out <- curl::multi_run(timeout = Inf, pool = pool)
+  urls2 <- unlist(urls2)
+  data <- data[match(urls, urls2)]
   t2 <- Sys.time()
   message("Done in ",round(difftime(t2,t1, units = "mins"),1)," mins")
   return(unlist(data, use.names = FALSE))
 }
+
+make_handle <- function(x){
+  handle <- curl::new_handle()
+  curl::handle_setopt(handle, copypostfields = paste0("routeid=", x))
+  return(handle)
+}
+
+
