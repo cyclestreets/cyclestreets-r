@@ -87,7 +87,7 @@ journey2 <- function(fromPlace = NA,
     stop("You are sending duplicated requests")
   }
 
-  message(Sys.time()," sending ",length(urls)," routes requests using ",host_con," threads")
+
   progressr::handlers("cli")
   results <- progressr::with_progress(otp_async(urls, host_con))
 
@@ -234,6 +234,7 @@ otp_async <- function(urls, host_con, id){
                            pool = pool,
                            handle = h)
   }
+  message(Sys.time()," sending ",length(urls)," routes requests using ",host_con," threads")
   p <- progressr::progressor(length(urls))
   out <- curl::multi_run(timeout = Inf, pool = pool)
   urls2 <- unlist(urls2)
