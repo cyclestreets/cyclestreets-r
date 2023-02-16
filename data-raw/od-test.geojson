@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "od-test",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "geo_code1": "S02001236", "geo_code2": "S02001238", "all": 37.333333333333336, "from_home": 0.0, "train": 0.0, "bus": 14.666666666666666, "car_driver": 20.333333333333332, "car_passenger": 1.3333333333333333, "bicycle": 0.33333333333333331, "foot": 0.66666666666666663, "other": 0.0, "dist_euclidean": 1669.2572967770154, "dist_bands": "(3,6] km", "dist_euclidean_jittered": 4544.0262410365422, "route_id": "S02001236_S02001238_3" }, "geometry": { "type": "LineString", "coordinates": [ [ -2.262340004296829, 57.100788208524435 ], [ -2.192983068718521, 57.11664366596213 ] ] } }
+]
+}
