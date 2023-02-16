@@ -46,8 +46,15 @@
 #' from = c(-1.55, 53.80) # geo_code("leeds")
 #' to = c(-1.76, 53.80) # geo_code("bradford uk")
 #' r1 = journey(from, to)
-#' names(r1)
+#' r2 = journey2(from, to, segments = TRUE)
+#' # waldo::compare(r1, r2) # see differences
+#' sum(sf::st_length(r1))
+#' sum(sf::st_length(r2))
+#' # waldo::compare(sum(sf::st_length(r1)), sum(sf::st_length(r2)))
+#' # waldo::compare(names(r1), names(r2))
+#' # waldo::compare(r1[1, ], r2[1, ])
 #' r1[1:2, ]
+#' r2[1:2, ]
 #' r1$grammesCO2saved
 #' r1$calories
 #' }
@@ -86,7 +93,6 @@ journey2 <- function(fromPlace = NA,
   if(any(duplicated(urls))){
     stop("You are sending duplicated requests")
   }
-
 
   progressr::handlers("cli")
   results <- progressr::with_progress(otp_async(urls, host_con))
@@ -136,7 +142,8 @@ journey2 <- function(fromPlace = NA,
   results <- sf::st_as_sf(results)
 
   # message("results may not be in the order they were provided")
-  add_columns(results)
+  results = add_columns(results)
+  results
 
 }
 
