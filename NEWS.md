@@ -1,3 +1,5 @@
+# cyclestreets 0.6.0
+
 # cyclestreets 0.5.4 (January 2023)
 
 * Batch routing implemented
