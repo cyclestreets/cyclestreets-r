@@ -20,7 +20,7 @@ segments closest to (in front of and behind) the offending segment."><!-- mathja
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cyclestreets</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.0</span>
       </span>
     </div>
 
@@ -65,7 +65,8 @@ segments closest to (in front of and behind) the offending segment.</p>
 <span>  <span class="va">distances</span>,</span>
 <span>  distance_cutoff <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>  gradient_cutoff <span class="op">=</span> <span class="fl">0.1</span>,</span>
-<span>  n <span class="op">=</span> <span class="fl">3</span></span>
+<span>  n <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  warnNA <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -92,7 +93,11 @@ segments closest to (in front of and behind) the offending segment.</p>
 
 
 <dt>n</dt>
-<dd><p>The number of segments to use to smooth anomalous gradents.
+<dd><p>The number of segments to use to smooth anomalous gradents.</p></dd>
+
+
+<dt>warnNA</dt>
+<dd><p>Logical should NA warning be given?
 The default is 3, meaning segments directly before, after and including the offending segment.</p></dd>
 
 </dl></div>
@@ -130,7 +135,7 @@ The default is 3, meaning segments directly before, after and including the offe
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

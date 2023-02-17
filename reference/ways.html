@@ -18,7 +18,7 @@ See API docs."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/li
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cyclestreets</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.0</span>
       </span>
     </div>
 
@@ -57,12 +57,12 @@ See <a href="https://www.cyclestreets.net/api/v2/" class="external-link">API doc
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ways</span><span class="op">(</span></span>
 <span>  <span class="va">bb</span>,</span>
-<span>  pat <span class="op">=</span> <span class="st">"c047ed46f7b50b18"</span>,</span>
+<span>  pat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"CYCLESTREETS"</span><span class="op">)</span>,</span>
 <span>  base_url <span class="op">=</span> <span class="st">"https://api.cyclestreets.net/v2/mapdata?"</span>,</span>
 <span>  limit <span class="op">=</span> <span class="fl">400</span>,</span>
 <span>  types <span class="op">=</span> <span class="st">"way"</span>,</span>
-<span> </span>
-<span>    wayFields <span class="op">=</span> <span class="st">"name,ridingSurface,id,cyclableText,quietness,speedMph,speedKmph,pause,color"</span>,</span>
+<span>  wayFields <span class="op">=</span></span>
+<span>    <span class="st">"name,ridingSurface,id,cyclableText,quietness,speedMph,speedKmph,pause,color"</span>,</span>
 <span>  zoom <span class="op">=</span> <span class="fl">16</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -81,22 +81,39 @@ See <a href="https://www.cyclestreets.net/api/v2/" class="external-link">API doc
 <dd><p>The base url from which to construct API requests
 (with default set to main server)</p></dd>
 
+
+<dt>limit</dt>
+<dd><p>Maximum number of features to return</p></dd>
+
+
+<dt>types</dt>
+<dd><p>The type of way to get. Default: "way".</p></dd>
+
+
+<dt>wayFields</dt>
+<dd><p>Which attributes of the ways to return?</p></dd>
+
+
+<dt>zoom</dt>
+<dd><p>Zoom level</p></dd>
+
 </dl></div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">u</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"https://api.cyclestreets.net/v2/mapdata?key=c047ed46f7b50b18"</span>,</span></span>
+<span class="r-in"><span><span class="va">u_test</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"https://api.cyclestreets.net/v2/mapdata?key=c047ed46f7b50b1x"</span>,</span></span>
 <span class="r-in"><span>  <span class="st">"&amp;limit=400&amp;types=way&amp;wayFields=name,ridingSurface,id,cyclableText,"</span>,</span></span>
 <span class="r-in"><span>  <span class="st">"quietness,speedMph,speedKmph,pause,color&amp;zoom=16&amp;"</span>,</span></span>
 <span class="r-in"><span>  <span class="st">"bbox=-9.160863,38.754642,-9.150128,38.75764"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">ways_test</span> <span class="op">=</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">read_sf</a></span><span class="op">(</span><span class="va">u</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">bb</span> <span class="op">&lt;-</span> <span class="st">"0.101131,52.195807,0.170288,52.209719"</span></span></span>
-<span class="r-in"><span><span class="va">way_data</span> <span class="op">&lt;-</span> <span class="fu">ways</span><span class="op">(</span><span class="va">bb</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># ways_test = sf::read_sf(u_test)</span></span></span>
+<span class="r-in"><span><span class="va">bb</span> <span class="op">=</span> <span class="st">"0.101131,52.195807,0.170288,52.209719"</span></span></span>
+<span class="r-in"><span><span class="va">bb</span> <span class="op">=</span> <span class="st">"-9.160863,38.754642,-9.150128,38.75764"</span></span></span>
+<span class="r-in"><span><span class="va">way_data</span> <span class="op">=</span> <span class="fu">ways</span><span class="op">(</span><span class="va">bb</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">way_data</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">bb</span> <span class="op">&lt;-</span> <span class="fu">stplanr</span><span class="fu">::</span><span class="va"><a href="https://docs.ropensci.org/stplanr/reference/routes_fast_sf.html" class="external-link">routes_fast_sf</a></span></span></span>
-<span class="r-in"><span><span class="va">way_data</span> <span class="op">&lt;-</span> <span class="fu">ways</span><span class="op">(</span><span class="va">bb</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">bb</span> <span class="op">=</span> <span class="fu">stplanr</span><span class="fu">::</span><span class="va"><a href="https://docs.ropensci.org/stplanr/reference/routes_fast_sf.html" class="external-link">routes_fast_sf</a></span></span></span>
+<span class="r-in"><span><span class="va">way_data</span> <span class="op">=</span> <span class="fu">ways</span><span class="op">(</span><span class="va">bb</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">way_data</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
@@ -113,7 +130,7 @@ See <a href="https://www.cyclestreets.net/api/v2/" class="external-link">API doc
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>
