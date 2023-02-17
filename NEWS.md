@@ -1,4 +1,8 @@
-# cyclestreets 0.6.0
+# cyclestreets 0.6.0 (February 2023)
+
+* Experimental `journey2()` function added (#31)
+* Documentation updated
+* `batch()` is now less chatty
 
 # cyclestreets 0.5.4 (January 2023)
 

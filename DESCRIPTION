@@ -2,27 +2,16 @@ Type: Package
 Package: cyclestreets
 Title: Cycle Routing and Data for Cycling Advocacy
 Version: 0.6.0
-Authors@R: 
-    c(person(given = "Robin",
-             family = "Lovelace",
-             role = c("aut", "cre"),
-             email = "rob00x@gmail.com",
-             comment = c(ORCID = "0000-0001-5679-6536")),
-      person(given = "Martin",
-             family = "Lucas-Smith",
-             role = "aut"),
-      person(given = "Eric",
-             family = "Krueger",
-             role = "ctb"),
-      person(given = "Joey",
-             family = "Talbot",
-             role = "aut",
-             email = "j.d.talbot@leeds.ac.uk",
-             comment = c(ORCID = "0000-0002-6520-4560")),
-      person(given = "Malcolm", 
-             family = "Morgan", 
-             role = "ctb", 
-             comment = c(ORCID = "0000-0002-9488-9183")))
+Authors@R: c(
+    person("Robin", "Lovelace", , "rob00x@gmail.com", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0001-5679-6536")),
+    person("Martin", "Lucas-Smith", role = "aut"),
+    person("Eric", "Krueger", role = "ctb"),
+    person("Joey", "Talbot", , "j.d.talbot@leeds.ac.uk", role = "aut",
+           comment = c(ORCID = "0000-0002-6520-4560")),
+    person("Malcolm", "Morgan", role = "ctb",
+           comment = c(ORCID = "0000-0002-9488-9183"))
+  )
 Description: An interface to the cycle routing/data services provided by
     'CycleStreets', a not-for-profit social enterprise and advocacy
     organisation.  The application programming interfaces (APIs) provided
@@ -34,23 +23,24 @@ Description: An interface to the cycle routing/data services provided by
     represent routes taken to minimise time, avoid traffic and compromise
     between the two, respectively.
 License: GPL-3
-URL: https://rpackage.cyclestreets.net/, https://github.com/cyclestreets/cyclestreets-r
+URL: https://rpackage.cyclestreets.net/,
+    https://github.com/cyclestreets/cyclestreets-r
 BugReports: https://github.com/cyclestreets/cyclestreets-r/issues
 Depends: 
     R (>= 3.6.0)
 Imports:
+    checkmate,
+    curl,
+    dplyr,
     geodist,
     geojsonsf,
     httr,
     jsonlite,
     magrittr,
+    progressr,
     purrr,
     R.utils,
-    progressr,
     RcppSimdJson,
-    dplyr,
-    curl,
-    checkmate,
     sf,
     stringr
 Suggests: 
