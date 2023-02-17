@@ -35,6 +35,7 @@
 #'   pause: Pause job
 #'   continue: Continue (re-open) job
 #'   terminate: Terminate job and delete data
+#' @param delete_job Delete the job? TRUE by default to avoid clogged servers
 #' @inheritParams journey
 #' @export
 #' @examples
@@ -68,13 +69,14 @@ batch = function(
     base_url = "https://api.cyclestreets.net/v2/batchroutes.createjob",
     id = NULL,
     pat = Sys.getenv("CYCLESTREETS_BATCH"),
-    silent = TRUE
+    silent = TRUE,
+    delete_job = TRUE
 ) {
   sys_time = Sys.time()
   if(is.null(wait_time)) {
     wait_time = wait_s(n = nrow(desire_lines))
   }
-  if(is.null(desire_lines$id)) {
+  if(! "id" %in% names(desire_lines)) {
     desire_lines$id = seq(nrow(desire_lines))
   }
   if(is.null(id)) {
@@ -108,7 +110,8 @@ batch = function(
     username = username,
     password = password,
     id = id,
-    pat = pat
+    pat = pat,
+    silent = silent
   )
   if(is.null(res_joburls)) {
     message("No data returned yet. Trying again id ", id, " every 10 seconds")
@@ -150,7 +153,9 @@ batch = function(
   time_taken_s = round(as.numeric(difftime(time1 = Sys.time(), time2 = sys_time, units = "secs")))
   rps = round(nrow(desire_lines) / time_taken_s, 1)
   message(nrow(desire_lines), " routes, ", time_taken_s, "s, ", rps, " routes/s")
-  browser()
+  if(delete_job) {
+    batch_deletejob(base_url, username, password, id = id, pat = pat, silent = silent)
+  }
   routes_updated
 }
 
@@ -198,13 +203,13 @@ batch_routes = function(
   id
 }
 
-batch_control = function(base_url = "https://api.cyclestreets.net/v2/batchroutes.controljob", pat) {
+batch_control = function(base_url = "https://api.cyclestreets.net/v2/batchroutes.controljob", pat, username) {
   # POST https://api.cyclestreets.net/v2/batchroutes.controljob?key=...
   batch_url = paste0(base_url, "?key=", pat)
   body = list(
     id = 196,
     action = "start",
-    username = "robinlovelace",
+    username = username,
     password = Sys.getenv("CYCLESTREETS_PW")
   )
   httr::POST(url = batch_url, body = body)
@@ -215,17 +220,18 @@ batch_jobdata = function(
     username = "yourname",
     password = Sys.getenv("CYCLESTREETS_PW"),
     id,
-    pat
+    pat,
+    silent = TRUE
 ) {
   # POST https://api.cyclestreets.net/v2/batchroutes.controljob?key=...
   batch_url = paste0(base_url, "?key=", pat)
   body = list(
     id = id,
-    username = "robinlovelace",
+    username = username,
     password = Sys.getenv("CYCLESTREETS_PW")
   )
   # TODO add polling
-  message("Sending data, wait...")
+  if(!silent) message("Sending data, wait...")
   res = httr::POST(url = batch_url, body = body)
   res_json = httr::content(res, "parsed")
   if(!is.null(res_json$ready)) {
@@ -234,11 +240,36 @@ batch_jobdata = function(
       res_joburls = res_json$files
       return(res_joburls)
     } else {
-      message("Routing not complete")
+      if(!silent) message("Routing not complete")
     }
   } else {
     message("Routing not complete")
   }
+}
+
+batch_deletejob = function(
+    base_url = "https://api.cyclestreets.net/v2/batchroutes.deletejob",
+    username = "yourname",
+    password = Sys.getenv("CYCLESTREETS_PW"),
+    id,
+    pat,
+    silent = TRUE,
+    serverId = 21
+) {
+  # POST https://api.cyclestreets.net/v2/batchroutes.controljob?key=...
+  batch_url = paste0(base_url, "?key=", pat)
+  body = list(
+    id = id,
+    username = username,
+    name = username,
+    password = Sys.getenv("CYCLESTREETS_PW"),
+    serverId = serverId
+  )
+  # TODO add polling
+  if(!silent) message("Deleting the data")
+  res = httr::POST(url = batch_url, body = body)
+  res_json = httr::content(res, "parsed")
+  message(res_json)
 }
 
 # # # Tests:
