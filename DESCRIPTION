@@ -39,8 +39,8 @@ Imports:
     magrittr,
     progressr,
     purrr,
-    R.utils,
     RcppSimdJson,
+    readr,
     sf,
     stringr
 Suggests: 
