@@ -98,7 +98,9 @@ batch = function(
     if(is.null(id)) {
       stop("Check your credentials, try again, and maybe contact CycleStreets")
     }
-    message("Waiting to request the data for ", wait_time, " seconds.")
+    if(!silent) {
+      message("Waiting to request the data for ", wait_time, " seconds.")
+    }
     Sys.sleep(time = wait_time)
   }
   res_joburls = batch_jobdata(
@@ -333,5 +335,11 @@ batch_read = function(file) {
 }
 
 wait_s = function(n) {
-  30 + n / 20
+  if(n < 2000) {
+    w = 30 + n / 20
+  }
+  if(n >= 2000) {
+    w = 30 + n / 40
+  }
+  w
 }
