@@ -4,16 +4,20 @@
 #' See [API docs](https://www.cyclestreets.net/api/v2/).
 #'
 #' @param bb An sf or 'bounding box' like object
+#' @param limit Maximum number of features to return
+#' @param types The type of way to get. Default: "way".
+#' @param wayFields Which attributes of the ways to return?
+#' @param zoom Zoom level
 #' @inheritParams journey
 #' @export
 #' @examples
 #' \dontrun{
 #'
-#' u_test = paste0("https://api.cyclestreets.net/v2/mapdata?key=c047ed46f7b50b18",
+#' u_test = paste0("https://api.cyclestreets.net/v2/mapdata?key=c047ed46f7b50b1x",
 #'   "&limit=400&types=way&wayFields=name,ridingSurface,id,cyclableText,",
 #'   "quietness,speedMph,speedKmph,pause,color&zoom=16&",
 #'   "bbox=-9.160863,38.754642,-9.150128,38.75764")
-#' ways_test = sf::read_sf(u_test)
+#' # ways_test = sf::read_sf(u_test)
 #' bb = "0.101131,52.195807,0.170288,52.209719"
 #' bb = "-9.160863,38.754642,-9.150128,38.75764"
 #' way_data = ways(bb)
@@ -24,8 +28,7 @@
 #' }
 ways = function(
     bb,
-    # pat = Sys.getenv("CYCLESTREETS"),
-    pat = "c047ed46f7b50b18",
+    pat = Sys.getenv("CYCLESTREETS"),
     base_url = "https://api.cyclestreets.net/v2/mapdata?",
     limit = 400,
     types = "way",

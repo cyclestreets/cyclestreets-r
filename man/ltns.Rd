@@ -19,11 +19,11 @@ https://www.cyclestreets.org/news/2021/07/25/mapping-ltns/
 }
 \examples{
 \dontrun{
-bb <- "0.101131,52.195807,0.170288,52.209719"
-ltn_data <- ltns(bb)
+bb = "0.101131,52.195807,0.170288,52.209719"
+ltn_data = ltns(bb)
 plot(ltn_data)
-bb <- stplanr::routes_fast_sf
-ltn_data <- ltns(bb)
+bb = stplanr::routes_fast_sf
+ltn_data = ltns(bb)
 plot(ltn_data)
 }
 }

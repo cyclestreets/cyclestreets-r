@@ -70,8 +70,15 @@ for details on how these are calculated.
 from = c(-1.55, 53.80) # geo_code("leeds")
 to = c(-1.76, 53.80) # geo_code("bradford uk")
 r1 = journey(from, to)
-names(r1)
+r2 = journey2(from, to, segments = TRUE)
+# waldo::compare(r1, r2) # see differences
+sum(sf::st_length(r1))
+sum(sf::st_length(r2))
+# waldo::compare(sum(sf::st_length(r1)), sum(sf::st_length(r2)))
+# waldo::compare(names(r1), names(r2))
+# waldo::compare(r1[1, ], r2[1, ])
 r1[1:2, ]
+r2[1:2, ]
 r1$grammesCO2saved
 r1$calories
 }
