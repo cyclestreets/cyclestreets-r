@@ -114,7 +114,9 @@ batch = function(
     message("No data returned yet. Trying again id ", id, " every 10 seconds")
     while(is.null(res_joburls)) {
       sys_time_taken = round(difftime(time1 = Sys.time(), time2 = sys_time, units = "secs") / 60)
-      message(sys_time_taken, " minutes taken, waiting another 10 s")
+      if(!silent) {
+        message(sys_time_taken, " minutes taken, waiting another 10 s")
+      }
       Sys.sleep(10)
       res_joburls = batch_jobdata(
         username = username,
