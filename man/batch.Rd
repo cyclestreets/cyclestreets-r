@@ -22,7 +22,8 @@ batch(
   base_url = "https://api.cyclestreets.net/v2/batchroutes.createjob",
   id = NULL,
   pat = Sys.getenv("CYCLESTREETS_BATCH"),
-  silent = TRUE
+  silent = TRUE,
+  delete_job = TRUE
 )
 }
 \arguments{
@@ -78,6 +79,8 @@ terminate: Terminate job and delete data}
 \item{pat}{The API key used. By default this uses \code{Sys.getenv("CYCLESTREETS")}.}
 
 \item{silent}{Logical (default is FALSE). TRUE hides request sent.}
+
+\item{delete_job}{Delete the job? TRUE by default to avoid clogged servers}
 }
 \description{
 Note: set \code{CYCLESTREETS_BATCH} and \code{CYCLESTREETS_PW}
