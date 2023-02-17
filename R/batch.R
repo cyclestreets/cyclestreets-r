@@ -128,7 +128,7 @@ batch = function(
   if(file.exists(filename_local)) {
     message(filename, " already exists, overwriting it")
   }
-  httr::GET(res_joburls$dataGz, httr::write_disk(filename_local))
+  httr::GET(res_joburls$dataGz, httr::write_disk(filename_local, overwrite = TRUE))
   routes = batch_read(filename_local)
   route_number = as.numeric(routes$id)
   if (!any(is.na(route_number))) {
@@ -188,7 +188,7 @@ batch_routes = function(
   if(!silent) {
     message("Posting to: ", batch_url)
   }
-  res = httr::POST(url = batch_url, body = body, )
+  res = httr::POST(url = batch_url, body = body)
   res_json = httr::content(res, "parsed")
   id = res_json$id
   message("Job id: ", id)
