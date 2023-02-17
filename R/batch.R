@@ -238,35 +238,37 @@ batch_jobdata = function(
   }
 }
 
-# Tests:
-# u = "https://github.com/cyclestreets/cyclestreets-r/releases/download/v0.5.3/cambridge-data.csv.gz"
-# file = basename(u)
-# download.file(u, file)
-# file = "/tmp/RtmpJCZGRC/test.csv"
-# res = batch_read(file)
-# l_desire |>
-#   slice(1:3) |>
-#   mapview::mapview()
-# res |>
-#   filter(id %in% 1:3) |>
-#   mapview::mapview()
+# # Tests:
+devtools::load_all()
+library(tidyverse)
+u = "https://github.com/cyclestreets/cyclestreets-r/releases/download/v0.5.3/cambridge-data.csv.gz"
+file = basename(u)
+download.file(u, file)
+res = batch_read(file)
+l_desire |>
+  slice(1:3) |>
+  mapview::mapview()
+res |>
+  filter(id %in% 1:3) |>
+  mapview::mapview()
 
 
 batch_read = function(file) {
-  if(grepl(pattern = ".gz", x = file)) {
-    file_csv = gsub(pattern = ".gz", replacement = "", x = file)
-    if(file.exists(file_csv)) {
-      message(".csv File already exists. Removing it.")
-      file.remove(file_csv)
-    }
-    R.utils::gunzip(file)
-  } else {
-    file_csv = file
-  }
+  # if(grepl(pattern = ".gz", x = file)) {
+  #   file_csv = gsub(pattern = ".gz", replacement = "", x = file)
+  #   if(file.exists(file_csv)) {
+  #     message(".csv File already exists. Removing it.")
+  #     file.remove(file_csv)
+  #   }
+  #   R.utils::gunzip(file)
+  # } else {
+    # file_csv = file
+  # }
   # browser()
   # res = readr::read_csv(file_csv)
-  message("Reading in the following file:\n", file_csv)
-  res = utils::read.csv(file_csv)
+  # message("Reading in the following file:\n", file_csv)
+  message("Reading in the following file:\n", file)
+  res = readr::read_csv(file)
   res$id = seq(nrow(res))
   n_char = nchar(res$json)
   if(all(is.na(n_char))) {
