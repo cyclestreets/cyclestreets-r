@@ -150,6 +150,7 @@ batch = function(
   time_taken_s = round(as.numeric(difftime(time1 = Sys.time(), time2 = sys_time, units = "secs")))
   rps = round(nrow(desire_lines) / time_taken_s, 1)
   message(nrow(desire_lines), " routes, ", time_taken_s, "s, ", rps, " routes/s")
+  browser()
   routes_updated
 }
 
