@@ -76,7 +76,7 @@ batch = function(
   if(is.null(wait_time)) {
     wait_time = wait_s(n = nrow(desire_lines))
   }
-  if(is.null(desire_lines$id)) {
+  if(! "id" %in% names(desire_lines)) {
     desire_lines$id = seq(nrow(desire_lines))
   }
   if(is.null(id)) {
@@ -221,7 +221,7 @@ batch_jobdata = function(
     password = Sys.getenv("CYCLESTREETS_PW"),
     id,
     pat,
-    silent
+    silent = TRUE
 ) {
   # POST https://api.cyclestreets.net/v2/batchroutes.controljob?key=...
   batch_url = paste0(base_url, "?key=", pat)
@@ -253,7 +253,8 @@ batch_deletejob = function(
     password = Sys.getenv("CYCLESTREETS_PW"),
     id,
     pat,
-    silent = TRUE
+    silent = TRUE,
+    serverId = 21
 ) {
   # POST https://api.cyclestreets.net/v2/batchroutes.controljob?key=...
   batch_url = paste0(base_url, "?key=", pat)
@@ -261,7 +262,8 @@ batch_deletejob = function(
     id = id,
     username = username,
     name = username,
-    password = Sys.getenv("CYCLESTREETS_PW")
+    password = Sys.getenv("CYCLESTREETS_PW"),
+    serverId = serverId
   )
   # TODO add polling
   if(!silent) message("Deleting the data")
