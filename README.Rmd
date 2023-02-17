@@ -5,7 +5,7 @@ output: github_document
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/cyclestreets/cyclestreets-r/workflows/R-CMD-check/badge.svg)](https://github.com/cyclestreets/cyclestreets-r/actions) [![CRAN status](https://www.r-pkg.org/badges/version/cyclestreets)](https://CRAN.R-project.org/package=cyclestreets)
-
+[![R-CMD-check](https://github.com/cyclestreets/cyclestreets-r/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/cyclestreets/cyclestreets-r/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->

@@ -3,6 +3,7 @@
 export("%>%")
 export(batch)
 export(journey)
+export(journey2)
 export(json2sf_cs)
 export(ltns)
 export(smooth_with_cutoffs)

@@ -85,4 +85,3 @@ plot(routes_route_n$route_number, routes_batch_n$id)
 plot(routes_route_n$nrow, routes_batch_n$nrow)
 routes_combined_n = cbind(routes_batch_n, nrowb = routes_route_n$nrow)
 summary(routes_combined_n$nrowb %in% routes_combined_n$nrow)
-

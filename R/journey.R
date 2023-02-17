@@ -83,7 +83,7 @@
 #' r = stplanr::route(l = desire_line, route_fun = journey)
 #' r
 #' }
-journey <- function(from,
+journey = function(from,
                     to,
                     plan = "fastest",
                     silent = TRUE,
@@ -132,9 +132,9 @@ journey <- function(from,
                     warnNA = FALSE) {
   if (is.null(pat))
     pat = Sys.getenv("CYCLESTREETS")
-  orig <- paste0(from, collapse = ",")
-  dest <- paste0(to, collapse = ",")
-  ft_string <- paste(orig, dest, sep = "|")
+  orig = paste0(from, collapse = ",")
+  dest = paste0(to, collapse = ",")
+  ft_string = paste(orig, dest, sep = "|")
 
   httrmsg = httr::modify_url(
     base_url,
@@ -151,18 +151,18 @@ journey <- function(from,
     print(paste0("The request sent to cyclestreets.net was: ", httrmsg))
   }
 
-  httrreq <- httr::GET(httrmsg)
+  httrreq = httr::GET(httrmsg)
 
   if (grepl('application/json', httrreq$headers$`content-type`) == FALSE) {
     stop("Error: CycleStreets did not return a valid result")
   }
 
-  txt <- httr::content(httrreq, as = "text", encoding = "UTF-8")
+  txt = httr::content(httrreq, as = "text", encoding = "UTF-8")
   if (txt == "") {
     stop("Error: CycleStreets did not return a valid result")
   }
 
-  obj <- jsonlite::fromJSON(txt, simplifyDataFrame = TRUE)
+  obj = jsonlite::fromJSON(txt, simplifyDataFrame = TRUE)
 
   if (is.element("error", names(obj))) {
     stop(paste0("Error: ", obj$error))
@@ -189,7 +189,7 @@ journey <- function(from,
 
 txt2coords = function(txt) {
   # helper function to document...
-  coords_split <- stringr::str_split(txt, pattern = " |,")[[1]]
+  coords_split = stringr::str_split(txt, pattern = " |,")[[1]]
   matrix(as.numeric(coords_split),
          ncol = 2,
          byrow = TRUE)
@@ -202,7 +202,7 @@ txt2coords = function(txt) {
 
 txt2elevations = function(txt) {
   # helper function to document...
-  coords_split <- stringr::str_split(txt, pattern = ",")[[1]]
+  coords_split = stringr::str_split(txt, pattern = ",")[[1]]
   as.numeric(coords_split)
 }
 
@@ -236,7 +236,7 @@ txt2elevations = function(txt) {
 #' json2sf_cs(obj, cols = c("time", "busynance", "elevations"))
 #' json2sf_cs(obj, cols = c("distances"), smooth_gradient = TRUE,
 #'   gradient_cutoff = 0.05, distance_cutoff = 50)
-json2sf_cs <- function(obj,
+json2sf_cs = function(obj,
                        cols = NULL,
                        cols_extra = c(
                          # "gradient_mean",
@@ -253,7 +253,7 @@ json2sf_cs <- function(obj,
                        distance_cutoff = 50,
                        gradient_cutoff = 0.1,
                        n = 3,
-                       warnNA = TRUE) {
+                       warnNA = FALSE) {
 
   coord_list = lapply(obj$marker$`@attributes`$points[-1], txt2coords)
   elev_list = lapply(obj$marker$`@attributes`$elevations[-1], txt2elevations)
@@ -436,7 +436,7 @@ smooth_with_cutoffs = function(gradient_segment,
                                distance_cutoff = 50,
                                gradient_cutoff = 0.1,
                                n = 3,
-                               warnNA = TRUE) {
+                               warnNA = FALSE) {
   sel = gradient_segment > gradient_cutoff &
     distances <= distance_cutoff
   gradient_segment_smooth =
@@ -457,7 +457,7 @@ smooth_with_cutoffs = function(gradient_segment,
 
 # x = 1:2
 # route_rolling_average(x)
-route_rolling_average <- function(x, n = 3) {
+route_rolling_average = function(x, n = 3) {
   if(length(x) >= n) {
     as.numeric(stats::filter(x, rep(1 / n, n), sides = 2))
   } else {

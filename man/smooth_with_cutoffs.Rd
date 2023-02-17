@@ -11,7 +11,7 @@ smooth_with_cutoffs(
   distance_cutoff = 50,
   gradient_cutoff = 0.1,
   n = 3,
-  warnNA = TRUE
+  warnNA = FALSE
 )
 }
 \arguments{

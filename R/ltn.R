@@ -10,18 +10,18 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' bb <- "0.101131,52.195807,0.170288,52.209719"
-#' ltn_data <- ltns(bb)
+#' bb = "0.101131,52.195807,0.170288,52.209719"
+#' ltn_data = ltns(bb)
 #' plot(ltn_data)
-#' bb <- stplanr::routes_fast_sf
-#' ltn_data <- ltns(bb)
+#' bb = stplanr::routes_fast_sf
+#' ltn_data = ltns(bb)
 #' plot(ltn_data)
 #' }
-ltns <- function(bb, pat = Sys.getenv("CYCLESTREETS")) {
+ltns = function(bb, pat = Sys.getenv("CYCLESTREETS")) {
   if(any(grepl(pattern = "sf", class(bb)))) {
-    bb <- bb_to_character(bb)
+    bb = bb_to_character(bb)
   }
-  u <- paste0("https://api.cyclestreets.net/v2/advocacydata.ltns?key=",
+  u = paste0("https://api.cyclestreets.net/v2/advocacydata.ltns?key=",
              Sys.getenv("CYCLESTREETS"),
              "&bbox=",
              bb)
@@ -29,7 +29,7 @@ ltns <- function(bb, pat = Sys.getenv("CYCLESTREETS")) {
   sf::read_sf(u)
 }
 
-bb_to_character <- function(bb) {
-  bb <- sf::st_bbox(bb)
+bb_to_character = function(bb) {
+  bb = sf::st_bbox(bb)
   paste0(bb, collapse = ",")
 }
