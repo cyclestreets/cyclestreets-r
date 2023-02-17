@@ -253,7 +253,7 @@ json2sf_cs = function(obj,
                        distance_cutoff = 50,
                        gradient_cutoff = 0.1,
                        n = 3,
-                       warnNA = TRUE) {
+                       warnNA = FALSE) {
 
   coord_list = lapply(obj$marker$`@attributes`$points[-1], txt2coords)
   elev_list = lapply(obj$marker$`@attributes`$elevations[-1], txt2elevations)
@@ -436,7 +436,7 @@ smooth_with_cutoffs = function(gradient_segment,
                                distance_cutoff = 50,
                                gradient_cutoff = 0.1,
                                n = 3,
-                               warnNA = TRUE) {
+                               warnNA = FALSE) {
   sel = gradient_segment > gradient_cutoff &
     distances <= distance_cutoff
   gradient_segment_smooth =
