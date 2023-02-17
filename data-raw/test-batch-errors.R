@@ -1,4 +1,3 @@
-
 u = "https://github.com/cyclestreets/cyclestreets-r/files/8853002/test-data.csv.gz"
 f = basename(u)
 

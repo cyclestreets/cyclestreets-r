@@ -1,4 +1,4 @@
-  library(cyclestreets)
+library(cyclestreets)
   library(tidyverse)
   library(stplanr)
   library(sf)
@@ -34,4 +34,3 @@ res = res |>
     ggplot(aes(rows, `min`, colour = as.character(expression))) +
     geom_point() +
     geom_line(aes(group = expression))
-

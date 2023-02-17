@@ -14,15 +14,15 @@
 #'   "quietness,speedMph,speedKmph,pause,color&zoom=16&",
 #'   "bbox=-9.160863,38.754642,-9.150128,38.75764")
 #' ways_test = sf::read_sf(u_test)
-#' bb <- "0.101131,52.195807,0.170288,52.209719"
-#' bb <- "-9.160863,38.754642,-9.150128,38.75764"
-#' way_data <- ways(bb)
+#' bb = "0.101131,52.195807,0.170288,52.209719"
+#' bb = "-9.160863,38.754642,-9.150128,38.75764"
+#' way_data = ways(bb)
 #' plot(way_data)
-#' bb <- stplanr::routes_fast_sf
-#' way_data <- ways(bb)
+#' bb = stplanr::routes_fast_sf
+#' way_data = ways(bb)
 #' plot(way_data)
 #' }
-ways <- function(
+ways = function(
     bb,
     # pat = Sys.getenv("CYCLESTREETS"),
     pat = "c047ed46f7b50b18",
@@ -33,9 +33,9 @@ ways <- function(
     zoom = 16
     ) {
   if(any(grepl(pattern = "sf", class(bb)))) {
-    bb <- bb_to_character(bb)
+    bb = bb_to_character(bb)
   }
-  u <- paste0(base_url,
+  u = paste0(base_url,
              "key=", pat,
              "&limit=", limit,
              "&types=", types,
@@ -46,4 +46,3 @@ ways <- function(
   # browseURL(u)
   sf::read_sf(u)
 }
-

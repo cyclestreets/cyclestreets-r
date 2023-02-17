@@ -138,4 +138,3 @@ j1 = jsonlite::read_json("journey1.json")
 j2 = jsonlite::read_json("journey2.json")
 j_combined = list(j1, j2)
 jsonlite::write_json(j_combined, "j_combined.json", pretty = TRUE)
-

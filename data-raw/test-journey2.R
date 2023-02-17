@@ -1,5 +1,3 @@
-
-
 # Aim: get new columns in 'r_2' object
 library(tidyverse)
 
