@@ -48,6 +48,8 @@
 #'   "releases/download/v0.5.3/od-longford-10-test.Rds")
 #' desire_lines = readRDS(url(u))
 #' routes_id = batch(desire_lines, username = "robinlovelace", wait = FALSE)
+#' desire_lines_huge = desire_lines[sample(nrow(desire_lines), 100000, replace = TRUE), ]
+#' routes_id = batch(desire_lines_huge, username = "robinlovelace", wait = FALSE)
 #' # Wait for some time, around a minute or 2
 #' batch(id = routes_id, username = "robinlovelace")
 #' names(routes)
@@ -157,7 +159,7 @@ batch = function(
     }
   }
   routes_updated = get_routes(res_joburls$dataGz, filename = filename, directory = directory)
-  if(wait) {
+  if(wait && !is.null(desire_lines)) {
     time_taken_s = round(as.numeric(difftime(time1 = Sys.time(), time2 = sys_time, units = "secs")))
     rps = round(nrow(desire_lines) / time_taken_s, 1)
     message(nrow(desire_lines), " routes, ", time_taken_s, "s, ", rps, " routes/s")
@@ -230,7 +232,8 @@ batch_routes = function(
   if(!silent) {
     message("Posting to: ", batch_url)
   }
-  res = httr::POST(url = batch_url, body = body)
+  browser()
+  res = httr::POST(url = batch_url, body = body, httr::timeout(60))
   res_json = httr::content(res, "parsed")
   id = res_json$id
   message("Job id: ", id)
