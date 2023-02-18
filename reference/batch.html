@@ -58,8 +58,9 @@ before trying this.</p>
 
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">batch</span><span class="op">(</span></span>
-<span>  <span class="va">desire_lines</span>,</span>
+<span>  desire_lines <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  directory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  wait <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  wait_time <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  name <span class="op">=</span> <span class="st">"test batch"</span>,</span>
 <span>  serverId <span class="op">=</span> <span class="fl">21</span>,</span>
@@ -88,6 +89,11 @@ before trying this.</p>
 
 <dt>directory</dt>
 <dd><p>Where to save the data? <code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir()</a></code> by default</p></dd>
+
+
+<dt>wait</dt>
+<dd><p>Should the process block your R session but return a route?
+FALSE by default.</p></dd>
 
 
 <dt>wait_time</dt>
@@ -184,7 +190,9 @@ terminate: Terminate job and delete data</p></dd>
 <span class="r-in"><span><span class="va">u</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"https://github.com/cyclestreets/cyclestreets-r/"</span>,</span></span>
 <span class="r-in"><span>  <span class="st">"releases/download/v0.5.3/od-longford-10-test.Rds"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">desire_lines</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/connections.html" class="external-link">url</a></span><span class="op">(</span><span class="va">u</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">routes</span> <span class="op">=</span> <span class="fu">batch</span><span class="op">(</span><span class="va">desire_lines</span>, username <span class="op">=</span> <span class="st">"robinlovelace"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">routes_id</span> <span class="op">=</span> <span class="fu">batch</span><span class="op">(</span><span class="va">desire_lines</span>, username <span class="op">=</span> <span class="st">"robinlovelace"</span>, wait <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Wait for some time, around a minute or 2</span></span></span>
+<span class="r-in"><span><span class="fu">batch</span><span class="op">(</span>id <span class="op">=</span> <span class="va">routes_id</span>, username <span class="op">=</span> <span class="st">"robinlovelace"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">routes</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">routes</span><span class="op">$</span><span class="va">geometry</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">desire_lines</span><span class="op">$</span><span class="va">geometry</span>, add <span class="op">=</span> <span class="cn">TRUE</span>, col <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></span></span>
