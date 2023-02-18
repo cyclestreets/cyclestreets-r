@@ -183,6 +183,9 @@ get_routes = function(url, filename, directory) {
   }
   routes_id_table = table(routes$id)
   routes_id_names = sort(as.numeric(names(routes_id_table)))
+  if(!is.null(desire_lines)) {
+    return(routes)
+  }
   n_routes_removed = nrow(desire_lines) - length(routes_id_names)
   desire_lines = desire_lines[routes_id_names, ]
   message(n_routes_removed, " routes removed")
