@@ -7,6 +7,8 @@
 #' @param desire_lines Geographic desire lines representing origin-destination data
 #' @param name The name of the batch routing job for CycleStreets
 #' @param directory Where to save the data? `tempdir()` by default
+#' @param wait Should the process block your R session but return a route?
+#'   FALSE by default.
 #' @param wait_time How long to wait before getting the data in seconds?
 #'   NULL by default, meaning it will be calculated by the private function
 #'   `wait_s()`.
@@ -45,15 +47,18 @@
 #' u = paste0("https://github.com/cyclestreets/cyclestreets-r/",
 #'   "releases/download/v0.5.3/od-longford-10-test.Rds")
 #' desire_lines = readRDS(url(u))
-#' routes = batch(desire_lines, username = "robinlovelace")
+#' routes_id = batch(desire_lines, username = "robinlovelace", wait = FALSE)
+#' # Wait for some time, around a minute or 2
+#' batch(id = routes_id, username = "robinlovelace")
 #' names(routes)
 #' plot(routes$geometry)
 #' plot(desire_lines$geometry, add = TRUE, col = "red")
 #' routes = batch(desire_lines, username = "robinlovelace", wait_time = 5)
 #' }
 batch = function(
-    desire_lines,
+    desire_lines = NULL,
     directory = tempdir(),
+    wait = FALSE,
     wait_time = NULL,
     name = "test batch",
     serverId = 21,
@@ -73,12 +78,17 @@ batch = function(
     delete_job = TRUE
 ) {
   sys_time = Sys.time()
-  if(is.null(wait_time)) {
+
+  if(is.null(wait_time) && !is.null(desire_lines)) {
     wait_time = wait_s(n = nrow(desire_lines))
   }
-  if(! "id" %in% names(desire_lines)) {
-    desire_lines$id = seq(nrow(desire_lines))
+
+  if(!is.null(desire_lines)) {
+    if(! "id" %in% names(desire_lines)) {
+      desire_lines$id = seq(nrow(desire_lines))
+    }
   }
+
   if(is.null(id)) {
     id = batch_routes(
       desire_lines,
@@ -101,6 +111,20 @@ batch = function(
     if(is.null(id)) {
       stop("Check your credentials, try again, and maybe contact CycleStreets")
     }
+    if(!wait) {
+      res_joburls = batch_jobdata(
+        username = username,
+        password = password,
+        id = id,
+        pat = pat,
+        silent = silent
+      )
+      if(is.null(res_joburls)) {
+        message("Routing job sent, check back in around ", round(wait_time / 60), " minutes if you've just sent this")
+        message("Check at www.cyclestreets.net/journey/batch/ for route id: ", id)
+        return(id)
+      }
+    }
     if(!silent) {
       message("Waiting to request the data for ", wait_time, " seconds.")
     }
@@ -114,6 +138,9 @@ batch = function(
     silent = silent
   )
   if(is.null(res_joburls)) {
+    if(!wait) {
+      return(id)
+    }
     message("No data returned yet. Trying again id ", id, " every 10 seconds")
     while(is.null(res_joburls)) {
       sys_time_taken = round(difftime(time1 = Sys.time(), time2 = sys_time, units = "secs") / 60)
@@ -129,11 +156,24 @@ batch = function(
       )
     }
   }
+  routes_updated = get_routes(res_joburls$dataGz, filename = filename, directory = directory)
+  if(wait) {
+    time_taken_s = round(as.numeric(difftime(time1 = Sys.time(), time2 = sys_time, units = "secs")))
+    rps = round(nrow(desire_lines) / time_taken_s, 1)
+    message(nrow(desire_lines), " routes, ", time_taken_s, "s, ", rps, " routes/s")
+  }
+  if(delete_job) {
+    batch_deletejob(base_url, username, password, id = id, pat = pat, silent = silent)
+  }
+  routes_updated
+}
+
+get_routes = function(url, filename, directory) {
   filename_local = file.path(directory, paste0(filename, ".csv.gz"))
   if(file.exists(filename_local)) {
     message(filename, " already exists, overwriting it")
   }
-  httr::GET(res_joburls$dataGz, httr::write_disk(filename_local, overwrite = TRUE))
+  httr::GET(url, httr::write_disk(filename_local, overwrite = TRUE))
   routes = batch_read(filename_local)
   route_number = as.numeric(routes$id)
   if (!any(is.na(route_number))) {
@@ -145,18 +185,12 @@ batch = function(
   desire_lines = desire_lines[routes_id_names, ]
   message(n_routes_removed, " routes removed")
   df = sf::st_drop_geometry(routes)
-  # browser()
   inds = rep(seq(nrow(desire_lines)), times = as.numeric(routes_id_table))
   df_routes_expanded = sf::st_drop_geometry(desire_lines)[inds, ]
   df = cbind(df_routes_expanded, df[-1])
   routes_updated = sf::st_sf(df, geometry = routes$geometry)
-  time_taken_s = round(as.numeric(difftime(time1 = Sys.time(), time2 = sys_time, units = "secs")))
-  rps = round(nrow(desire_lines) / time_taken_s, 1)
-  message(nrow(desire_lines), " routes, ", time_taken_s, "s, ", rps, " routes/s")
-  if(delete_job) {
-    batch_deletejob(base_url, username, password, id = id, pat = pat, silent = silent)
-  }
-  routes_updated
+
+
 }
 
 batch_routes = function(
@@ -298,7 +332,6 @@ batch_read = function(file) {
   # } else {
     # file_csv = file
   # }
-  # browser()
   # res = readr::read_csv(file_csv)
   # message("Reading in the following file:\n", file_csv)
   message("Reading in the following file:\n", file)
@@ -376,7 +409,7 @@ wait_s = function(n) {
     w = 30 + n / 20
   }
   if(n >= 2000) {
-    w = 30 + n / 40
+    w = 30 + n / 30
   }
   w
 }

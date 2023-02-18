@@ -5,8 +5,9 @@
 \title{Interface to CycleStreets Batch Routing API}
 \usage{
 batch(
-  desire_lines,
+  desire_lines = NULL,
   directory = tempdir(),
+  wait = FALSE,
   wait_time = NULL,
   name = "test batch",
   serverId = 21,
@@ -30,6 +31,9 @@ batch(
 \item{desire_lines}{Geographic desire lines representing origin-destination data}
 
 \item{directory}{Where to save the data? \code{tempdir()} by default}
+
+\item{wait}{Should the process block your R session but return a route?
+FALSE by default.}
 
 \item{wait_time}{How long to wait before getting the data in seconds?
 NULL by default, meaning it will be calculated by the private function
@@ -94,7 +98,9 @@ desire_lines = od::od_to_sf(od::od_data_df, od::od_data_zones)[4:5, 1:3]
 u = paste0("https://github.com/cyclestreets/cyclestreets-r/",
   "releases/download/v0.5.3/od-longford-10-test.Rds")
 desire_lines = readRDS(url(u))
-routes = batch(desire_lines, username = "robinlovelace")
+routes_id = batch(desire_lines, username = "robinlovelace", wait = FALSE)
+# Wait for some time, around a minute or 2
+batch(id = routes_id, username = "robinlovelace")
 names(routes)
 plot(routes$geometry)
 plot(desire_lines$geometry, add = TRUE, col = "red")
