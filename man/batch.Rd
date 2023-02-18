@@ -6,6 +6,7 @@
 \usage{
 batch(
   desire_lines = NULL,
+  id = NULL,
   directory = tempdir(),
   wait = FALSE,
   wait_time = NULL,
@@ -21,7 +22,6 @@ batch(
   username = "yourname",
   password = Sys.getenv("CYCLESTREETS_PW"),
   base_url = "https://api.cyclestreets.net/v2/batchroutes.createjob",
-  id = NULL,
   pat = Sys.getenv("CYCLESTREETS_BATCH"),
   silent = TRUE,
   delete_job = TRUE
@@ -29,6 +29,15 @@ batch(
 }
 \arguments{
 \item{desire_lines}{Geographic desire lines representing origin-destination data}
+
+\item{id}{int
+Batch job ID, as returned from batchroutes.createjob.
+action string (start|pause|continue|terminate)
+Action to take. Available actions are:
+start: Start (open) job
+pause: Pause job
+continue: Continue (re-open) job
+terminate: Terminate job and delete data}
 
 \item{directory}{Where to save the data? \code{tempdir()} by default}
 
@@ -71,15 +80,6 @@ Sys.setenv(CYCLESTREETS_PW="xxxxxx")}
 \item{base_url}{The base url from which to construct API requests
 (with default set to main server)}
 
-\item{id}{int
-Batch job ID, as returned from batchroutes.createjob.
-action string (start|pause|continue|terminate)
-Action to take. Available actions are:
-start: Start (open) job
-pause: Pause job
-continue: Continue (re-open) job
-terminate: Terminate job and delete data}
-
 \item{pat}{The API key used. By default this uses \code{Sys.getenv("CYCLESTREETS")}.}
 
 \item{silent}{Logical (default is FALSE). TRUE hides request sent.}
@@ -100,7 +100,10 @@ u = paste0("https://github.com/cyclestreets/cyclestreets-r/",
 desire_lines = readRDS(url(u))
 routes_id = batch(desire_lines, username = "robinlovelace", wait = FALSE)
 # Wait for some time, around a minute or 2
-batch(id = routes_id, username = "robinlovelace")
+routes_wait = batch(id = routes_id, username = "robinlovelace", wait = TRUE)
+routes_attrib = batch(desire_lines, id = routes_id, username = "robinlovelace", wait = TRUE)
+desire_lines_huge = desire_lines[sample(nrow(desire_lines), 100000, replace = TRUE), ]
+routes_id = batch(desire_lines_huge, username = "robinlovelace", wait = FALSE)
 names(routes)
 plot(routes$geometry)
 plot(desire_lines$geometry, add = TRUE, col = "red")
