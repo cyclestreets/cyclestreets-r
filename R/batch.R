@@ -80,6 +80,7 @@ batch = function(
     silent = TRUE,
     delete_job = TRUE
 ) {
+
   sys_time = Sys.time()
 
   if(is.null(wait_time) && !is.null(desire_lines)) {
@@ -236,8 +237,26 @@ batch_routes = function(
   if(!silent) {
     message("Posting to: ", batch_url)
   }
+
+  # # With httr:
   res = httr::POST(url = batch_url, body = body, httr::timeout(60))
   res_json = httr::content(res, "parsed")
+
+  # # # With httr2:
+  # req = httr2::request(batch_url)
+  # # res_dry_run = req %>%
+  # #   httr2::req_body_json(data = body) %>%
+  # #   httr2::req_dry_run()
+  # res = req %>%
+  #   httr2::req_body_json(data = body) %>%
+  #   httr2::req_perform()
+  # res_json = httr2::resp_body_json(resp = res)
+
+  if("error" %in% names(res_json)) {
+    # TODO: should this be an error message on the R side?
+    warning("Error message from server:\n", res_json$error)
+  }
+
   id = res_json$id
   message("Job id: ", id)
   id
