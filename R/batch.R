@@ -51,8 +51,11 @@
 #' desire_lines = readRDS(url(u))
 #' routes_id = batch(desire_lines, username = "robinlovelace", wait = FALSE)
 #' # Wait for some time, around a minute or 2
-#' routes_wait = batch(id = routes_id, username = "robinlovelace", wait = TRUE)
+#' routes_wait = batch(id = routes_id, username = "robinlovelace", wait = TRUE, delete_job = FALSE)
+#' names(routes_wait)
+#' plot(routes_wait)
 #' routes_attrib = batch(desire_lines, id = routes_id, username = "robinlovelace", wait = TRUE)
+#' names(routes_attrib)
 #' desire_lines_huge = desire_lines[sample(nrow(desire_lines), 100000, replace = TRUE), ]
 #' routes_id = batch(desire_lines_huge, username = "robinlovelace", wait = FALSE)
 #' names(routes)
@@ -304,8 +307,9 @@ batch_jobdata = function(
     message("Error message detected from CycleStreets output")
     warning(res_json$error)
   }
-  errors = paste0(" ", as.character(res_json$error))
-  if(nchar(names(errors))[1] > 2) {
+  # browser()
+  errors = paste0(" ", as.character(res_json$errors))
+  if(nchar(errors[1]) > 1) {
     message("Routing errors for these routes:\n", paste(errors, collapse = "\n"))
     message(paste(names(errors), collapse = "\n"))
   }
