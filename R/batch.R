@@ -54,6 +54,7 @@
 #' routes_wait = batch(id = routes_id, username = "robinlovelace", wait = TRUE, delete_job = FALSE)
 #' names(routes_wait)
 #' plot(routes_wait)
+#' # Job is deleted after this command:
 #' routes_attrib = batch(desire_lines, id = routes_id, username = "robinlovelace", wait = TRUE)
 #' names(routes_attrib)
 #' desire_lines_huge = desire_lines[sample(nrow(desire_lines), 100000, replace = TRUE), ]

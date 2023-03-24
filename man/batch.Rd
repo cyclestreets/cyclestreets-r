@@ -103,8 +103,12 @@ u = paste0("https://github.com/cyclestreets/cyclestreets-r/",
 desire_lines = readRDS(url(u))
 routes_id = batch(desire_lines, username = "robinlovelace", wait = FALSE)
 # Wait for some time, around a minute or 2
-routes_wait = batch(id = routes_id, username = "robinlovelace", wait = TRUE)
+routes_wait = batch(id = routes_id, username = "robinlovelace", wait = TRUE, delete_job = FALSE)
+names(routes_wait)
+plot(routes_wait)
+# Job is deleted after this command:
 routes_attrib = batch(desire_lines, id = routes_id, username = "robinlovelace", wait = TRUE)
+names(routes_attrib)
 desire_lines_huge = desire_lines[sample(nrow(desire_lines), 100000, replace = TRUE), ]
 routes_id = batch(desire_lines_huge, username = "robinlovelace", wait = FALSE)
 names(routes)
