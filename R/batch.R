@@ -383,7 +383,10 @@ batch_read = function(file) {
   # res = readr::read_csv(file_csv)
   # message("Reading in the following file:\n", file_csv)
   message("Reading in the following file:\n", file)
-  res = readr::read_csv(file)
+  # browser()
+  res = utils::read.csv(file)
+  # res = readr::read_csv(file)
+  # res_dt = data.table::fread(file, qmethod = "double")
   res$id = seq(nrow(res))
   n_char = nchar(res$json)
   if(all(is.na(n_char))) {
