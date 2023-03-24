@@ -31,7 +31,6 @@ Depends:
 Imports:
     checkmate,
     curl,
-    data.table,
     dplyr,
     geodist,
     geojsonsf,
@@ -41,7 +40,6 @@ Imports:
     progressr,
     purrr,
     RcppSimdJson,
-    readr,
     sf,
     stringr
 Suggests: 
