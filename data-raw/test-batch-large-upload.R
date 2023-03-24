@@ -29,6 +29,8 @@ od_100k = od %>%
 
 sf::write_sf(od_10k, "od_10k.geojson")
 sf::write_sf(od_15k, "od_15k.geojson")
+sf::write_sf(od_30k, "od_30k.geojson")
+fs::file_size("od_30k.geojson")
 
 batch(desire_lines = od_100, wait = FALSE, silent = FALSE, username = "robinlovelace")
 batch(desire_lines = od_10k, wait = FALSE, silent = FALSE, username = "robinlovelace")
@@ -37,4 +39,6 @@ batch(desire_lines = od_35k, wait = FALSE, silent = FALSE, username = "robinlove
 batch(desire_lines = od_40k, wait = FALSE, silent = FALSE, username = "robinlovelace")
 batch(desire_lines = od_50k, wait = FALSE, silent = FALSE, username = "robinlovelace")
 batch(desire_lines = od_100k, wait = FALSE, silent = FALSE, username = "robinlovelace")
+
+desire_lines_15k = batch(id = 3950)
 

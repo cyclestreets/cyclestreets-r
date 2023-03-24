@@ -1,8 +1,10 @@
 #' Interface to CycleStreets Batch Routing API
 #'
-#' Note: set `CYCLESTREETS_BATCH` and `CYCLESTREETS_PW`
+#' Note: set `CYCLESTREETS_BATCH`, `CYCLESTREETS_PW` and `CYCLESTREETS_PW`
 #' environment variables, e.g. with `usethis::edit_r_environ()`
 #' before trying this.
+#'
+#' See https://www.cyclestreets.net/journey/batch/ for web UI.
 #'
 #' @param desire_lines Geographic desire lines representing origin-destination data
 #' @param name The name of the batch routing job for CycleStreets
@@ -73,7 +75,7 @@ batch = function(
     filename = "test",
     includeJsonOutput = 1,
     emailOnCompletion = "you@example.com",
-    username = "yourname",
+    username = Sys.getenv("CYCLESTREETS_UN"),
     password = Sys.getenv("CYCLESTREETS_PW"),
     base_url = "https://api.cyclestreets.net/v2/batchroutes.createjob",
     pat = Sys.getenv("CYCLESTREETS_BATCH"),
@@ -211,7 +213,7 @@ batch_routes = function(
     filename = "test",
     includeJsonOutput = 1,
     emailOnCompletion = "you@example.com",
-    username = "yourname",
+    username = Sys.getenv("CYCLESTREETS_UN"),
     password = Sys.getenv("CYCLESTREETS_PW"),
     base_url = "https://api.cyclestreets.net/v2/batchroutes.createjob",
     id = 1,
@@ -276,12 +278,13 @@ batch_control = function(base_url = "https://api.cyclestreets.net/v2/batchroutes
 
 batch_jobdata = function(
     base_url = "https://api.cyclestreets.net/v2/batchroutes.jobdata",
-    username = "yourname",
+    username = Sys.getenv("CYCLESTREETS_UN"),
     password = Sys.getenv("CYCLESTREETS_PW"),
     id,
     pat,
     silent = TRUE
 ) {
+  browser()
   # POST https://api.cyclestreets.net/v2/batchroutes.controljob?key=...
   batch_url = paste0(base_url, "?key=", pat)
   body = list(
@@ -293,6 +296,9 @@ batch_jobdata = function(
   if(!silent) message("Sending data, wait...")
   res = httr::POST(url = batch_url, body = body)
   res_json = httr::content(res, "parsed")
+  if(!is.null(res_json$error)) {
+    warning(res_json$error)
+  }
   if(!is.null(res_json$ready)) {
     if(res_json$ready) {
       message("Congrats, you data is ready")
@@ -308,7 +314,7 @@ batch_jobdata = function(
 
 batch_deletejob = function(
     base_url,
-    username = "yourname",
+    username = Sys.getenv("CYCLESTREETS_UN"),
     password = Sys.getenv("CYCLESTREETS_PW"),
     id,
     pat,
