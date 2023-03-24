@@ -302,6 +302,10 @@ batch_jobdata = function(
   res = httr::POST(url = batch_url, body = body)
   res_json = httr::content(res, "parsed")
   error_message = paste0(" ", as.character(res_json$error))
+  if (error_message == " The job you requested to control is either non-existent or is owned by another user.") {
+    message("No job with that ID. Try setting delete_job = FALSE")
+    stop(error_message)
+  }
   if(nchar(error_message)[1] > 2) {
     message("Error message detected from CycleStreets output")
     warning(res_json$error)
