@@ -301,13 +301,11 @@ batch_jobdata = function(
   if(!silent) message("Sending data, wait...")
   res = httr::POST(url = batch_url, body = body)
   res_json = httr::content(res, "parsed")
-  # browser()
   error_message = paste0(" ", as.character(res_json$error))
   if(nchar(error_message)[1] > 2) {
     message("Error message detected from CycleStreets output")
     warning(res_json$error)
   }
-  # browser()
   errors = paste0(" ", as.character(res_json$errors))
   if(nchar(errors[1]) > 1) {
     message("Routing errors for these routes:\n", paste(errors, collapse = "\n"))
