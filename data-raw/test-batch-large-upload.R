@@ -1,5 +1,5 @@
 library(tidyverse)
-library(cyclestreets)
+# library(cyclestreets)
 # devtools::load_all()
 # od = readRDS("~/nptscot/npt/inputdata/od_commute_jittered.Rds")
 od_raw = pct::get_od()
@@ -40,5 +40,8 @@ batch(desire_lines = od_40k, wait = FALSE, silent = FALSE, username = "robinlove
 batch(desire_lines = od_50k, wait = FALSE, silent = FALSE, username = "robinlovelace")
 batch(desire_lines = od_100k, wait = FALSE, silent = FALSE, username = "robinlovelace")
 
-desire_lines_15k = batch(id = 3950)
+system.time({
+desire_lines = batch(id = 3957)
+})
+
 

@@ -19,7 +19,7 @@ batch(
   filename = "test",
   includeJsonOutput = 1,
   emailOnCompletion = "you@example.com",
-  username = "yourname",
+  username = Sys.getenv("CYCLESTREETS_UN"),
   password = Sys.getenv("CYCLESTREETS_PW"),
   base_url = "https://api.cyclestreets.net/v2/batchroutes.createjob",
   pat = Sys.getenv("CYCLESTREETS_BATCH"),
@@ -87,9 +87,12 @@ Sys.setenv(CYCLESTREETS_PW="xxxxxx")}
 \item{delete_job}{Delete the job? TRUE by default to avoid clogged servers}
 }
 \description{
-Note: set \code{CYCLESTREETS_BATCH} and \code{CYCLESTREETS_PW}
+Note: set \code{CYCLESTREETS_BATCH}, \code{CYCLESTREETS_PW} and \code{CYCLESTREETS_PW}
 environment variables, e.g. with \code{usethis::edit_r_environ()}
 before trying this.
+}
+\details{
+See https://www.cyclestreets.net/journey/batch/ for web UI.
 }
 \examples{
 if(FALSE) {

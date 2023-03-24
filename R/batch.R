@@ -162,7 +162,8 @@ batch = function(
       )
     }
   }
-  routes_updated = get_routes(res_joburls$dataGz, desire_lines, filename, directory)
+  browser()
+  routes_updated = get_routes(url = res_joburls$dataGz, desire_lines, filename, directory)
   # if(wait && !is.null(desire_lines)) {
   #   time_taken_s = round(as.numeric(difftime(time1 = Sys.time(), time2 = sys_time, units = "secs")))
   #   rps = round(nrow(desire_lines) / time_taken_s, 1)
@@ -180,6 +181,9 @@ get_routes = function(url, desire_lines = NULL, filename, directory) {
     message(filename, " already exists, overwriting it")
   }
   httr::GET(url, httr::write_disk(filename_local, overwrite = TRUE))
+  # R.utils::gzip(filename_local)
+  # routes = batch_read(gsub(pattern = ".gz", replacement = "", filename_local))
+  # list.files(tempdir())
   routes = batch_read(filename_local)
   route_number = as.numeric(routes$id)
   if (!any(is.na(route_number))) {
@@ -284,7 +288,6 @@ batch_jobdata = function(
     pat,
     silent = TRUE
 ) {
-  browser()
   # POST https://api.cyclestreets.net/v2/batchroutes.controljob?key=...
   batch_url = paste0(base_url, "?key=", pat)
   body = list(
@@ -296,9 +299,15 @@ batch_jobdata = function(
   if(!silent) message("Sending data, wait...")
   res = httr::POST(url = batch_url, body = body)
   res_json = httr::content(res, "parsed")
-  if(!is.null(res_json$error)) {
+  # browser()
+  error_message = paste0(" ", as.character(res_json$error))
+  if(nchar(error_message)[1] > 2) {
+    message("Error message detected from CycleStreets output")
     warning(res_json$error)
   }
+  routing_errors = res_json$errors
+  message("Routing errors for these routes:\n", paste(routing_errors, collapse = "\n"))
+  message(paste(names(routing_errors), collapse = "\n"))
   if(!is.null(res_json$ready)) {
     if(res_json$ready) {
       message("Congrats, you data is ready")
@@ -363,10 +372,10 @@ batch_read = function(file) {
   # } else {
     # file_csv = file
   # }
-  # res = data.table::fread(file_csv)
+  # res = readr::read_csv(file_csv)
   # message("Reading in the following file:\n", file_csv)
   message("Reading in the following file:\n", file)
-  res = data.table::fread(file)
+  res = readr::read_csv(file)
   res$id = seq(nrow(res))
   n_char = nchar(res$json)
   if(all(is.na(n_char))) {
