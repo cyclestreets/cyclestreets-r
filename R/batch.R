@@ -357,10 +357,10 @@ batch_read = function(file) {
   # } else {
     # file_csv = file
   # }
-  # res = readr::read_csv(file_csv)
+  # res = data.table::fread(file_csv)
   # message("Reading in the following file:\n", file_csv)
   message("Reading in the following file:\n", file)
-  res = readr::read_csv(file)
+  res = data.table::fread(file)
   res$id = seq(nrow(res))
   n_char = nchar(res$json)
   if(all(is.na(n_char))) {

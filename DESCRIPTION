@@ -31,6 +31,7 @@ Depends:
 Imports:
     checkmate,
     curl,
+    data.table,
     dplyr,
     geodist,
     geojsonsf,
