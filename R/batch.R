@@ -162,7 +162,6 @@ batch = function(
       )
     }
   }
-  browser()
   routes_updated = get_routes(url = res_joburls$dataGz, desire_lines, filename, directory)
   # if(wait && !is.null(desire_lines)) {
   #   time_taken_s = round(as.numeric(difftime(time1 = Sys.time(), time2 = sys_time, units = "secs")))
@@ -305,9 +304,11 @@ batch_jobdata = function(
     message("Error message detected from CycleStreets output")
     warning(res_json$error)
   }
-  routing_errors = res_json$errors
-  message("Routing errors for these routes:\n", paste(routing_errors, collapse = "\n"))
-  message(paste(names(routing_errors), collapse = "\n"))
+  errors = paste0(" ", as.character(res_json$error))
+  if(nchar(names(errors))[1] > 2) {
+    message("Routing errors for these routes:\n", paste(errors, collapse = "\n"))
+    message(paste(names(errors), collapse = "\n"))
+  }
   if(!is.null(res_json$ready)) {
     if(res_json$ready) {
       message("Congrats, you data is ready")
