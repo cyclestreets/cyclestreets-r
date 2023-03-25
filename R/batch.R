@@ -125,7 +125,7 @@ batch = function(
       res_joburls = batch_jobdata(
         username = username,
         password = password,
-        id = id,
+        id = as.character(id),
         pat = pat,
         silent = silent
       )
@@ -143,7 +143,7 @@ batch = function(
   res_joburls = batch_jobdata(
     username = username,
     password = password,
-    id = id,
+    id = as.character(id),
     pat = pat,
     silent = silent
   )
@@ -161,7 +161,7 @@ batch = function(
       res_joburls = batch_jobdata(
         username = username,
         password = password,
-        id = id,
+        id = as.character(id),
         pat = pat
       )
     }
@@ -173,7 +173,7 @@ batch = function(
   #   message(nrow(desire_lines), " routes, ", time_taken_s, "s, ", rps, " routes/s")
   # }
   if(delete_job) {
-    batch_deletejob(base_url, username, password, id = id, pat = pat, silent = silent)
+    batch_deletejob(base_url, username, password, id = as.character(id), pat = pat, silent = silent)
   }
   routes_updated
 }
@@ -188,11 +188,7 @@ get_routes = function(url, desire_lines = NULL, filename, directory) {
   # routes = batch_read(gsub(pattern = ".gz", replacement = "", filename_local))
   # list.files(tempdir())
   routes = batch_read(filename_local)
-  route_number = as.numeric(routes$id)
-  if (!any(is.na(route_number))) {
-    routes$id = route_number
-  }
-  routes_id_table = table(routes$id)
+  routes_id_table = table(routes$route_number)
   routes_id_names = sort(as.numeric(names(routes_id_table)))
   if(is.null(desire_lines)) {
     return(routes)
@@ -205,8 +201,7 @@ get_routes = function(url, desire_lines = NULL, filename, directory) {
   df_routes_expanded = sf::st_drop_geometry(desire_lines)[inds, ]
   df = cbind(df_routes_expanded, df[-1])
   routes_updated = sf::st_sf(df, geometry = routes$geometry)
-
-
+  routes_updated
 }
 
 batch_routes = function(
@@ -294,7 +289,7 @@ batch_jobdata = function(
   # POST https://api.cyclestreets.net/v2/batchroutes.controljob?key=...
   batch_url = paste0(base_url, "?key=", pat)
   body = list(
-    id = id,
+    id = as.character(id),
     username = username,
     password = Sys.getenv("CYCLESTREETS_PW")
   )
@@ -341,7 +336,7 @@ batch_deletejob = function(
   base_url = gsub(pattern = "createjob", replacement = "deletejob", x = base_url)
   batch_url = paste0(base_url, "?key=", pat)
   body = list(
-    id = id,
+    id = as.character(id),
     username = username,
     name = username,
     password = Sys.getenv("CYCLESTREETS_PW"),
@@ -386,17 +381,16 @@ batch_read = function(file) {
   # res = utils::read.csv(file)
   res = readr::read_csv(file)
   # res_dt = data.table::fread(file, qmethod = "double")
-  res$id = seq(nrow(res))
+  res$route_number = seq(nrow(res))
   n_char = nchar(res$json)
-  if(all(is.na(n_char))) {
+  n_char[is.na(n_char)] = 0
+  if(all(n_char == 0)) {
     stop("No routes returned: does CycleStreets operate where you requested data?")
   }
   min_nchar = min(n_char)
-  min_nchar[is.na(min_nchar)] = 0
   if(min_nchar == 0) {
     which_min_ncar = which(n_char == 0)
-    warning("These contain no data: ", paste(which_min_ncar, collapse = " "))
-    warning("Removing the failing desire lines")
+    message("Removing NA routes: ", paste(which_min_ncar, collapse = " "))
     res = res[-which_min_ncar, ]
   }
   # Commented debugging code to identify the failing line:
@@ -449,8 +443,9 @@ batch_read = function(file) {
   distance_cutoff = 50,
   gradient_cutoff = 0.1,
   n = 3,
-  .id = "id"
+  .id = "route_number"
   )
+  res_df$id = NULL
   res_df
 }
 

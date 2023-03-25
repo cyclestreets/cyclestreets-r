@@ -2,6 +2,7 @@
 
 export("%>%")
 export(batch)
+export(batch_multi)
 export(journey)
 export(journey2)
 export(json2sf_cs)
