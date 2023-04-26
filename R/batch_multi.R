@@ -1,8 +1,3 @@
-
-
-
-
-
 #' Batch routing for multiple plans and large datasets
 #'
 #' @param desire_lines Input desire lines
@@ -143,7 +138,7 @@ bind_sf = function(x) {
   geom_name = attr(x[[1]], "sf_column")
   x = data.table::rbindlist(x, use.names = FALSE)
   # x = collapse::unlist2d(x, idcols = FALSE, recursive = FALSE)
-  x[[geom_name]] = st_sfc(x[[geom_name]], recompute_bbox = TRUE)
-  x = st_as_sf(x)
+  x[[geom_name]] = sf::st_sfc(x[[geom_name]], recompute_bbox = TRUE)
+  x = sf::st_as_sf(x)
   x
 }
