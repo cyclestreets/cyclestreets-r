@@ -363,11 +363,12 @@ batch_read = function(file) {
   res = readr::read_csv(file)
   res$id = seq(nrow(res))
   n_char = nchar(res$json)
-  if(all(is.na(n_char))) {
+  n_char[is.na(n_char)] = 0
+  if(all(n_char == 0)) {
     stop("No routes returned: does CycleStreets operate where you requested data?")
   }
   min_nchar = min(n_char)
-  min_nchar[is.na(min_nchar)] = 0
+
   if(min_nchar == 0) {
     which_min_ncar = which(n_char == 0)
     warning("These contain no data: ", paste(which_min_ncar, collapse = " "))
