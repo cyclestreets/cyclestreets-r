@@ -1,8 +1,10 @@
 #' Interface to CycleStreets Batch Routing API
 #'
-#' Note: set `CYCLESTREETS_BATCH` and `CYCLESTREETS_PW`
+#' Note: set `CYCLESTREETS_BATCH`, `CYCLESTREETS_PW` and `CYCLESTREETS_PW`
 #' environment variables, e.g. with `usethis::edit_r_environ()`
 #' before trying this.
+#'
+#' See https://www.cyclestreets.net/journey/batch/ for web UI.
 #'
 #' @param desire_lines Geographic desire lines representing origin-destination data
 #' @param name The name of the batch routing job for CycleStreets
@@ -49,8 +51,12 @@
 #' desire_lines = readRDS(url(u))
 #' routes_id = batch(desire_lines, username = "robinlovelace", wait = FALSE)
 #' # Wait for some time, around a minute or 2
-#' routes_wait = batch(id = routes_id, username = "robinlovelace", wait = TRUE)
+#' routes_wait = batch(id = routes_id, username = "robinlovelace", wait = TRUE, delete_job = FALSE)
+#' names(routes_wait)
+#' plot(routes_wait)
+#' # Job is deleted after this command:
 #' routes_attrib = batch(desire_lines, id = routes_id, username = "robinlovelace", wait = TRUE)
+#' names(routes_attrib)
 #' desire_lines_huge = desire_lines[sample(nrow(desire_lines), 100000, replace = TRUE), ]
 #' routes_id = batch(desire_lines_huge, username = "robinlovelace", wait = FALSE)
 #' names(routes)
@@ -73,7 +79,7 @@ batch = function(
     filename = "test",
     includeJsonOutput = 1,
     emailOnCompletion = "you@example.com",
-    username = "yourname",
+    username = Sys.getenv("CYCLESTREETS_UN"),
     password = Sys.getenv("CYCLESTREETS_PW"),
     base_url = "https://api.cyclestreets.net/v2/batchroutes.createjob",
     pat = Sys.getenv("CYCLESTREETS_BATCH"),
@@ -119,7 +125,7 @@ batch = function(
       res_joburls = batch_jobdata(
         username = username,
         password = password,
-        id = id,
+        id = as.character(id),
         pat = pat,
         silent = silent
       )
@@ -137,7 +143,7 @@ batch = function(
   res_joburls = batch_jobdata(
     username = username,
     password = password,
-    id = id,
+    id = as.character(id),
     pat = pat,
     silent = silent
   )
@@ -155,19 +161,19 @@ batch = function(
       res_joburls = batch_jobdata(
         username = username,
         password = password,
-        id = id,
+        id = as.character(id),
         pat = pat
       )
     }
   }
-  routes_updated = get_routes(res_joburls$dataGz, desire_lines, filename, directory)
+  routes_updated = get_routes(url = res_joburls$dataGz, desire_lines, filename, directory)
   # if(wait && !is.null(desire_lines)) {
   #   time_taken_s = round(as.numeric(difftime(time1 = Sys.time(), time2 = sys_time, units = "secs")))
   #   rps = round(nrow(desire_lines) / time_taken_s, 1)
   #   message(nrow(desire_lines), " routes, ", time_taken_s, "s, ", rps, " routes/s")
   # }
   if(delete_job) {
-    batch_deletejob(base_url, username, password, id = id, pat = pat, silent = silent)
+    batch_deletejob(base_url, username, password, id = as.character(id), pat = pat, silent = silent)
   }
   routes_updated
 }
@@ -178,12 +184,11 @@ get_routes = function(url, desire_lines = NULL, filename, directory) {
     message(filename, " already exists, overwriting it")
   }
   httr::GET(url, httr::write_disk(filename_local, overwrite = TRUE))
+  # R.utils::gzip(filename_local)
+  # routes = batch_read(gsub(pattern = ".gz", replacement = "", filename_local))
+  # list.files(tempdir())
   routes = batch_read(filename_local)
-  route_number = as.numeric(routes$id)
-  if (!any(is.na(route_number))) {
-    routes$id = route_number
-  }
-  routes_id_table = table(routes$id)
+  routes_id_table = table(routes$route_number)
   routes_id_names = sort(as.numeric(names(routes_id_table)))
   if(is.null(desire_lines)) {
     return(routes)
@@ -196,8 +201,7 @@ get_routes = function(url, desire_lines = NULL, filename, directory) {
   df_routes_expanded = sf::st_drop_geometry(desire_lines)[inds, ]
   df = cbind(df_routes_expanded, df[-1])
   routes_updated = sf::st_sf(df, geometry = routes$geometry)
-
-
+  routes_updated
 }
 
 batch_routes = function(
@@ -211,7 +215,7 @@ batch_routes = function(
     filename = "test",
     includeJsonOutput = 1,
     emailOnCompletion = "you@example.com",
-    username = "yourname",
+    username = Sys.getenv("CYCLESTREETS_UN"),
     password = Sys.getenv("CYCLESTREETS_PW"),
     base_url = "https://api.cyclestreets.net/v2/batchroutes.createjob",
     id = 1,
@@ -276,7 +280,7 @@ batch_control = function(base_url = "https://api.cyclestreets.net/v2/batchroutes
 
 batch_jobdata = function(
     base_url = "https://api.cyclestreets.net/v2/batchroutes.jobdata",
-    username = "yourname",
+    username = Sys.getenv("CYCLESTREETS_UN"),
     password = Sys.getenv("CYCLESTREETS_PW"),
     id,
     pat,
@@ -285,7 +289,7 @@ batch_jobdata = function(
   # POST https://api.cyclestreets.net/v2/batchroutes.controljob?key=...
   batch_url = paste0(base_url, "?key=", pat)
   body = list(
-    id = id,
+    id = as.character(id),
     username = username,
     password = Sys.getenv("CYCLESTREETS_PW")
   )
@@ -293,6 +297,20 @@ batch_jobdata = function(
   if(!silent) message("Sending data, wait...")
   res = httr::POST(url = batch_url, body = body)
   res_json = httr::content(res, "parsed")
+  error_message = paste0(" ", as.character(res_json$error))
+  if (error_message == " The job you requested to control is either non-existent or is owned by another user.") {
+    message("No job with that ID. Try setting delete_job = FALSE")
+    stop(error_message)
+  }
+  if(nchar(error_message)[1] > 2) {
+    message("Error message detected from CycleStreets output")
+    warning(res_json$error)
+  }
+  errors = paste0(" ", as.character(res_json$errors))
+  if(nchar(errors[1]) > 1) {
+    message("Routing errors for these routes:\n", paste(errors, collapse = "\n"))
+    message(paste(names(errors), collapse = "\n"))
+  }
   if(!is.null(res_json$ready)) {
     if(res_json$ready) {
       message("Congrats, you data is ready")
@@ -308,7 +326,7 @@ batch_jobdata = function(
 
 batch_deletejob = function(
     base_url,
-    username = "yourname",
+    username = Sys.getenv("CYCLESTREETS_UN"),
     password = Sys.getenv("CYCLESTREETS_PW"),
     id,
     pat,
@@ -318,7 +336,7 @@ batch_deletejob = function(
   base_url = gsub(pattern = "createjob", replacement = "deletejob", x = base_url)
   batch_url = paste0(base_url, "?key=", pat)
   body = list(
-    id = id,
+    id = as.character(id),
     username = username,
     name = username,
     password = Sys.getenv("CYCLESTREETS_PW"),
@@ -360,19 +378,19 @@ batch_read = function(file) {
   # res = readr::read_csv(file_csv)
   # message("Reading in the following file:\n", file_csv)
   message("Reading in the following file:\n", file)
+  # res = utils::read.csv(file)
   res = readr::read_csv(file)
-  res$id = seq(nrow(res))
+  # res_dt = data.table::fread(file, qmethod = "double")
+  res$route_number = seq(nrow(res))
   n_char = nchar(res$json)
   n_char[is.na(n_char)] = 0
   if(all(n_char == 0)) {
     stop("No routes returned: does CycleStreets operate where you requested data?")
   }
   min_nchar = min(n_char)
-
   if(min_nchar == 0) {
     which_min_ncar = which(n_char == 0)
-    warning("These contain no data: ", paste(which_min_ncar, collapse = " "))
-    warning("Removing the failing desire lines")
+    message("Removing NA routes: ", paste(which_min_ncar, collapse = " "))
     res = res[-which_min_ncar, ]
   }
   # Commented debugging code to identify the failing line:
@@ -425,8 +443,9 @@ batch_read = function(file) {
   distance_cutoff = 50,
   gradient_cutoff = 0.1,
   n = 3,
-  .id = "id"
+  .id = "route_number"
   )
+  res_df$id = NULL
   res_df
 }
 
