@@ -123,6 +123,10 @@ journey2 = function(fromPlace = NA,
   results = lapply(results, dplyr::bind_rows)
   results = dplyr::bind_rows(results, .id = "id")
 
+  if(nrow(results) == 0){
+    stop("No valid results returned")
+  }
+
   route_variables = c("start","finish","start_longitude","start_latitude","finish_longitude","finish_latitude",
                        "crow_fly_distance","event","whence","speed","itinerary","plan",
                        "note","length","west","south","east","north","leaving","arriving",
