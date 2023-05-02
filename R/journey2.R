@@ -90,9 +90,9 @@ journey2 = function(fromPlace = NA,
   )
 
   urls = build_urls(routerUrl, itinerarypoints, query)
-  if(any(duplicated(urls))){
-    stop("You are sending duplicated requests")
-  }
+  # if(any(duplicated(urls))){
+  #   stop("You are sending duplicated requests")
+  # }
 
   progressr::handlers("cli")
   results = progressr::with_progress(otp_async(urls, host_con))
@@ -143,6 +143,7 @@ journey2 = function(fromPlace = NA,
 
   # message("results may not be in the order they were provided")
   results = add_columns(results)
+  results$SPECIALIDFORINTERNAL2 <- NULL
   results
 
 }
@@ -214,44 +215,76 @@ otp_clean_input = function(imp, imp_name) {
   ))
 }
 
-otp_async = function(urls, host_con, id){
+otp_async <- function(urls, ncores){
 
-  # Success Function
-  otp_success = function(res){
-    p()
-    data <<- c(data, list(rawToChar(res$content)))
-    urls2 <<- c(urls2, res$url)
-  }
-  # Fail Function
-  otp_failure = function(msg){
-    p()
-    cat("Error: ", msg, "\n")
-    urls2 <<- c(urls2, msg$url)
-  }
-
-  t1 = Sys.time()
-
-  pool = curl::new_pool(host_con = host_con)
-  data = list()
-  urls2 = list()
-
-  for(i in seq_len(length(urls))){
-    h = make_handle(i)
+  t1 <- Sys.time()
+  p <- progressr::progressor(length(urls))
+  out <- vector('list', length(urls))
+  pool <- curl::new_pool(host_con = ncores)
+  lapply( seq_along(urls), function(i){
+    h <- curl::new_handle()
+    success <- function(res){
+      p()
+      out[[i]] <<- rawToChar(res$content)
+    }
+    failure <- function(res){
+      p()
+      cat("Error: ", res, "\n")
+      out[[i]] <<- paste0("Error: ", res)
+    }
     curl::curl_fetch_multi(urls[i],
-                           otp_success,
-                           otp_failure ,
+                           done = success,
+                           fail = failure,
                            pool = pool,
                            handle = h)
-  }
-  message(Sys.time()," sending ",length(urls)," routes requests using ",host_con," threads")
-  p = progressr::progressor(length(urls))
-  out = curl::multi_run(timeout = Inf, pool = pool)
-  urls2 = unlist(urls2)
-  data = data[match(urls, urls2)]
-  t2 = Sys.time()
+  })
+  curl::multi_run(timeout = Inf, pool = pool)
+  t2 <- Sys.time()
   message("Done in ",round(difftime(t2,t1, units = "mins"),1)," mins")
-  return(unlist(data, use.names = FALSE))
+  return(unlist(out, use.names = FALSE))
 }
+
+
+
+
+# otp_async = function(urls, host_con, id){
+#
+#   # Success Function
+#   otp_success = function(res){
+#     p()
+#     data <<- c(data, list(rawToChar(res$content)))
+#     urls2 <<- c(urls2, res$url)
+#   }
+#   # Fail Function
+#   otp_failure = function(msg){
+#     p()
+#     cat("Error: ", msg, "\n")
+#     urls2 <<- c(urls2, msg$url)
+#   }
+#
+#   t1 = Sys.time()
+#
+#   pool = curl::new_pool(host_con = host_con)
+#   data = list()
+#   urls2 = list()
+#
+#   for(i in seq_len(length(urls))){
+#     h = make_handle(i)
+#     curl::curl_fetch_multi(urls[i],
+#                            otp_success,
+#                            otp_failure ,
+#                            pool = pool,
+#                            handle = h)
+#   }
+#   message(Sys.time()," sending ",length(urls)," routes requests using ",host_con," threads")
+#   p = progressr::progressor(length(urls))
+#   out = curl::multi_run(timeout = Inf, pool = pool)
+#   urls2 = unlist(urls2)
+#   data = data[match(urls, urls2)]
+#   t2 = Sys.time()
+#   message("Done in ",round(difftime(t2,t1, units = "mins"),1)," mins")
+#   return(unlist(data, use.names = FALSE))
+# }
 
 make_handle = function(x){
   handle = curl::new_handle()
