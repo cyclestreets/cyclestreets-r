@@ -95,14 +95,24 @@ journey2 = function(fromPlace = NA,
   # }
 
   progressr::handlers("cli")
-  results = progressr::with_progress(otp_async(urls, host_con))
+  results_raw = progressr::with_progress(otp_async(urls, host_con))
 
-  if(length(results) == 0){
+  if(length(results_raw) == 0){
     stop("No results returned, check your connection")
   }
 
   message(Sys.time()," processing results")
-  results = RcppSimdJson::fparse(results, query = "/marker", query_error_ok = TRUE, always_list = TRUE)
+  results = RcppSimdJson::fparse(results_raw, query = "/marker", query_error_ok = TRUE, always_list = TRUE)
+  results_error = RcppSimdJson::fparse(results_raw, query = "/error", query_error_ok = TRUE, always_list = TRUE)
+  results_error = unlist(results_error, use.names = FALSE)
+  if(length(results_error) > 0){
+    message(length(results_error)," routes returned errors. Unique error messages are:\n")
+    results_error = as.data.frame(table(results_error))
+    results_error = results_error[order(results_error$Freq, decreasing = TRUE),]
+    for(msgs in seq_len(nrow(results_error))){
+      message(results_error$Freq[msgs],'x messages: "',results_error$results_error[msgs],'"\n')
+    }
+  }
 
   # Process Marker
   #names(results) <- as.character(seq_len(length(results)))
