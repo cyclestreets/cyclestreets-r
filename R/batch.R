@@ -193,14 +193,16 @@ get_routes = function(url, desire_lines = NULL, filename, directory) {
   if(is.null(desire_lines)) {
     return(routes)
   }
+  # If there are desire lines:
+  desire_lines$id = seq(nrow(desire_lines))
+  desire_lines = sf::st_drop_geometry(desire_lines)
   n_routes_removed = nrow(desire_lines) - length(routes_id_names)
-  desire_lines = desire_lines[routes_id_names, ]
   message(n_routes_removed, " routes removed")
-  df = sf::st_drop_geometry(routes)
-  inds = rep(seq(nrow(desire_lines)), times = as.numeric(routes_id_table))
-  df_routes_expanded = sf::st_drop_geometry(desire_lines)[inds, ]
-  df = cbind(df_routes_expanded, df[-1])
-  routes_updated = sf::st_sf(df, geometry = routes$geometry)
+  routes_updated = dplyr::left_join(
+    routes,
+    desire_lines,
+    by = dplyr::join_by(id == id)
+  )
   routes_updated
 }
 
