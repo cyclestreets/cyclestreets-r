@@ -254,7 +254,6 @@ json2sf_cs = function(obj,
                        gradient_cutoff = 0.1,
                        n = 3,
                        warnNA = FALSE) {
-
   coord_list = lapply(obj$marker$`@attributes`$points[-1], txt2coords)
   elev_list = lapply(obj$marker$`@attributes`$elevations[-1], txt2elevations)
   elev_diff_list = lapply(elev_list, function(x)
@@ -286,23 +285,16 @@ json2sf_cs = function(obj,
   sel_numeric = !is.na(vals_numeric)
   vals_constant[sel_numeric] = vals_numeric[sel_numeric]
   d_constant = data.frame(vals_constant)[rep(1, n_segs),]
-
   # useful cols: busynance, name, elevations, distances, turn,provisionName
-
-  sel_variable = cols_na == 0 &
-    !grepl("startBearing|type", names(cols_na))
+  sel_variable = cols_na == 0 & !grepl("startBearing|type", names(cols_na))
   cols_variable = names(cols_na)[sel_variable]
-  vv = lapply(cols_variable, function(x)
-    obj$marker$`@attributes`[[x]][-1])
+  vv = lapply(cols_variable, function(x) obj$marker$`@attributes`[[x]][-1])
   names(vv) = cols_variable
-  # vv # take a look - which ones to process?
-
   vv$elevation_mean = unlist(lapply(elev_list, mean))
   vv$elevation_start = unlist(lapply(elev_list, head, n = 1))
   vv$elevation_end = unlist(lapply(elev_list, tail, n = 1))
   vv$elevation_max = unlist(lapply(elev_list, max))
   vv$elevation_min = unlist(lapply(elev_list, min))
-
   if(n_segs == 1) {
     vv$gradient_mean = mean(abs(glst))
     vv$gradient_median = stats::median(abs(glst))
@@ -316,39 +308,24 @@ json2sf_cs = function(obj,
     vv$gradient_max = sapply(glst, function(x) max(abs(x)))
   }
   vv$distances = sapply(dist_list, sum)
-
   suppressWarnings({
     vals_vnumeric = lapply(vv, as.numeric)
   })
   vals_vnumeric$name = vv$name
-
   dv = data.frame(vals_vnumeric)
-
   # manually add records
-  dv$gradient_segment = (vv$elevation_max -
-                           vv$elevation_min) / vv$distances
-  dv$elevation_change = (vv$elevation_max -
-                           vv$elevation_min)
-
+  dv$gradient_segment = (vv$elevation_max - vv$elevation_min) / vv$distances
+  dv$elevation_change = (vv$elevation_max - vv$elevation_min)
   dv$provisionName = obj$marker$`@attributes`$provisionName[-1]
   if (!is.null(cols_extra)) {
-    cols_extra_variable = c(cols, cols_extra)[c(cols, cols_extra) %in%
-                                                names(dv)]
+    cols_extra_variable = c(cols, cols_extra)[c(cols, cols_extra) %in% names(dv)]
     dv = dv[cols_extra_variable]
   }
   d_all = cbind(dv, d_constant)
-
   if (!is.null(cols)) {
-    # names(d_all)[! names(d_all) %in% c(cols, cols_extra)]
-    # c(cols, cols_extra)[! c(cols, cols_extra) %in% names(d_all)]
     d_all = d_all[c(cols, cols_extra)]
   }
-
-  # todo: create more segment-level statistics (vectors) +
-  # add them to the data frame (d) below
-
   r = sf::st_sf(d_all, geometry = rsfl, crs = 4326)
-
   if (smooth_gradient) {
     if(n_segs > 1) {
       r$gradient_smooth = smooth_with_cutoffs(
@@ -364,9 +341,7 @@ json2sf_cs = function(obj,
       r$gradient_smooth = r$gradient_segment
     }
   }
-
   return(r)
-
 }
 
 #' Identify and smooth-out anomalous gradient values
