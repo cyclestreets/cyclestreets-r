@@ -268,21 +268,14 @@ json2sf_cs = function(obj,
     geodist::geodist(data.frame(x = x[, 1], y = x[, 2]),
                      sequential = TRUE)
   })
-  # gradient_list = purrr::map2(elev_diff_list, dist_list, ~.x / .y)
-  gradient_list = mapply(function(x, y)
+  # glst = purrr::map2(elev_diff_list, dist_list, ~.x / .y)
+  glst = mapply(function(x, y)
     x / y, elev_diff_list, dist_list)
-  rsfl = lapply(coord_list, sf::st_linestring) %>%
-    sf::st_sfc()
-
+  rsfl = do.call(c, lapply(coord_list, sfheaders::sfc_linestring))
   # variables - constant
   n_segs = length(rsfl)
-  # cols_lengths = sapply(obj$marker$`@attributes`, length)
-  # cyclestreets_column_names = names(cols_lengths)
-  # usethis::use_data(cyclestreets_column_names)
-  cols_na = sapply(obj$marker$`@attributes`, function(x)
-    sum(is.na(x)))
-  sel_constant = cols_na == n_segs &
-    names(cols_na) != "coordinates"
+  cols_na = sapply(obj$marker$`@attributes`, function(x) sum(is.na(x)))
+  sel_constant = cols_na == n_segs & names(cols_na) != "coordinates"
   cols_constant = names(cols_na)[sel_constant]
   vals_constant = lapply(cols_constant, function(x)
     obj$marker$`@attributes`[[x]][1])
@@ -299,78 +292,51 @@ json2sf_cs = function(obj,
   sel_variable = cols_na == 0 &
     !grepl("startBearing|type", names(cols_na))
   cols_variable = names(cols_na)[sel_variable]
-  vals_variable = lapply(cols_variable, function(x)
+  vv = lapply(cols_variable, function(x)
     obj$marker$`@attributes`[[x]][-1])
-  names(vals_variable) = cols_variable
-  # vals_variable # take a look - which ones to process?
-  vals_variable$elevation_mean = stringr::str_split(vals_variable$elevations, pattern = ",") %>%
-    lapply(as.numeric) %>%
-    lapply(mean) %>%
-    unlist()
-  vals_variable$elevation_start = stringr::str_split(vals_variable$elevations, pattern = ",") %>%
-    lapply(as.numeric) %>%
-    lapply(utils::head, 1) %>%
-    unlist()
-  vals_variable$elevation_end = stringr::str_split(vals_variable$elevations, pattern = ",") %>%
-    lapply(as.numeric) %>%
-    lapply(utils::tail, 1) %>%
-    unlist()
-  vals_variable$elevation_max = stringr::str_split(vals_variable$elevations, pattern = ",") %>%
-    lapply(as.numeric) %>%
-    lapply(max) %>%
-    unlist()
-  vals_variable$elevation_min = stringr::str_split(vals_variable$elevations, pattern = ",") %>%
-    lapply(as.numeric) %>%
-    lapply(min) %>%
-    unlist()
+  names(vv) = cols_variable
+  # vv # take a look - which ones to process?
+
+  vv$elevation_mean = unlist(lapply(elev_list, mean))
+  vv$elevation_start = unlist(lapply(elev_list, head, n = 1))
+  vv$elevation_end = unlist(lapply(elev_list, tail, n = 1))
+  vv$elevation_max = unlist(lapply(elev_list, max))
+  vv$elevation_min = unlist(lapply(elev_list, min))
 
   if(n_segs == 1) {
-    vals_variable$gradient_mean = mean(abs(gradient_list))
-    vals_variable$gradient_median = stats::median(abs(gradient_list))
-    vals_variable$gradient_p75 = stats::quantile(abs(gradient_list), probs = 0.75)
-    vals_variable$gradient_max = max(abs(gradient_list))
+    vv$gradient_mean = mean(abs(glst))
+    vv$gradient_median = stats::median(abs(glst))
+    vv$gradient_p75 = stats::quantile(abs(glst), probs = 0.75)
+    vv$gradient_max = max(abs(glst))
   } else {
-    vals_variable$gradient_mean = lapply(gradient_list, function(x)
-      mean(abs(x))) %>%
-      unlist()
-    vals_variable$gradient_median = lapply(gradient_list,
-                                           function(x)
-                                             stats::median(abs(x))) %>%
-      unlist()
-    vals_variable$gradient_p75 = lapply(gradient_list,
-                                        function(x)
-                                          stats::quantile(abs(x), probs = 0.75)) %>%
-      unlist()
-    vals_variable$gradient_max = lapply(gradient_list,
-                                        function(x)
-                                          max(abs(x))) %>%
-      unlist()
+    vv$gradient_mean = sapply(glst, function(x) mean(abs(x)))
+    vv$gradient_median = sapply(glst, function(x) stats::median(abs(x)))
+    vv$gradient_median = sapply(glst, function(x) stats::median(abs(x)))
+    vv$gradient_p75 = sapply(glst, function(x) stats::quantile(abs(x), probs = 0.75))
+    vv$gradient_max = sapply(glst, function(x) max(abs(x)))
   }
-  vals_variable$distances = stringr::str_split(vals_variable$distances, pattern = ",") %>%
-    lapply(as.numeric) %>%
-    lapply(sum) %>%
-    unlist()
+  vv$distances = sapply(dist_list, sum)
 
   suppressWarnings({
-    vals_vnumeric = lapply(vals_variable, as.numeric)
+    vals_vnumeric = lapply(vv, as.numeric)
   })
-  vals_vnumeric$name = vals_variable$name
+  vals_vnumeric$name = vv$name
 
-  d_variable = data.frame(vals_vnumeric)
+  dv = data.frame(vals_vnumeric)
 
   # manually add records
-  d_variable$gradient_segment = (vals_variable$elevation_max -
-                                   vals_variable$elevation_min) / vals_variable$distances
-  d_variable$elevation_change = (vals_variable$elevation_max -
-                                   vals_variable$elevation_min)
+  dv$gradient_segment = (vv$elevation_max -
+                           vv$elevation_min) / vv$distances
+  dv$elevation_change = (vv$elevation_max -
+                           vv$elevation_min)
 
-  d_variable$provisionName = obj$marker$`@attributes`$provisionName[-1]
+  dv$provisionName = obj$marker$`@attributes`$provisionName[-1]
   if (!is.null(cols_extra)) {
     cols_extra_variable = c(cols, cols_extra)[c(cols, cols_extra) %in%
-                                                names(d_variable)]
-    d_variable = d_variable[cols_extra_variable]
+                                                names(dv)]
+    dv = dv[cols_extra_variable]
   }
-  d_all = cbind(d_variable, d_constant)
+  d_all = cbind(dv, d_constant)
 
   if (!is.null(cols)) {
     # names(d_all)[! names(d_all) %in% c(cols, cols_extra)]
