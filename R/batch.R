@@ -197,14 +197,14 @@ get_routes = function(url, desire_lines = NULL, filename, directory) {
     return(routes)
   }
   # If there are desire lines:
-  desire_lines$id = seq(nrow(desire_lines))
+  desire_lines$route_number = as.character(seq(nrow(desire_lines)))
   desire_lines = sf::st_drop_geometry(desire_lines)
   n_routes_removed = nrow(desire_lines) - length(routes_id_names)
   message(n_routes_removed, " routes removed")
   routes_updated = dplyr::left_join(
     routes,
     desire_lines,
-    by = dplyr::join_by(id == id)
+    by = dplyr::join_by(route_number == route_number)
   )
   routes_updated
 }
@@ -318,7 +318,7 @@ batch_jobdata = function(
   }
   if(!is.null(res_json$ready)) {
     if(res_json$ready) {
-      message("Congrats, you data is ready")
+      message("Congrats, your data is ready")
       res_joburls = res_json$files
       return(res_joburls)
     } else {

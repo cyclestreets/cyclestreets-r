@@ -99,3 +99,7 @@ r3 = routes_updated2 %>%
 mapview::mapview(r3) +
   mapview::mapview(od3)
 
+# With a different input dataset:
+d = sf::read_sf("https://github.com/nptscot/npt/releases/download/v1/od_commute_subset_1000_test_batch.geojson")
+r = batch(d, username = "robinlovelace")
+r = batch(d, username = "robinlovelace", id = 4996)
