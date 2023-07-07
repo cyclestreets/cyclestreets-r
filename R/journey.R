@@ -162,7 +162,7 @@ journey = function(from,
     stop("Error: CycleStreets did not return a valid result")
   }
 
-  obj = jsonlite::fromJSON(txt, simplifyDataFrame = TRUE)
+  obj = jsonlite::fromJSON(txt, simplifyDataFrame = TRUE, bigint_as_char = FALSE)
 
   if (is.element("error", names(obj))) {
     stop(paste0("Error: ", obj$error))

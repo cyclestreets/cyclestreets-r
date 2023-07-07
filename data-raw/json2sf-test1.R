@@ -1,9 +1,17 @@
 
 f = system.file(package = "cyclestreets", "extdata/journey.json")
 obj = jsonlite::read_json(f, simplifyVector = TRUE)
+obj2 = RcppSimdJson::fload(f, max_simplify_lvl = "data_frame")
+obj2 = RcppSimdJson::fload(f, max_simplify_lvl = "data_frame")
+obj2 = jsonify::from_json(f, simplify = TRUE)
+waldo::compare(obj, obj2)
+obj$marker$`@attributes`
+obj2$marker$`@attributes`
+
 rsf = cyclestreets::json2sf_cs(obj, cols = c("distances"))
 sf:::plot.sf(rsf)
 
+obj2$marker$`@attributes`$elevations
 obj$marker$`@attributes`$elevations
 # [1] "27,27,27,27,27,28,28,28,28,28,28,28,28,28,28,29,29,29,31,33,34,33,33,33,32,32,33,33,33,34,34,34,34,34,34,34,34,34,34"
 # [2] "27,27,27,27,27,28"
