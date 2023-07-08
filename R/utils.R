@@ -1,28 +1,7 @@
 
-#' @examples
-#' if(FALSE) {
-#' f = system.file(package = "cyclestreets", "extdata/journey.json")
-#' obj = jsonlite::read_json(f, simplifyVector = TRUE)
-#' txt = obj$marker$`@attributes`$points[2]
-#' c1 = txt2coords(txt)
-#' c2 = txt2coords2(txt)
-#' waldo::compare(c1, c2)
-#' # `old` is a double vector (-1.54408, -1.54399, -1.54336, -1.54331, -1.54329, ...)
-#' # `new` is an S3 object of class <XY/LINESTRING/sfg>, a double vector
-#' bench::mark(check = FALSE,
-#'   c1 = txt2coords(txt),
-#'   c2 = txt2coords2(txt)
-#' )
-#' e = obj$marker$`@attributes`$elevations[1] # for whole journey
-#' e1 = obj$marker$`@attributes`$elevations[2] # for 1st segment
-#' txt = obj$marker$`@attributes`$elevations[2] # for 2nd segment
-#' }
 txt2coords = function(txt) {
-  # helper function to document...
   coords_split = stringr::str_split(txt, pattern = " |,")[[1]]
-  matrix(as.numeric(coords_split),
-         ncol = 2,
-         byrow = TRUE)
+  matrix(as.numeric(coords_split), ncol = 2, byrow = TRUE)
 }
 txt2coords2 = function(txt) {
   if(is.na(txt)){
@@ -34,27 +13,22 @@ txt2coords2 = function(txt) {
                         byrow = TRUE)
   sf::st_linestring(coords_split)
 }
-txt2coords3 = function(txt) {
-  # helper function to document...
-  coords_split = stringi::stri_split(txt, regex = " |,")
-  matrix(as.numeric(coords_split[[1]]), ncol = 2, byrow = TRUE)
-}
 
-f = system.file(package = "cyclestreets", "extdata/journey.json")
-obj = jsonlite::read_json(f, simplifyVector = TRUE)
-txt = obj$marker$`@attributes`$points[2]
-c1 = txt2coords(txt)
-c2 = txt2coords2(txt)
-c3 = txt2coords3(txt)
-waldo::compare(c1, c2)
-waldo::compare(c1, c3)
-# `old` is a double vector (-1.54408, -1.54399, -1.54336, -1.54331, -1.54329, ...)
-# `new` is an S3 object of class <XY/LINESTRING/sfg>, a double vector
-bench::mark(check = FALSE,
-  c1 = txt2coords(txt),
-  c2 = txt2coords2(txt),
-  c3 = txt2coords2(txt)
-)
+# f = system.file(package = "cyclestreets", "extdata/journey.json")
+# obj = jsonlite::read_json(f, simplifyVector = TRUE)
+# txt = obj$marker$`@attributes`$points[2]
+# c1 = txt2coords(txt)
+# c2 = txt2coords2(txt)
+# c3 = txt2coords3(txt)
+# waldo::compare(c1, c2)
+# waldo::compare(c1, c3)
+# # `old` is a double vector (-1.54408, -1.54399, -1.54336, -1.54331, -1.54329, ...)
+# # `new` is an S3 object of class <XY/LINESTRING/sfg>, a double vector
+# bench::mark(check = FALSE,
+#   c1 = txt2coords(txt),
+#   c2 = txt2coords2(txt),
+#   c3 = txt2coords2(txt)
+# )
 
 txt2elevations = function(txt) {
   # helper function to document...
