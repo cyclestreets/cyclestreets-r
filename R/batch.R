@@ -400,7 +400,8 @@ batch_read = function(file) {
   }
   # Commented debugging code to identify the failing line:
   # try({
-    res_list = lapply(res$json, function(x) {
+  message("Reading route data")
+    res_list = pbapply::pblapply(res$json, function(x) {
   #     if(exists("i_line")) {
   #       i_line <<- i_line + 1
   #     } else {
@@ -410,7 +411,10 @@ batch_read = function(file) {
       jsonlite::parse_json(x, simplifyVector = TRUE)
     } )
   # })
-  res_df = purrr::map_dfr(res_list, .f = json2sf_cs, cols = c(
+  message("Converting json values to linestrings")
+  res_list = pbapply::pblapply(
+    res_list,
+    json2sf_cs, cols = c(
     "name",
     "distances",
     "time",
@@ -447,19 +451,31 @@ batch_read = function(file) {
   smooth_gradient = TRUE,
   distance_cutoff = 50,
   gradient_cutoff = 0.1,
-  n = 3,
-  .id = "route_number"
+  n = 3
   )
-  res_df$id = NULL
+  res_list = lapply(seq(length(res_list)), function(i) {
+    res_list[[i]]$route_number = i
+    res_list[[i]]
+  } )
+  res_df = bind_sf(res_list)
   res_df
 }
 
 wait_s = function(n) {
   if(n < 2000) {
-    w = 30 + n / 20
-  }
-  if(n >= 2000) {
     w = 30 + n / 30
   }
+  if(n >= 2000) {
+    w = 30 + n / 100
+  }
   w
+}
+
+bind_sf = function(x) {
+  if (length(x) == 0) stop("Empty list")
+  geom_name = attr(x[[1]], "sf_column")
+  x = data.table::rbindlist(x, use.names = FALSE)
+  # x = collapse::unlist2d(x, idcols = FALSE, recursive = FALSE)
+  x[[geom_name]] = st_sfc(x[[geom_name]], recompute_bbox = TRUE)
+  x = st_as_sf(x)
 }
