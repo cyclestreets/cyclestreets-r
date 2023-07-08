@@ -184,28 +184,6 @@ journey = function(from,
   }
   r
 }
-
-# obj = jsonlite::read_json(f, simplifyVector = TRUE)
-
-txt2coords = function(txt) {
-  # helper function to document...
-  coords_split = stringr::str_split(txt, pattern = " |,")[[1]]
-  matrix(as.numeric(coords_split),
-         ncol = 2,
-         byrow = TRUE)
-}
-# txt2coords(obj$marker$`@attributes`$points[2])
-
-# e = obj$marker$`@attributes`$elevations[1] # for whole journey
-# e1 = obj$marker$`@attributes`$elevations[2] # for 1st segment
-# txt = obj$marker$`@attributes`$elevations[2] # for 2nd segment
-
-txt2elevations = function(txt) {
-  # helper function to document...
-  coords_split = stringr::str_split(txt, pattern = ",")[[1]]
-  as.numeric(coords_split)
-}
-
 #' Convert output from CycleStreets.net into sf object
 #'
 #' @param obj Object from CycleStreets.net read-in with
@@ -227,6 +205,11 @@ txt2elevations = function(txt) {
 #' f = system.file(package = "cyclestreets", "extdata/journey.json")
 #' obj = jsonlite::read_json(f, simplifyVector = TRUE)
 #' rsf = json2sf_cs(obj, cols = c("distances"))
+#' # Benchmarking performance, see issue #65
+#' bench::mark(
+#'   test = json2sf_cs(obj, cols = c("distances"))
+#' )
+#' # 90 itr/sec # Around 30 itr/sec for typical commute routes
 #' names(rsf)
 #' rsf
 #' rsf2 = json2sf_cs(obj, cols = NULL, cols_extra = NULL)
@@ -396,12 +379,3 @@ smooth_with_cutoffs = function(gradient_segment,
   gradient_segment
 }
 
-# x = 1:2
-# route_rolling_average(x)
-route_rolling_average = function(x, n = 3) {
-  if(length(x) >= n) {
-    as.numeric(stats::filter(x, rep(1 / n, n), sides = 2))
-  } else {
-    x
-  }
-}
