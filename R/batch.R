@@ -454,7 +454,7 @@ batch_read = function(file) {
   n = 3
   )
   res_list = lapply(seq(length(res_list)), function(i) {
-    res_list[[i]]$route_number = i
+    res_list[[i]]$route_number = as.character(i)
     res_list[[i]]
   } )
   res_df = bind_sf(res_list)
