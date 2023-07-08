@@ -66,6 +66,7 @@
 #' plot(routes$geometry)
 #' plot(desire_lines$geometry, add = TRUE, col = "red")
 #' routes = batch(desire_lines, username = "robinlovelace", wait_time = 5)
+#' routes = batch(username = "robinlovelace", id = 4998)
 #' }
 batch = function(
     desire_lines = NULL,
@@ -400,15 +401,31 @@ batch_read = function(file) {
   }
   # Commented debugging code to identify the failing line:
   # try({
-    res_list = lapply(res$json, function(x) {
-  #     if(exists("i_line")) {
-  #       i_line <<- i_line + 1
-  #     } else {
-  #       i_line <<- 1
-  #     }
-      # message("Line number ", i_line)
-      jsonlite::parse_json(x, simplifyVector = TRUE)
-    } )
+  browser()
+  res_original = res
+  res = res[1, ]
+
+    system.time({
+      res_list = lapply(res$json, function(x) {
+        jsonlite::parse_json(x, simplifyVector = TRUE)
+      } )
+
+      class(res_list[[1]]$marker$`@attributes`)
+
+      res_list2 = RcppSimdJson::fparse(res$json)
+
+      results = RcppSimdJson::fparse(res$json, query = "/marker", query_error_ok = TRUE, always_list = TRUE)
+      results = lapply(results, dplyr::bind_rows)
+      results = dplyr::bind_rows(results, .id = "id")
+      waldo::compare(res_list2[[1]]$`@attributes`, results)
+
+      # Process Marker
+      #names(results) <- as.character(seq_len(length(results)))
+      res_list = lapply(results, `[[`, "@attributes")
+
+    }
+
+    )
   # })
   res_df = purrr::map_dfr(res_list, .f = json2sf_cs, cols = c(
     "name",
