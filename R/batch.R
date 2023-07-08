@@ -456,10 +456,10 @@ batch_read = function(file) {
 
 wait_s = function(n) {
   if(n < 2000) {
-    w = 30 + n / 20
+    w = 30 + n / 30
   }
   if(n >= 2000) {
-    w = 30 + n / 30
+    w = 30 + n / 100
   }
   w
 }
