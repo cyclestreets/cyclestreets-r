@@ -211,10 +211,12 @@ journey = function(from,
 #' # save result from the API call to journey.json
 #' # res_json = journey(from_point, to_point, silent = FALSE, save_raw = TRUE)
 #' # jsonlite::write_json(res_json, "inst/extdata/journey.json")
+#' # f = "inst/extdata/journey.json"
 #' f = system.file(package = "cyclestreets", "extdata/journey.json")
 #' obj = jsonlite::read_json(f, simplifyVector = TRUE)
-#' rsf = json2sf_cs(obj, cols = c("distances"))
+#' rsf = json2sf_cs(obj)
 #' rsf
+#' json2sf_cs(obj, cols = c("distances"))
 #' rsf2 = json2sf_cs(obj, cols = NULL, cols_extra = NULL)
 #' json2sf_cs(obj, cols_extra = "gradient_median")
 #' json2sf_cs(obj, cols = c("name", "distances"), cols_extra = "gradient_median")
@@ -224,14 +226,16 @@ journey = function(from,
 #' json2sf_cs(obj, cols = c("time", "busynance", "elevations"))
 #' json2sf_cs(obj, cols = c("distances"), smooth_gradient = TRUE,
 #'   gradient_cutoff = 0.05, distance_cutoff = 50)
-json2sf_cs = function(obj,
-                       cols = c("distances", "elevations"),
-                       cols_extra = NULL,
-                       smooth_gradient = FALSE,
-                       distance_cutoff = 50,
-                       gradient_cutoff = 0.1,
-                       n = 3,
-                       warnNA = FALSE) {
+json2sf_cs = function(
+    obj,
+    cols = c("distances", "elevations", "gradient_smooth", "quietness", "provisionName"),
+    cols_extra = NULL,
+    smooth_gradient = FALSE,
+    distance_cutoff = 50,
+    gradient_cutoff = 0.1,
+    n = 3,
+    warnNA = FALSE
+    ) {
   # browser()
   att = obj$marker$`@attributes`
   coord_list = lapply(att$points[-1], txt2coords)
@@ -244,7 +248,6 @@ json2sf_cs = function(obj,
   # dist_list = lapply(coord_list, function(x) {
   #   geodist::geodist(data.frame(x = x[, 1], y = x[, 2]), sequential = TRUE)
   # })
-  # dist_sums = sapply(dist_list, sum)
   # route_distances = as.numeric(att$distance[-1])
 
   # cor(dist_sums, dist_list2) # 99.99%
@@ -287,6 +290,9 @@ json2sf_cs = function(obj,
   # vv$elevation_end = unlist(lapply(elev_list, tail, n = 1))
   elevation_max = unlist(lapply(elev_list, max))
   elevation_min = unlist(lapply(elev_list, min))
+  if(any(grepl(pattern = "route_distance", x = cols_all))) {
+    vv$route_distance = as.numeric(obj$marker$`@attributes`$length[1])
+  }
   if(n_segs == 1) {
     if(any(grepl(pattern = "gradient_mean", x = cols_extra))) {
       vv$gradient_mean = mean(abs(glst))

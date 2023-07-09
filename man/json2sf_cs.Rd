@@ -6,7 +6,7 @@
 \usage{
 json2sf_cs(
   obj,
-  cols = c("distances", "elevations"),
+  cols = c("distances", "elevations", "gradient_smooth", "quietness", "provisionName"),
   cols_extra = NULL,
   smooth_gradient = FALSE,
   distance_cutoff = 50,
@@ -59,10 +59,12 @@ to_point =   c(-1.54802, 53.79618)
 # save result from the API call to journey.json
 # res_json = journey(from_point, to_point, silent = FALSE, save_raw = TRUE)
 # jsonlite::write_json(res_json, "inst/extdata/journey.json")
+# f = "inst/extdata/journey.json"
 f = system.file(package = "cyclestreets", "extdata/journey.json")
 obj = jsonlite::read_json(f, simplifyVector = TRUE)
-rsf = json2sf_cs(obj, cols = c("distances"))
+rsf = json2sf_cs(obj)
 rsf
+json2sf_cs(obj, cols = c("distances"))
 rsf2 = json2sf_cs(obj, cols = NULL, cols_extra = NULL)
 json2sf_cs(obj, cols_extra = "gradient_median")
 json2sf_cs(obj, cols = c("name", "distances"), cols_extra = "gradient_median")

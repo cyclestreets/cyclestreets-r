@@ -54,6 +54,7 @@
 #' routes_wait = batch(id = routes_id, username = "robinlovelace", wait = TRUE, delete_job = FALSE)
 #' names(routes_wait)
 #' plot(routes_wait)
+#' batch(id = 3724, username = "robinlovelace", wait = TRUE, delete_job = FALSE)
 #' plot(desire_lines$geometry[4])
 #' head(routes_wait$route_number)
 #' plot(routes_wait$geometry[routes_wait$route_number == "4"], add = TRUE)
@@ -446,7 +447,7 @@ batch_read = function(file) {
     # "grammesCO2saved",
     # "calories",
     # "edition",
-    # "gradient_segment",
+    "gradient_segment",
     # "elevation_change",
     # "provisionName",
     "quietness"
@@ -461,6 +462,7 @@ batch_read = function(file) {
     res_list[[i]]
   } )
   res_df = bind_sf(res_list)
+  sf::st_crs(res_df) = "EPSG:4326"
   res_df
 }
 
