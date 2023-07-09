@@ -7,11 +7,7 @@ txt2coords2 = function(txt) {
   if(is.na(txt)){
     return(NULL)
   }
-  coords_split = stringr::str_split(txt, pattern = " |,")[[1]]
-  coords_split = matrix(as.numeric(coords_split),
-                        ncol = 2,
-                        byrow = TRUE)
-  sf::st_linestring(coords_split)
+  sf::st_linestring(txt2coords(txt))
 }
 
 # f = system.file(package = "cyclestreets", "extdata/journey.json")
