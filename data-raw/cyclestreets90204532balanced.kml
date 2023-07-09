@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://earth.google.com/kml/2.0">
+	<Folder>
+		<name>Bayswater Road to Gledhow Terrace</name>
+		<Placemark>
+			<name>Roseville Road</name>
+			<description>Roseville Road</description>
+			<LookAt>
+				<longitude>-1.5246</longitude>
+				<latitude>53.81057</latitude>
+				<range>35</range>
+				<heading>0</heading>
+				<tilt>70</tilt>
+			</LookAt>
+			<Style>
+				<LineStyle>
+					<color>7f33aa33</color>
+					<width>4</width>
+				</LineStyle>
+			</Style>
+			<LineString>
+				<coordinates>
+-1.5246,53.81057,100
+-1.52471,53.81048,100
+-1.52548,53.80983,100</coordinates>
+			</LineString>
+		</Placemark>
+		<Placemark>
+			<name>Roseville Road</name>
+			<description>Roseville Road</description>
+			<LookAt>
+				<longitude>-1.52548</longitude>
+				<latitude>53.80983</latitude>
+				<range>35</range>
+				<heading>-145</heading>
+				<tilt>70</tilt>
+			</LookAt>
+			<Style>
+				<LineStyle>
+					<color>7f33aa33</color>
+					<width>4</width>
+				</LineStyle>
+			</Style>
+			<LineString>
+				<coordinates>
+-1.52548,53.80983,100
+-1.52471,53.81048,100
+-1.5246,53.81057,100</coordinates>
+			</LineString>
+		</Placemark>
+	</Folder>
+</kml>

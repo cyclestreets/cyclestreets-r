@@ -177,6 +177,7 @@ journey = function(from,
       warnNA = warnNA
     )
   }
+  sf::st_crs(r) = "EPSG:4326"
   r
 }
 #' Convert output from CycleStreets.net into sf object
@@ -228,8 +229,8 @@ journey = function(from,
 #'   gradient_cutoff = 0.05, distance_cutoff = 50)
 json2sf_cs = function(
     obj,
-    cols = c("distances", "elevations", "gradient_smooth", "quietness", "provisionName"),
-    cols_extra = NULL,
+    cols = c("distances", "elevations"),
+    cols_extra = c("gradient_segment", "quietness"),
     smooth_gradient = FALSE,
     distance_cutoff = 50,
     gradient_cutoff = 0.1,
