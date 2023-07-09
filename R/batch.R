@@ -66,6 +66,8 @@
 #' plot(routes$geometry)
 #' plot(desire_lines$geometry, add = TRUE, col = "red")
 #' routes = batch(desire_lines, username = "robinlovelace", wait_time = 5)
+#'
+#' profvis::profvis(batch_read("test-data.csv.gz"))
 #' }
 batch = function(
     desire_lines = NULL,
@@ -415,38 +417,39 @@ batch_read = function(file) {
   res_list = pbapply::pblapply(
     res_list,
     json2sf_cs, cols = c(
-    "name",
+    # "name",
     "distances",
-    "time",
+    # "time",
     "busynance",
-    "elevations",
-    "start_longitude",
-    "start_latitude",
-    "finish_longitude",
-    "finish_latitude"
+    "elevations"
+    # ,
+    # "start_longitude",
+    # "start_latitude",
+    # "finish_longitude",
+    # "finish_latitude"
   ),
   cols_extra = c(
-    "crow_fly_distance",
-    "event",
-    "whence",
-    "speed",
-    "itinerary",
-    "plan",
-    "note",
-    "length",
-    "quietness",
-    "west",
-    "south",
-    "east",
-    "north",
-    "leaving",
-    "arriving",
-    "grammesCO2saved",
-    "calories",
-    "edition",
-    "gradient_segment",
-    "elevation_change",
-    "provisionName"
+    # "crow_fly_distance",
+    # "event",
+    # "whence",
+    # "speed",
+    # "itinerary",
+    # "plan",
+    # "note",
+    # "length",
+    # "west",
+    # "south",
+    # "east",
+    # "north",
+    # "leaving",
+    # "arriving",
+    # "grammesCO2saved",
+    # "calories",
+    # "edition",
+    # "gradient_segment",
+    # "elevation_change",
+    # "provisionName",
+    "quietness"
   ),
   smooth_gradient = TRUE,
   distance_cutoff = 50,

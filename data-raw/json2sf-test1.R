@@ -8,7 +8,7 @@ waldo::compare(obj, obj2)
 obj$marker$`@attributes`
 obj2$marker$`@attributes`
 
-rsf = cyclestreets::json2sf_cs(obj, cols = c("distances"))
+rsf = json2sf_cs(obj, cols = c("distances"))
 sf:::plot.sf(rsf)
 
 obj2$marker$`@attributes`$elevations
