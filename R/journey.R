@@ -334,7 +334,7 @@ json2sf_cs = function(obj,
   } else {
     d_all = dv
   }
-  r = sf::st_sf(d_all, geometry = rsfl, crs = 4326)
+  r = sf::st_sf(d_all, geometry = rsfl)
   if (smooth_gradient) {
     if(n_segs > 1) {
       r$gradient_smooth = smooth_with_cutoffs(
