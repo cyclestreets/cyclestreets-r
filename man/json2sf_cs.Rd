@@ -6,8 +6,8 @@
 \usage{
 json2sf_cs(
   obj,
-  cols = c("distances", "elevations", "gradient_smooth", "quietness", "provisionName"),
-  cols_extra = NULL,
+  cols = c("distances", "elevations"),
+  cols_extra = c("gradient_segment", "quietness"),
   smooth_gradient = FALSE,
   distance_cutoff = 50,
   gradient_cutoff = 0.1,
