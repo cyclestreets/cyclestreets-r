@@ -5,3 +5,4 @@
 .Renviron
 *.Rds
 *.csv
+*.gz

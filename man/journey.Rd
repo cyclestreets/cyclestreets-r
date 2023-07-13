@@ -86,19 +86,10 @@ CYCLESTREETS=1a43ed677e5e6fe9
 After setting the environment variable, as outlined above,
 you need to restart your R session before the journey function will work.
 
-A full list of variables (\code{cols}) available is represented by:
-
-\if{html}{\out{<div class="sourceCode">}}\preformatted{c("time", "busynance", "signalledJunctions", "signalledCrossings",
-"name", "walk", "elevations", "distances", "start", "finish",
-"startSpeed", "start_longitude", "start_latitude", "finish_longitude",
-"finish_latitude", "crow_fly_distance", "event", "whence", "speed",
-"itinerary", "plan", "note", "length", "quietness",
-"west", "south", "east", "north", "leaving", "arriving", "grammesCO2saved",
-"calories", "edition", "geometry")
-}\if{html}{\out{</div>}}
-
 See \href{https://www.cyclestreets.net/help/journey/howitworks/}{www.cyclestreets.net/help/journey/howitworks/}
 for details on how these are calculated.
+
+See \code{\link[=json2sf_cs]{json2sf_cs()}} for details.
 }
 \examples{
 \dontrun{

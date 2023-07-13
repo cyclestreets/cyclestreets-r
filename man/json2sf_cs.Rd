@@ -6,9 +6,8 @@
 \usage{
 json2sf_cs(
   obj,
-  cols = NULL,
-  cols_extra = c("elevation_start", "elevation_end", "gradient_segment",
-    "elevation_change", "provisionName"),
+  cols = c("distances", "elevations"),
+  cols_extra = c("gradient_segment", "quietness"),
   smooth_gradient = FALSE,
   distance_cutoff = 50,
   gradient_cutoff = 0.1,
@@ -36,7 +35,19 @@ https://github.com/Robinlovelace/cyclestreets/issues/14}
 The default is 3, meaning segments directly before, after and including the offending segment.}
 }
 \description{
-Convert output from CycleStreets.net into sf object
+Available fields from CycleStreets include:
+}
+\details{
+\if{html}{\out{<div class="sourceCode">}}\preformatted{c("start", "finish", "startBearing", "startSpeed", "start_longitude",
+  "start_latitude", "finish_longitude", "finish_latitude", "crow_fly_distance",
+  "event", "whence", "speed", "itinerary", "clientRouteId", "plan",
+  "note", "length", "time", "busynance", "quietness", "signalledJunctions",
+  "signalledCrossings", "west", "south", "east", "north", "name",
+  "walk", "leaving", "arriving", "coordinates", "elevations", "distances",
+  "grammesCO2saved", "calories", "edition", "type", "legNumber",
+  "distance", "flow", "turn", "color", "points", "provisionName"
+)
+}\if{html}{\out{</div>}}
 }
 \examples{
 from = "Leeds Rail Station"
@@ -48,12 +59,15 @@ to_point =   c(-1.54802, 53.79618)
 # save result from the API call to journey.json
 # res_json = journey(from_point, to_point, silent = FALSE, save_raw = TRUE)
 # jsonlite::write_json(res_json, "inst/extdata/journey.json")
+# f = "inst/extdata/journey.json"
 f = system.file(package = "cyclestreets", "extdata/journey.json")
 obj = jsonlite::read_json(f, simplifyVector = TRUE)
-rsf = json2sf_cs(obj, cols = c("distances"))
-names(rsf)
+rsf = json2sf_cs(obj)
 rsf
+json2sf_cs(obj, cols = c("distances"))
 rsf2 = json2sf_cs(obj, cols = NULL, cols_extra = NULL)
+json2sf_cs(obj, cols_extra = "gradient_median")
+json2sf_cs(obj, cols = c("name", "distances"), cols_extra = "gradient_median")
 names(rsf2)
 # stplanr::line2points(rsf) extract start and end points
 sf:::plot.sf(rsf)
