@@ -22,5 +22,21 @@ batch_read2 = function(file, segments = TRUE) {
   }
 
   res_df = json2sf_cs2(res$json, id = res$route_number, segments = segments)
+
+  #Character to numeric
+  nms = c("time","busynance","quietness","signalledJunctions","signalledCrossings",
+          "walk","distances","legNumber","distance","flow","startBearing",
+          "start_longitude","start_latitude","finish_longitude","finish_latitude",
+          "crow_fly_distance","speed","itinerary","length","west","south","east",
+          "north","grammesCO2saved","calories")
+  for(i in seq(1, length(nms))){
+    if(nms[i] %in% names(res_df)){
+      res_df[[nms[i]]] = as.numeric(res_df[[nms[i]]])
+    }
+  }
+
+  names(res_df)[names(res_df) == "id"] = "route_number"
+
+
   res_df
 }
