@@ -1,6 +1,6 @@
 
 txt2coords = function(txt) {
-  coords_split = stringr::str_split(txt, pattern = " |,")[[1]]
+  coords_split = stringi::stri_split_regex(txt, pattern = " |,")[[1]]
   matrix(as.numeric(coords_split), ncol = 2, byrow = TRUE)
 }
 txt2coords2 = function(txt) {

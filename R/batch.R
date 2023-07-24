@@ -372,99 +372,99 @@ batch_deletejob = function(
 #   mapview::mapview()
 
 
-batch_read = function(file) {
-  # if(grepl(pattern = ".gz", x = file)) {
-  #   file_csv = gsub(pattern = ".gz", replacement = "", x = file)
-  #   if(file.exists(file_csv)) {
-  #     message(".csv File already exists. Removing it.")
-  #     file.remove(file_csv)
-  #   }
-  #   R.utils::gunzip(file)
-  # } else {
-    # file_csv = file
-  # }
-  # res = readr::read_csv(file_csv)
-  # message("Reading in the following file:\n", file_csv)
-  message("Reading in the following file:\n", file)
-  # res = utils::read.csv(file)
-  res = readr::read_csv(file)
-  # res_dt = data.table::fread(file, qmethod = "double")
-  res$route_number = seq(nrow(res))
-  n_char = nchar(res$json)
-  n_char[is.na(n_char)] = 0
-  if(all(n_char == 0)) {
-    stop("No routes returned: does CycleStreets operate where you requested data?")
-  }
-  min_nchar = min(n_char)
-  if(min_nchar == 0) {
-    which_min_ncar = which(n_char == 0)
-    message("Removing NA routes: ", paste(which_min_ncar, collapse = " "))
-    res = res[-which_min_ncar, ]
-  }
-  # Commented debugging code to identify the failing line:
-  # try({
-  message("Reading route data")
-    res_list = pbapply::pblapply(res$json, function(x) {
-  #     if(exists("i_line")) {
-  #       i_line <<- i_line + 1
-  #     } else {
-  #       i_line <<- 1
-  #     }
-      # message("Line number ", i_line)
-      jsonlite::parse_json(x, simplifyVector = TRUE)
-    } )
-  # })
-  message("Converting json values to linestrings")
-  res_list = pbapply::pblapply(
-    res_list,
-    json2sf_cs, cols = c(
-    # "name",
-    "distances",
-    # "time",
-    "busynance",
-    "elevations"
-    # ,
-    # "start_longitude",
-    # "start_latitude",
-    # "finish_longitude",
-    # "finish_latitude"
-  ),
-  cols_extra = c(
-    # "crow_fly_distance",
-    # "event",
-    # "whence",
-    # "speed",
-    # "itinerary",
-    # "plan",
-    # "note",
-    # "length",
-    # "west",
-    # "south",
-    # "east",
-    # "north",
-    # "leaving",
-    # "arriving",
-    # "grammesCO2saved",
-    # "calories",
-    # "edition",
-    "gradient_segment",
-    # "elevation_change",
-    # "provisionName",
-    "quietness"
-  ),
-  smooth_gradient = TRUE,
-  distance_cutoff = 50,
-  gradient_cutoff = 0.1,
-  n = 3
-  )
-  res_list = lapply(seq(length(res_list)), function(i) {
-    res_list[[i]]$route_number = as.character(i)
-    res_list[[i]]
-  } )
-  res_df = bind_sf(res_list)
-  sf::st_crs(res_df) = "EPSG:4326"
-  res_df
-}
+# batch_read = function(file) {
+#   # if(grepl(pattern = ".gz", x = file)) {
+#   #   file_csv = gsub(pattern = ".gz", replacement = "", x = file)
+#   #   if(file.exists(file_csv)) {
+#   #     message(".csv File already exists. Removing it.")
+#   #     file.remove(file_csv)
+#   #   }
+#   #   R.utils::gunzip(file)
+#   # } else {
+#     # file_csv = file
+#   # }
+#   # res = readr::read_csv(file_csv)
+#   # message("Reading in the following file:\n", file_csv)
+#   message("Reading in the following file:\n", file)
+#   # res = utils::read.csv(file)
+#   res = readr::read_csv(file)
+#   # res_dt = data.table::fread(file, qmethod = "double")
+#   res$route_number = seq(nrow(res))
+#   n_char = nchar(res$json)
+#   n_char[is.na(n_char)] = 0
+#   if(all(n_char == 0)) {
+#     stop("No routes returned: does CycleStreets operate where you requested data?")
+#   }
+#   min_nchar = min(n_char)
+#   if(min_nchar == 0) {
+#     which_min_ncar = which(n_char == 0)
+#     message("Removing NA routes: ", paste(which_min_ncar, collapse = " "))
+#     res = res[-which_min_ncar, ]
+#   }
+#   # Commented debugging code to identify the failing line:
+#   # try({
+#   message("Reading route data")
+#     res_list = pbapply::pblapply(res$json, function(x) {
+#   #     if(exists("i_line")) {
+#   #       i_line <<- i_line + 1
+#   #     } else {
+#   #       i_line <<- 1
+#   #     }
+#       # message("Line number ", i_line)
+#       jsonlite::parse_json(x, simplifyVector = TRUE)
+#     } )
+#   # })
+#   message("Converting json values to linestrings")
+#   res_list = pbapply::pblapply(
+#     res_list,
+#     json2sf_cs, cols = c(
+#     # "name",
+#     "distances",
+#     # "time",
+#     "busynance",
+#     "elevations"
+#     # ,
+#     # "start_longitude",
+#     # "start_latitude",
+#     # "finish_longitude",
+#     # "finish_latitude"
+#   ),
+#   cols_extra = c(
+#     # "crow_fly_distance",
+#     # "event",
+#     # "whence",
+#     # "speed",
+#     # "itinerary",
+#     # "plan",
+#     # "note",
+#     # "length",
+#     # "west",
+#     # "south",
+#     # "east",
+#     # "north",
+#     # "leaving",
+#     # "arriving",
+#     # "grammesCO2saved",
+#     # "calories",
+#     # "edition",
+#     "gradient_segment",
+#     # "elevation_change",
+#     # "provisionName",
+#     "quietness"
+#   ),
+#   smooth_gradient = TRUE,
+#   distance_cutoff = 50,
+#   gradient_cutoff = 0.1,
+#   n = 3
+#   )
+#   res_list = lapply(seq(length(res_list)), function(i) {
+#     res_list[[i]]$route_number = as.character(i)
+#     res_list[[i]]
+#   } )
+#   res_df = bind_sf(res_list)
+#   sf::st_crs(res_df) = "EPSG:4326"
+#   res_df
+# }
 
 wait_s = function(n) {
   if(n < 2000) {

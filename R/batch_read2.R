@@ -1,11 +1,12 @@
 #' Batch read v2
 #'
-#' Replacemtn for batch_read
+#' Replaces batch_read from batch.R
 #' @param file File path to csv
 #' @param segments Logical if true returns segments else returns routes
 #' @noRd
 
-batch_read2 = function(file, segments = TRUE) {
+
+batch_read = function(file, segments = TRUE) {
   message("Reading in the following file:\n", file)
   res = readr::read_csv(file, show_col_types = FALSE)
   res$route_number = seq(nrow(res))
@@ -21,7 +22,9 @@ batch_read2 = function(file, segments = TRUE) {
     res = res[-which_min_ncar, ]
   }
 
-  res_df = json2sf_cs2(res$json, id = res$route_number, segments = segments)
+  res_df = json2sf_cs2(results_raw = res$json,
+                       id = res$route_number,
+                       segments = segments)
 
   #Character to numeric
   nms = c("time","busynance","quietness","signalledJunctions","signalledCrossings",

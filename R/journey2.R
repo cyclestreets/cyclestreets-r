@@ -254,8 +254,9 @@ json2sf_cs2 = function(results_raw, id, segments){
   if(!is.null(id)){
     names(results) = as.character(id)
   }
-  results = lapply(results, dplyr::bind_rows)
-  results = dplyr::bind_rows(results, .id = "id")
+
+  results = lapply(results, data.table::rbindlist, fill = TRUE)
+  results = data.table::rbindlist(results, idcol = "id", fill = TRUE)
 
   if(nrow(results) == 0){
     stop("No valid results returned")
@@ -273,9 +274,9 @@ json2sf_cs2 = function(results_raw, id, segments){
     results_seg$geometry = sf::st_sfc(lapply(results_seg$points, txt2coords2), crs = 4326)
 
     results_rt = results[results$type == "route",]
-    results_rt = results_rt[,names(results_rt) %in% c(route_variables,"SPECIALIDFORINTERNAL2")]
+    results_rt = results_rt[,names(results_rt) %in% c(route_variables,"SPECIALIDFORINTERNAL2"), with = FALSE]
 
-    results_seg = results_seg[,!names(results_seg) %in% route_variables]
+    results_seg = results_seg[,!names(results_seg) %in% route_variables, with = FALSE]
     results_seg = dplyr::left_join(results_seg, results_rt, by = "SPECIALIDFORINTERNAL2")
 
     results = results_seg
