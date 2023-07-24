@@ -3,3 +3,6 @@
 .RData
 .Ruserdata
 .Renviron
+*.Rds
+*.csv
+*.gz

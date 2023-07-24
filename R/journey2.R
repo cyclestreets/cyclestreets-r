@@ -112,18 +112,6 @@ build_urls = function (routerUrl,itinerarypoints, query){
   secs
 }
 
-
-txt2coords2 = function(txt) {
-  if(is.na(txt)){
-    return(NULL)
-  }
-  coords_split = stringr::str_split(txt, pattern = " |,")[[1]]
-  coords_split = matrix(as.numeric(coords_split),
-         ncol = 2,
-         byrow = TRUE)
-  sf::st_linestring(coords_split)
-}
-
 otp_clean_input = function(imp, imp_name) {
   # For single point inputs
   if (all(class(imp) == "numeric")) {
@@ -204,6 +192,7 @@ make_handle = function(x){
   curl::handle_setopt(handle, copypostfields = paste0("routeid=", x))
   return(handle)
 }
+
 
 get_values = function(v, fun) {
   sapply(v, function(x) fun(as.numeric(x)))
@@ -305,4 +294,5 @@ json2sf_cs2 = function(results_raw, id, segments){
   results$SPECIALIDFORINTERNAL2 <- NULL
   results
 }
+
 

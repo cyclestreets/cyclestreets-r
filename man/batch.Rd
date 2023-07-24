@@ -106,6 +106,10 @@ routes_id = batch(desire_lines, username = "robinlovelace", wait = FALSE)
 routes_wait = batch(id = routes_id, username = "robinlovelace", wait = TRUE, delete_job = FALSE)
 names(routes_wait)
 plot(routes_wait)
+batch(id = 3724, username = "robinlovelace", wait = TRUE, delete_job = FALSE)
+plot(desire_lines$geometry[4])
+head(routes_wait$route_number)
+plot(routes_wait$geometry[routes_wait$route_number == "4"], add = TRUE)
 # Job is deleted after this command:
 routes_attrib = batch(desire_lines, id = routes_id, username = "robinlovelace", wait = TRUE)
 names(routes_attrib)
@@ -115,5 +119,7 @@ names(routes)
 plot(routes$geometry)
 plot(desire_lines$geometry, add = TRUE, col = "red")
 routes = batch(desire_lines, username = "robinlovelace", wait_time = 5)
+
+profvis::profvis(batch_read("test-data.csv.gz"))
 }
 }

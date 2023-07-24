@@ -24,19 +24,11 @@
 #' After setting the environment variable, as outlined above,
 #' you need to restart your R session before the journey function will work.
 #'
-#' A full list of variables (`cols`) available is represented by:
-#' ```
-#' c("time", "busynance", "signalledJunctions", "signalledCrossings",
-#' "name", "walk", "elevations", "distances", "start", "finish",
-#' "startSpeed", "start_longitude", "start_latitude", "finish_longitude",
-#' "finish_latitude", "crow_fly_distance", "event", "whence", "speed",
-#' "itinerary", "plan", "note", "length", "quietness",
-#' "west", "south", "east", "north", "leaving", "arriving", "grammesCO2saved",
-#' "calories", "edition", "geometry")
-#' ```
 #'
 #' See [www.cyclestreets.net/help/journey/howitworks/](https://www.cyclestreets.net/help/journey/howitworks/)
 #' for details on how these are calculated.
+#'
+#' See [json2sf_cs()] for details.
 #'
 #' @param from Longitude/Latitude pair, e.g. `c(-1.55, 53.80)`
 #' @param to Longitude/Latitude pair, e.g. `c(-1.55, 53.80)`
@@ -122,6 +114,9 @@ journey = function(from,
                       "calories",
                       "edition",
                       "gradient_segment",
+                      # "gradient_median",
+                      # "gradient_p75",
+                      # "gradient_max",
                       "elevation_change",
                       "provisionName"
                     ),
@@ -162,7 +157,7 @@ journey = function(from,
     stop("Error: CycleStreets did not return a valid result")
   }
 
-  obj = jsonlite::fromJSON(txt, simplifyDataFrame = TRUE)
+  obj = jsonlite::fromJSON(txt, simplifyDataFrame = TRUE, bigint_as_char = FALSE)
 
   if (is.element("error", names(obj))) {
     stop(paste0("Error: ", obj$error))
@@ -182,31 +177,24 @@ journey = function(from,
       warnNA = warnNA
     )
   }
+  sf::st_crs(r) = "EPSG:4326"
   r
 }
-
-# obj = jsonlite::read_json(f, simplifyVector = TRUE)
-
-txt2coords = function(txt) {
-  # helper function to document...
-  coords_split = stringr::str_split(txt, pattern = " |,")[[1]]
-  matrix(as.numeric(coords_split),
-         ncol = 2,
-         byrow = TRUE)
-}
-# txt2coords(obj$marker$`@attributes`$points[2])
-
-# e = obj$marker$`@attributes`$elevations[1] # for whole journey
-# e1 = obj$marker$`@attributes`$elevations[2] # for 1st segment
-# txt = obj$marker$`@attributes`$elevations[2] # for 2nd segment
-
-txt2elevations = function(txt) {
-  # helper function to document...
-  coords_split = stringr::str_split(txt, pattern = ",")[[1]]
-  as.numeric(coords_split)
-}
-
 #' Convert output from CycleStreets.net into sf object
+#'
+#' Available fields from CycleStreets include:
+#'
+#' ```
+#' c("start", "finish", "startBearing", "startSpeed", "start_longitude",
+#'   "start_latitude", "finish_longitude", "finish_latitude", "crow_fly_distance",
+#'   "event", "whence", "speed", "itinerary", "clientRouteId", "plan",
+#'   "note", "length", "time", "busynance", "quietness", "signalledJunctions",
+#'   "signalledCrossings", "west", "south", "east", "north", "name",
+#'   "walk", "leaving", "arriving", "coordinates", "elevations", "distances",
+#'   "grammesCO2saved", "calories", "edition", "type", "legNumber",
+#'   "distance", "flow", "turn", "color", "points", "provisionName"
+#' )
+#' ```
 #'
 #' @param obj Object from CycleStreets.net read-in with
 #' @param cols Columns to be included in the result, a character vector or `NULL` for all available columns (see details for default)
@@ -224,165 +212,136 @@ txt2elevations = function(txt) {
 #' # save result from the API call to journey.json
 #' # res_json = journey(from_point, to_point, silent = FALSE, save_raw = TRUE)
 #' # jsonlite::write_json(res_json, "inst/extdata/journey.json")
+#' # f = "inst/extdata/journey.json"
 #' f = system.file(package = "cyclestreets", "extdata/journey.json")
 #' obj = jsonlite::read_json(f, simplifyVector = TRUE)
-#' rsf = json2sf_cs(obj, cols = c("distances"))
-#' names(rsf)
+#' rsf = json2sf_cs(obj)
 #' rsf
+#' json2sf_cs(obj, cols = c("distances"))
 #' rsf2 = json2sf_cs(obj, cols = NULL, cols_extra = NULL)
+#' json2sf_cs(obj, cols_extra = "gradient_median")
+#' json2sf_cs(obj, cols = c("name", "distances"), cols_extra = "gradient_median")
 #' names(rsf2)
 #' # stplanr::line2points(rsf) extract start and end points
 #' sf:::plot.sf(rsf)
 #' json2sf_cs(obj, cols = c("time", "busynance", "elevations"))
 #' json2sf_cs(obj, cols = c("distances"), smooth_gradient = TRUE,
 #'   gradient_cutoff = 0.05, distance_cutoff = 50)
-json2sf_cs = function(obj,
-                       cols = NULL,
-                       cols_extra = c(
-                         # "gradient_mean",
-                         # "gradient_median",
-                         # "gradient_p75",
-                         # "gradient_max",
-                         "elevation_start",
-                         "elevation_end",
-                         "gradient_segment",
-                         "elevation_change",
-                         "provisionName"
-                       ),
-                       smooth_gradient = FALSE,
-                       distance_cutoff = 50,
-                       gradient_cutoff = 0.1,
-                       n = 3,
-                       warnNA = FALSE) {
-
-  coord_list = lapply(obj$marker$`@attributes`$points[-1], txt2coords)
-  elev_list = lapply(obj$marker$`@attributes`$elevations[-1], txt2elevations)
-  elev_diff_list = lapply(elev_list, function(x)
-    diff(stats::lag(x, 1)))
-  # dist_list1 = geodist::geodist(rbind(coord_list[[1]][1, ], coord_list[[1]][2, ]), sequential = TRUE)
-  # dist_list2 = geodist::geodist(
-  #   data.frame(x = coord_list[[1]][, 1], y = coord_list[[1]][, 2]),
-  #   sequential = TRUE
-  #   )
-  dist_list = lapply(coord_list, function(x) {
-    geodist::geodist(data.frame(x = x[, 1], y = x[, 2]),
-                     sequential = TRUE)
+json2sf_cs = function(
+    obj,
+    cols = c("distances", "elevations"),
+    cols_extra = c("gradient_segment", "quietness"),
+    smooth_gradient = FALSE,
+    distance_cutoff = 50,
+    gradient_cutoff = 0.1,
+    n = 3,
+    warnNA = FALSE
+    ) {
+  # browser()
+  att = obj$marker$`@attributes`
+  coord_list = lapply(att$points[-1], txt2coords)
+  elev_list = lapply(att$elevations[-1], txt2elevations)
+  elev_diff_list = lapply(elev_list, function(x) diff(stats::lag(x, 1)))
+  dist_list = lapply(att$distances[-1], function(x){
+    distances = txt2elevations(x)
+    distances[-1]
   })
-  # gradient_list = purrr::map2(elev_diff_list, dist_list, ~.x / .y)
-  gradient_list = mapply(function(x, y)
-    x / y, elev_diff_list, dist_list)
-  rsfl = lapply(coord_list, sf::st_linestring) %>%
-    sf::st_sfc()
+  # dist_list = lapply(coord_list, function(x) {
+  #   geodist::geodist(data.frame(x = x[, 1], y = x[, 2]), sequential = TRUE)
+  # })
+  # route_distances = as.numeric(att$distance[-1])
 
-  # variables - constant
+  # cor(dist_sums, dist_list2) # 99.99%
+
+  glst = mapply(function(x, y) x / y, elev_diff_list, dist_list)
+  rsfl = do.call(c, lapply(coord_list, sfheaders::sfc_linestring))
   n_segs = length(rsfl)
-  # cols_lengths = sapply(obj$marker$`@attributes`, length)
-  # cyclestreets_column_names = names(cols_lengths)
-  # usethis::use_data(cyclestreets_column_names)
-  cols_na = sapply(obj$marker$`@attributes`, function(x)
-    sum(is.na(x)))
-  sel_constant = cols_na == n_segs &
-    names(cols_na) != "coordinates"
-  cols_constant = names(cols_na)[sel_constant]
-  vals_constant = lapply(cols_constant, function(x)
-    obj$marker$`@attributes`[[x]][1])
-  names(vals_constant) = cols_constant
-  suppressWarnings({
-    vals_numeric = lapply(vals_constant, as.numeric)
-  })
-  sel_numeric = !is.na(vals_numeric)
-  vals_constant[sel_numeric] = vals_numeric[sel_numeric]
-  d_constant = data.frame(vals_constant)[rep(1, n_segs),]
-
-  # useful cols: busynance, name, elevations, distances, turn,provisionName
-
-  sel_variable = cols_na == 0 &
-    !grepl("startBearing|type", names(cols_na))
-  cols_variable = names(cols_na)[sel_variable]
-  vals_variable = lapply(cols_variable, function(x)
-    obj$marker$`@attributes`[[x]][-1])
-  names(vals_variable) = cols_variable
-  # vals_variable # take a look - which ones to process?
-  vals_variable$elevation_mean = stringr::str_split(vals_variable$elevations, pattern = ",") %>%
-    lapply(as.numeric) %>%
-    lapply(mean) %>%
-    unlist()
-  vals_variable$elevation_start = stringr::str_split(vals_variable$elevations, pattern = ",") %>%
-    lapply(as.numeric) %>%
-    lapply(utils::head, 1) %>%
-    unlist()
-  vals_variable$elevation_end = stringr::str_split(vals_variable$elevations, pattern = ",") %>%
-    lapply(as.numeric) %>%
-    lapply(utils::tail, 1) %>%
-    unlist()
-  vals_variable$elevation_max = stringr::str_split(vals_variable$elevations, pattern = ",") %>%
-    lapply(as.numeric) %>%
-    lapply(max) %>%
-    unlist()
-  vals_variable$elevation_min = stringr::str_split(vals_variable$elevations, pattern = ",") %>%
-    lapply(as.numeric) %>%
-    lapply(min) %>%
-    unlist()
-
-  if(n_segs == 1) {
-    vals_variable$gradient_mean = mean(abs(gradient_list))
-    vals_variable$gradient_median = stats::median(abs(gradient_list))
-    vals_variable$gradient_p75 = stats::quantile(abs(gradient_list), probs = 0.75)
-    vals_variable$gradient_max = max(abs(gradient_list))
+  # att[cols]
+  # Remove variables not needed:
+  cols_all = c(cols, cols_extra)
+  att = att[names(att) %in% c(cols, cols_extra)]
+  cols_na = sapply(att, function(x) sum(is.na(x)))
+  sel_constant = cols_na == n_segs & names(cols_na) != "coordinates"
+  if(any(sel_constant)) {
+    cols_constant = names(cols_na)[sel_constant]
+    vals_constant = lapply(cols_constant, function(x) att[[x]][1])
+    names(vals_constant) = cols_constant
+    suppressWarnings({
+      vals_numeric = lapply(vals_constant, as.numeric)
+    })
+    sel_numeric = !is.na(vals_numeric)
+    vals_constant[sel_numeric] = vals_numeric[sel_numeric]
+    # Potential bottleneck:
+    d_constant = data.frame(vals_constant)[rep(1, n_segs),]
   } else {
-    vals_variable$gradient_mean = lapply(gradient_list, function(x)
-      mean(abs(x))) %>%
-      unlist()
-    vals_variable$gradient_median = lapply(gradient_list,
-                                           function(x)
-                                             stats::median(abs(x))) %>%
-      unlist()
-    vals_variable$gradient_p75 = lapply(gradient_list,
-                                        function(x)
-                                          stats::quantile(abs(x), probs = 0.75)) %>%
-      unlist()
-    vals_variable$gradient_max = lapply(gradient_list,
-                                        function(x)
-                                          max(abs(x))) %>%
-      unlist()
+    d_constant = NULL
   }
-  vals_variable$distances = stringr::str_split(vals_variable$distances, pattern = ",") %>%
-    lapply(as.numeric) %>%
-    lapply(sum) %>%
-    unlist()
-
+  # useful cols: busynance, name, elevations, distances, turn,provisionName
+  sel_variable = cols_na == 0 & !grepl("startB|type|dist|elev", names(cols_na))
+  cols_variable = names(cols_na)[sel_variable]
+  # Empty list if no matching cols:
+  vv = lapply(cols_variable, function(x) att[[x]][-1])
+  names(vv) = cols_variable
+  # TODO: explore conditional calculations here:
+  # if(any(grepl(pattern = "elev", x = cols_extra))) {
+  #
+  # }
+  # vv$elevation_mean = unlist(lapply(elev_list, mean))
+  # vv$elevation_start = unlist(lapply(elev_list, head, n = 1))
+  # vv$elevation_end = unlist(lapply(elev_list, tail, n = 1))
+  elevation_max = unlist(lapply(elev_list, max))
+  elevation_min = unlist(lapply(elev_list, min))
+  if(any(grepl(pattern = "route_distance", x = cols_all))) {
+    vv$route_distance = as.numeric(obj$marker$`@attributes`$length[1])
+  }
+  if(n_segs == 1) {
+    if(any(grepl(pattern = "gradient_mean", x = cols_extra))) {
+      vv$gradient_mean = mean(abs(glst))
+    }
+    if(any(grepl(pattern = "gradient_median", x = cols_extra))) {
+      vv$gradient_median = stats::median(abs(glst))
+    }
+    if(any(grepl(pattern = "gradient_p75", x = cols_extra))) {
+      vv$gradient_p75 = stats::quantile(abs(glst), probs = 0.75)
+    }
+    if(any(grepl(pattern = "gradient_mean", x = cols_extra))) {
+      vv$gradient_mean = max(abs(glst))
+    }
+  } else {
+    if(any(grepl(pattern = "gradient_mean", x = cols_extra))) {
+      vv$gradient_mean = sapply(glst, function(x) mean(abs(x)))
+    }
+    if(any(grepl(pattern = "gradient_median", x = cols_extra))) {
+      vv$gradient_median = sapply(glst, function(x) stats::median(abs(x)))
+    }
+    if(any(grepl(pattern = "gradient_p75", x = cols_extra))) {
+      vv$gradient_p75 = sapply(glst, function(x) stats::quantile(abs(x), probs = 0.75))
+    }
+    if(any(grepl(pattern = "gradient_max", x = cols_extra))) {
+      vv$gradient_max = sapply(glst, function(x) max(abs(x)))
+    }
+  }
+  vv$distances = sapply(dist_list, sum)
   suppressWarnings({
-    vals_vnumeric = lapply(vals_variable, as.numeric)
+    vals_vnumeric = lapply(vv, as.numeric)
   })
-  vals_vnumeric$name = vals_variable$name
-
-  d_variable = data.frame(vals_vnumeric)
-
+  # Add segment name if available:
+  vals_vnumeric$name = vv$name
+  dv = data.frame(vals_vnumeric)
   # manually add records
-  d_variable$gradient_segment = (vals_variable$elevation_max -
-                                   vals_variable$elevation_min) / vals_variable$distances
-  d_variable$elevation_change = (vals_variable$elevation_max -
-                                   vals_variable$elevation_min)
-
-  d_variable$provisionName = obj$marker$`@attributes`$provisionName[-1]
+  dv$gradient_segment = (elevation_max - elevation_min) / vv$distances
+  dv$elevation_change = (elevation_max - elevation_min)
+  dv$provisionName = att$provisionName[-1]
   if (!is.null(cols_extra)) {
-    cols_extra_variable = c(cols, cols_extra)[c(cols, cols_extra) %in%
-                                                names(d_variable)]
-    d_variable = d_variable[cols_extra_variable]
+    cols_extra_variable = c(cols, cols_extra)[c(cols, cols_extra) %in% names(dv)]
+    dv = dv[cols_extra_variable]
   }
-  d_all = cbind(d_variable, d_constant)
-
-  if (!is.null(cols)) {
-    # names(d_all)[! names(d_all) %in% c(cols, cols_extra)]
-    # c(cols, cols_extra)[! c(cols, cols_extra) %in% names(d_all)]
-    d_all = d_all[c(cols, cols_extra)]
+  if(is(d_constant, "data.frame")) {
+    d_all = cbind(dv, d_constant)
+  } else {
+    d_all = dv
   }
-
-  # todo: create more segment-level statistics (vectors) +
-  # add them to the data frame (d) below
-
-  r = sf::st_sf(d_all, geometry = rsfl, crs = 4326)
-
+  r = sf::st_sf(d_all, geometry = rsfl)
   if (smooth_gradient) {
     if(n_segs > 1) {
       r$gradient_smooth = smooth_with_cutoffs(
@@ -398,9 +357,7 @@ json2sf_cs = function(obj,
       r$gradient_smooth = r$gradient_segment
     }
   }
-
   return(r)
-
 }
 
 #' Identify and smooth-out anomalous gradient values
@@ -455,12 +412,3 @@ smooth_with_cutoffs = function(gradient_segment,
   gradient_segment
 }
 
-# x = 1:2
-# route_rolling_average(x)
-route_rolling_average = function(x, n = 3) {
-  if(length(x) >= n) {
-    as.numeric(stats::filter(x, rep(1 / n, n), sides = 2))
-  } else {
-    x
-  }
-}

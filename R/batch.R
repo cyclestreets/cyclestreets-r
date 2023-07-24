@@ -54,6 +54,10 @@
 #' routes_wait = batch(id = routes_id, username = "robinlovelace", wait = TRUE, delete_job = FALSE)
 #' names(routes_wait)
 #' plot(routes_wait)
+#' batch(id = 3724, username = "robinlovelace", wait = TRUE, delete_job = FALSE)
+#' plot(desire_lines$geometry[4])
+#' head(routes_wait$route_number)
+#' plot(routes_wait$geometry[routes_wait$route_number == "4"], add = TRUE)
 #' # Job is deleted after this command:
 #' routes_attrib = batch(desire_lines, id = routes_id, username = "robinlovelace", wait = TRUE)
 #' names(routes_attrib)
@@ -63,6 +67,8 @@
 #' plot(routes$geometry)
 #' plot(desire_lines$geometry, add = TRUE, col = "red")
 #' routes = batch(desire_lines, username = "robinlovelace", wait_time = 5)
+#'
+#' profvis::profvis(batch_read("test-data.csv.gz"))
 #' }
 batch = function(
     desire_lines = NULL,
@@ -193,14 +199,16 @@ get_routes = function(url, desire_lines = NULL, filename, directory) {
   if(is.null(desire_lines)) {
     return(routes)
   }
+  # If there are desire lines:
+  desire_lines$route_number = as.character(seq(nrow(desire_lines)))
+  desire_lines = sf::st_drop_geometry(desire_lines)
   n_routes_removed = nrow(desire_lines) - length(routes_id_names)
-  desire_lines = desire_lines[routes_id_names, ]
   message(n_routes_removed, " routes removed")
-  df = sf::st_drop_geometry(routes)
-  inds = rep(seq(nrow(desire_lines)), times = as.numeric(routes_id_table))
-  df_routes_expanded = sf::st_drop_geometry(desire_lines)[inds, ]
-  df = cbind(df_routes_expanded, df[-1])
-  routes_updated = sf::st_sf(df, geometry = routes$geometry)
+  routes_updated = dplyr::left_join(
+    routes,
+    desire_lines,
+    by = dplyr::join_by(route_number == route_number)
+  )
   routes_updated
 }
 
@@ -313,7 +321,7 @@ batch_jobdata = function(
   }
   if(!is.null(res_json$ready)) {
     if(res_json$ready) {
-      message("Congrats, you data is ready")
+      message("Congrats, your data is ready")
       res_joburls = res_json$files
       return(res_joburls)
     } else {
@@ -395,7 +403,8 @@ batch_read = function(file) {
   }
   # Commented debugging code to identify the failing line:
   # try({
-    res_list = lapply(res$json, function(x) {
+  message("Reading route data")
+    res_list = pbapply::pblapply(res$json, function(x) {
   #     if(exists("i_line")) {
   #       i_line <<- i_line + 1
   #     } else {
@@ -405,56 +414,73 @@ batch_read = function(file) {
       jsonlite::parse_json(x, simplifyVector = TRUE)
     } )
   # })
-  res_df = purrr::map_dfr(res_list, .f = json2sf_cs, cols = c(
-    "name",
+  message("Converting json values to linestrings")
+  res_list = pbapply::pblapply(
+    res_list,
+    json2sf_cs, cols = c(
+    # "name",
     "distances",
-    "time",
+    # "time",
     "busynance",
-    "elevations",
-    "start_longitude",
-    "start_latitude",
-    "finish_longitude",
-    "finish_latitude"
+    "elevations"
+    # ,
+    # "start_longitude",
+    # "start_latitude",
+    # "finish_longitude",
+    # "finish_latitude"
   ),
   cols_extra = c(
-    "crow_fly_distance",
-    "event",
-    "whence",
-    "speed",
-    "itinerary",
-    "plan",
-    "note",
-    "length",
-    "quietness",
-    "west",
-    "south",
-    "east",
-    "north",
-    "leaving",
-    "arriving",
-    "grammesCO2saved",
-    "calories",
-    "edition",
+    # "crow_fly_distance",
+    # "event",
+    # "whence",
+    # "speed",
+    # "itinerary",
+    # "plan",
+    # "note",
+    # "length",
+    # "west",
+    # "south",
+    # "east",
+    # "north",
+    # "leaving",
+    # "arriving",
+    # "grammesCO2saved",
+    # "calories",
+    # "edition",
     "gradient_segment",
-    "elevation_change",
-    "provisionName"
+    # "elevation_change",
+    # "provisionName",
+    "quietness"
   ),
   smooth_gradient = TRUE,
   distance_cutoff = 50,
   gradient_cutoff = 0.1,
-  n = 3,
-  .id = "route_number"
+  n = 3
   )
-  res_df$id = NULL
+  res_list = lapply(seq(length(res_list)), function(i) {
+    res_list[[i]]$route_number = as.character(i)
+    res_list[[i]]
+  } )
+  res_df = bind_sf(res_list)
+  sf::st_crs(res_df) = "EPSG:4326"
   res_df
 }
 
 wait_s = function(n) {
   if(n < 2000) {
-    w = 30 + n / 20
+    w = 10 + n / 100
   }
   if(n >= 2000) {
-    w = 30 + n / 30
+    w = 30 + n / 1000
   }
   w
+}
+
+bind_sf = function(x) {
+  if (length(x) == 0) stop("Empty list")
+  geom_name = attr(x[[1]], "sf_column")
+  x = data.table::rbindlist(x, use.names = FALSE)
+  # x = collapse::unlist2d(x, idcols = FALSE, recursive = FALSE)
+  x[[geom_name]] = st_sfc(x[[geom_name]], recompute_bbox = TRUE)
+  x = st_as_sf(x)
 }
