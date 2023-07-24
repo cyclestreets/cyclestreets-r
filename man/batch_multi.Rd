@@ -20,6 +20,10 @@ batch_multi(
 
 \item{nrow_batch}{How many rows per batch?}
 
+\item{temp_folder}{path to folder}
+
+\item{batch_ids}{NULL?}
+
 \item{...}{Arguments passed to batch}
 }
 \value{

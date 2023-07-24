@@ -7,7 +7,8 @@ txt2coords2 = function(txt) {
   if(is.na(txt)){
     return(NULL)
   }
-  sf::st_linestring(txt2coords(txt))
+  #sf::st_linestring(txt2coords(txt))
+  sfheaders::sfg_linestring(txt2coords(txt))
 }
 
 # f = system.file(package = "cyclestreets", "extdata/journey.json")

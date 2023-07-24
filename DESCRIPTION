@@ -33,16 +33,15 @@ Imports:
     curl,
     dplyr,
     data.table,
-    geodist,
     geojsonsf,
     httr,
     jsonlite,
     magrittr,
     progressr,
-    purrr,
     RcppSimdJson,
     readr,
     sf,
+    sfheaders,
     stringr,
     stringi
 Suggests: 
