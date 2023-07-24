@@ -39,7 +39,7 @@
 #' @param reporterrors Boolean value (TRUE/FALSE) indicating if cyclestreets (TRUE by default).
 #' should report errors (FALSE by default).
 #' @param segments Logical, if true route segments returned otherwise whole routes
-#' @seealso json2sf_cs
+#' @seealso json2sf_cs2
 #' @export
 #' @examples
 #' \dontrun{
@@ -90,9 +90,6 @@ journey2 = function(fromPlace = NA,
   )
 
   urls = build_urls(routerUrl, itinerarypoints, query)
-  # if(any(duplicated(urls))){
-  #   stop("You are sending duplicated requests")
-  # }
 
   progressr::handlers("cli")
   results_raw = progressr::with_progress(otp_async(urls, host_con))
@@ -202,48 +199,6 @@ otp_async <- function(urls, ncores){
   return(unlist(out, use.names = FALSE))
 }
 
-
-
-
-# otp_async = function(urls, host_con, id){
-#
-#   # Success Function
-#   otp_success = function(res){
-#     p()
-#     data <<- c(data, list(rawToChar(res$content)))
-#     urls2 <<- c(urls2, res$url)
-#   }
-#   # Fail Function
-#   otp_failure = function(msg){
-#     p()
-#     cat("Error: ", msg, "\n")
-#     urls2 <<- c(urls2, msg$url)
-#   }
-#
-#   t1 = Sys.time()
-#
-#   pool = curl::new_pool(host_con = host_con)
-#   data = list()
-#   urls2 = list()
-#
-#   for(i in seq_len(length(urls))){
-#     h = make_handle(i)
-#     curl::curl_fetch_multi(urls[i],
-#                            otp_success,
-#                            otp_failure ,
-#                            pool = pool,
-#                            handle = h)
-#   }
-#   message(Sys.time()," sending ",length(urls)," routes requests using ",host_con," threads")
-#   p = progressr::progressor(length(urls))
-#   out = curl::multi_run(timeout = Inf, pool = pool)
-#   urls2 = unlist(urls2)
-#   data = data[match(urls, urls2)]
-#   t2 = Sys.time()
-#   message("Done in ",round(difftime(t2,t1, units = "mins"),1)," mins")
-#   return(unlist(data, use.names = FALSE))
-# }
-
 make_handle = function(x){
   handle = curl::new_handle()
   curl::handle_setopt(handle, copypostfields = paste0("routeid=", x))
@@ -306,7 +261,6 @@ json2sf_cs2 = function(results_raw, id, segments){
   }
 
   # Process Marker
-  #names(results) <- as.character(seq_len(length(results)))
   results = lapply(results, `[[`, "@attributes")
   if(!is.null(id)){
     names(results) = as.character(id)
