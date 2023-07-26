@@ -32,17 +32,18 @@ Imports:
     checkmate,
     curl,
     dplyr,
-    geodist,
+    data.table,
     geojsonsf,
     httr,
     jsonlite,
     magrittr,
     progressr,
-    purrr,
     RcppSimdJson,
     readr,
     sf,
-    stringr
+    sfheaders,
+    stringr,
+    stringi
 Suggests: 
     covr,
     od,

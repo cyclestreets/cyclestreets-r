@@ -39,7 +39,7 @@
 #' @param reporterrors Boolean value (TRUE/FALSE) indicating if cyclestreets (TRUE by default).
 #' should report errors (FALSE by default).
 #' @param segments Logical, if true route segments returned otherwise whole routes
-#' @seealso json2sf_cs
+#' @seealso json2sf_cs2
 #' @export
 #' @examples
 #' \dontrun{
@@ -90,60 +90,16 @@ journey2 = function(fromPlace = NA,
   )
 
   urls = build_urls(routerUrl, itinerarypoints, query)
-  if(any(duplicated(urls))){
-    stop("You are sending duplicated requests")
-  }
 
   progressr::handlers("cli")
-  results = progressr::with_progress(otp_async(urls, host_con))
+  results_raw = progressr::with_progress(otp_async(urls, host_con))
 
-  if(length(results) == 0){
+  if(length(results_raw) == 0){
     stop("No results returned, check your connection")
   }
 
   message(Sys.time()," processing results")
-  results = RcppSimdJson::fparse(results, query = "/marker", query_error_ok = TRUE, always_list = TRUE)
-
-  # Process Marker
-  #names(results) <- as.character(seq_len(length(results)))
-  results = lapply(results, `[[`, "@attributes")
-  if(!is.null(id)){
-    names(results) = as.character(id)
-  }
-  results = lapply(results, dplyr::bind_rows)
-  results = dplyr::bind_rows(results, .id = "id")
-
-  route_variables = c("start","finish","start_longitude","start_latitude","finish_longitude","finish_latitude",
-                       "crow_fly_distance","event","whence","speed","itinerary","plan",
-                       "note","length","west","south","east","north","leaving","arriving",
-                       "grammesCO2saved","calories","edition")
-
-  if(segments){
-    results$SPECIALIDFORINTERNAL2 = cumsum(!is.na(results$start))
-
-    results_seg = results[results$type == "segment",]
-    results_seg$geometry = sf::st_sfc(lapply(results_seg$points, txt2coords2), crs = 4326)
-
-    results_rt = results[results$type == "route",]
-    results_rt = results_rt[,names(results_rt) %in% c(route_variables,"SPECIALIDFORINTERNAL2")]
-
-    results_seg = results_seg[,!names(results_seg) %in% route_variables]
-    results_seg = dplyr::left_join(results_seg, results_rt, by = "SPECIALIDFORINTERNAL2")
-
-    results = results_seg
-
-  } else {
-    results = results[results$type == "route",]
-    results$geometry = sf::st_sfc(lapply(results$coordinates, txt2coords2), crs = 4326)
-  }
-
-  results$points = NULL
-  results$coordinates = NULL
-  results = sf::st_as_sf(results)
-
-  # message("results may not be in the order they were provided")
-  results = add_columns(results)
-  results
+  json2sf_cs2(results_raw, id = id, segments = segments)
 
 }
 
@@ -202,43 +158,33 @@ otp_clean_input = function(imp, imp_name) {
   ))
 }
 
-otp_async = function(urls, host_con, id){
+otp_async <- function(urls, ncores){
 
-  # Success Function
-  otp_success = function(res){
-    p()
-    data <<- c(data, list(rawToChar(res$content)))
-    urls2 <<- c(urls2, res$url)
-  }
-  # Fail Function
-  otp_failure = function(msg){
-    p()
-    cat("Error: ", msg, "\n")
-    urls2 <<- c(urls2, msg$url)
-  }
-
-  t1 = Sys.time()
-
-  pool = curl::new_pool(host_con = host_con)
-  data = list()
-  urls2 = list()
-
-  for(i in seq_len(length(urls))){
-    h = make_handle(i)
+  t1 <- Sys.time()
+  p <- progressr::progressor(length(urls))
+  out <- vector('list', length(urls))
+  pool <- curl::new_pool(host_con = ncores)
+  lapply( seq_along(urls), function(i){
+    h <- curl::new_handle()
+    success <- function(res){
+      p()
+      out[[i]] <<- rawToChar(res$content)
+    }
+    failure <- function(res){
+      p()
+      cat("Error: ", res, "\n")
+      out[[i]] <<- paste0("Error: ", res)
+    }
     curl::curl_fetch_multi(urls[i],
-                           otp_success,
-                           otp_failure ,
+                           done = success,
+                           fail = failure,
                            pool = pool,
                            handle = h)
-  }
-  message(Sys.time()," sending ",length(urls)," routes requests using ",host_con," threads")
-  p = progressr::progressor(length(urls))
-  out = curl::multi_run(timeout = Inf, pool = pool)
-  urls2 = unlist(urls2)
-  data = data[match(urls, urls2)]
-  t2 = Sys.time()
+  })
+  curl::multi_run(timeout = Inf, pool = pool)
+  t2 <- Sys.time()
   message("Done in ",round(difftime(t2,t1, units = "mins"),1)," mins")
-  return(unlist(data, use.names = FALSE))
+  return(unlist(out, use.names = FALSE))
 }
 
 make_handle = function(x){
@@ -246,3 +192,108 @@ make_handle = function(x){
   curl::handle_setopt(handle, copypostfields = paste0("routeid=", x))
   return(handle)
 }
+
+
+get_values = function(v, fun) {
+  sapply(v, function(x) fun(as.numeric(x)))
+}
+
+extract_values = function(x) stringr::str_split(x, pattern = ",")
+get_mean = function(v) get_values(v, fun = mean)
+get_sum = function(v) get_values(v, fun = sum)
+get_min = function(v) get_values(v, fun = min)
+get_max = function(v) get_values(v, fun = max)
+
+# Aim: add these columns
+# [17] "gradient_segment"        "elevation_change"        "gradient_smooth"
+# Tests:
+# r1 = sf::read_sf("data-raw/r_1.geojson")
+# add_columns(r1)
+
+add_columns = function(r) {
+
+  elevations_list = extract_values(r$elevations)
+
+  elevation_min = get_min(elevations_list)
+  elevation_max = get_max(elevations_list)
+  distances_list = extract_values(r$distances)
+  # # Should be this for clearer name:
+  # r$segment_length = get_sum(distances_list)
+  # But for compatibility with original journey() we'll go with this:
+  r$distances = get_sum(distances_list)
+  elevation_change = elevation_max - elevation_min
+  # Order for compatibility with journey:
+  r$gradient_segment = elevation_change / r$distances
+  r$elevation_change = elevation_max - elevation_min
+  r$gradient_smooth = cyclestreets::smooth_with_cutoffs(
+    r$gradient_segment,
+    r$elevation_change,
+    r$distances,
+    distance_cutoff = 50,
+    gradient_cutoff = 0.1,
+    n = 3,
+  )
+  r
+}
+
+json2sf_cs2 = function(results_raw, id, segments){
+  results = RcppSimdJson::fparse(results_raw, query = "/marker", query_error_ok = TRUE, always_list = TRUE)
+  results_error = RcppSimdJson::fparse(results_raw, query = "/error", query_error_ok = TRUE, always_list = TRUE)
+  results_error = unlist(results_error, use.names = FALSE)
+  if(length(results_error) > 0){
+    message(length(results_error)," routes returned errors. Unique error messages are:\n")
+    results_error = as.data.frame(table(results_error))
+    results_error = results_error[order(results_error$Freq, decreasing = TRUE),]
+    for(msgs in seq_len(nrow(results_error))){
+      message(results_error$Freq[msgs],'x messages: "',results_error$results_error[msgs],'"\n')
+    }
+  }
+
+  # Process Marker
+  results = lapply(results, `[[`, "@attributes")
+  if(!is.null(id)){
+    names(results) = as.character(id)
+  }
+
+  results = lapply(results, data.table::rbindlist, fill = TRUE)
+  results = data.table::rbindlist(results, idcol = "id", fill = TRUE)
+
+  if(nrow(results) == 0){
+    stop("No valid results returned")
+  }
+
+  route_variables = c("start","finish","start_longitude","start_latitude","finish_longitude","finish_latitude",
+                      "crow_fly_distance","event","whence","speed","itinerary","plan",
+                      "note","length","west","south","east","north","leaving","arriving",
+                      "grammesCO2saved","calories","edition")
+
+  if(segments){
+    results$SPECIALIDFORINTERNAL2 = cumsum(!is.na(results$start))
+
+    results_seg = results[results$type == "segment",]
+    results_seg$geometry = sf::st_sfc(lapply(results_seg$points, txt2coords2), crs = 4326)
+
+    results_rt = results[results$type == "route",]
+    results_rt = results_rt[,names(results_rt) %in% c(route_variables,"SPECIALIDFORINTERNAL2"), with = FALSE]
+
+    results_seg = results_seg[,!names(results_seg) %in% route_variables, with = FALSE]
+    results_seg = dplyr::left_join(results_seg, results_rt, by = "SPECIALIDFORINTERNAL2")
+
+    results = results_seg
+
+  } else {
+    results = results[results$type == "route",]
+    results$geometry = sf::st_sfc(lapply(results$coordinates, txt2coords2), crs = 4326)
+  }
+
+  results$points = NULL
+  results$coordinates = NULL
+  results = sf::st_as_sf(results)
+
+  # message("results may not be in the order they were provided")
+  results = add_columns(results)
+  results$SPECIALIDFORINTERNAL2 <- NULL
+  results
+}
+
+

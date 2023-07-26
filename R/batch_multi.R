@@ -3,6 +3,8 @@
 #' @param desire_lines Input desire lines
 #' @param plans Plans, e.g. fastest
 #' @param nrow_batch How many rows per batch?
+#' @param temp_folder path to folder
+#' @param batch_ids NULL?
 #' @param ... Arguments passed to batch
 #'
 #' @return
