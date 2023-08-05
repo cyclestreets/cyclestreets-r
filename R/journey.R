@@ -231,11 +231,15 @@ journey = function(from,
 #' to_point =   c(-8.80565, 52.51329)
 #' # save result from the API call to journey.json
 #' # res_json = journey(from_point, to_point, silent = FALSE, save_raw = TRUE)
-#' # jsonlite::write_json(res_json, "inst/extdata/journey.json")
-#' # f = "inst/extdata/journey.json"
-#' f = system.file(package = "cyclestreets", "extdata/journey.json")
+#' # jsonlite::write_json(res_json, "inst/extdata/journey_short.json")
+#' # f = "inst/extdata/journey_short.json"
+#' f = system.file(package = "cyclestreets", "extdata/journey_short.json")
 #' obj = jsonlite::read_json(f, simplifyVector = TRUE)
-#' rsf = json2sf_cs(obj)
+#'
+#' rsf = json2sf_cs(obj, cols = c("name", "distances", "elevations"), cols_extra = "provisionName")
+#' # Inclusion of "start_longitude" leads to the additional ProvisionName1 colum:
+#' rsf = json2sf_cs(obj, cols = c("name", "distances", "start_longitude"), cols_extra = "provisionName")
+#' names(rsf)
 json2sf_cs = function(
     obj,
     cols = c("distances", "elevations"),
@@ -270,7 +274,7 @@ json2sf_cs = function(
   cols_all = c(cols, cols_extra)
   att = att[names(att) %in% c(cols, cols_extra)]
   cols_na = sapply(att, function(x) sum(is.na(x)))
-  sel_constant = cols_na == n_segs & names(cols_na) != "coordinates"
+  sel_constant = cols_na == n_segs & !grepl("coordinates|provis", names(cols_na))
   if(any(sel_constant)) {
     cols_constant = names(cols_na)[sel_constant]
     vals_constant = lapply(cols_constant, function(x) att[[x]][1])
