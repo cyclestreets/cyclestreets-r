@@ -227,6 +227,15 @@ journey = function(from,
 #' json2sf_cs(obj, cols = c("time", "busynance", "elevations"))
 #' json2sf_cs(obj, cols = c("distances"), smooth_gradient = TRUE,
 #'   gradient_cutoff = 0.05, distance_cutoff = 50)
+#' from_point = c(-8.80639, 52.50692)
+#' to_point =   c(-8.80565, 52.51329)
+#' # save result from the API call to journey.json
+#' # res_json = journey(from_point, to_point, silent = FALSE, save_raw = TRUE)
+#' # jsonlite::write_json(res_json, "inst/extdata/journey.json")
+#' # f = "inst/extdata/journey.json"
+#' f = system.file(package = "cyclestreets", "extdata/journey.json")
+#' obj = jsonlite::read_json(f, simplifyVector = TRUE)
+#' rsf = json2sf_cs(obj)
 json2sf_cs = function(
     obj,
     cols = c("distances", "elevations"),
