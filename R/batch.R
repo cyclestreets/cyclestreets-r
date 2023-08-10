@@ -161,7 +161,7 @@ batch = function(
     n_tries = 0
     while(is.null(res_joburls)) {
       n_tries = n_tries + 1
-      message("Try ", n_tries, " at ", Sys.time())
+      # message("Try ", n_tries, " at ", Sys.time())
       sys_time_taken = round(difftime(time1 = Sys.time(), time2 = sys_time, units = "secs") / 60)
       if(!silent) {
         message(sys_time_taken, " minutes taken, waiting another 10 s")
