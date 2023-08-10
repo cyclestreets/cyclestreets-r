@@ -158,7 +158,10 @@ batch = function(
       return(id)
     }
     message("No data returned yet. Trying again id ", id, " every 10 seconds")
+    n_tries = 0
     while(is.null(res_joburls)) {
+      n_tries = n_tries + 1
+      # message("Try ", n_tries, " at ", Sys.time())
       sys_time_taken = round(difftime(time1 = Sys.time(), time2 = sys_time, units = "secs") / 60)
       if(!silent) {
         message(sys_time_taken, " minutes taken, waiting another 10 s")
@@ -168,7 +171,8 @@ batch = function(
         username = username,
         password = password,
         id = as.character(id),
-        pat = pat
+        pat = pat,
+        silent = n_tries > 1
       )
     }
   }
@@ -306,18 +310,21 @@ batch_jobdata = function(
   res = httr::POST(url = batch_url, body = body)
   res_json = httr::content(res, "parsed")
   error_message = paste0(" ", as.character(res_json$error))
-  if (error_message == " The job you requested to control is either non-existent or is owned by another user.") {
-    message("No job with that ID. Try setting delete_job = FALSE")
-    stop(error_message)
-  }
-  if(nchar(error_message)[1] > 2) {
-    message("Error message detected from CycleStreets output")
-    warning(res_json$error)
-  }
-  errors = paste0(" ", as.character(res_json$errors))
-  if(nchar(errors[1]) > 1) {
-    message("Routing errors for these routes:\n", paste(errors, collapse = "\n"))
-    message(paste(names(errors), collapse = "\n"))
+  # Print message if silent = FALSE
+  if(!silent) {
+    if (error_message == " The job you requested to control is either non-existent or is owned by another user.") {
+      message("No job with that ID. Try setting delete_job = FALSE")
+      stop(error_message)
+    }
+    if(nchar(error_message)[1] > 2) {
+      message("Error message detected from CycleStreets output")
+      warning(res_json$error)
+    }
+    errors = paste0(" ", as.character(res_json$errors))
+    if(nchar(errors[1]) > 1) {
+      message("Routing errors for these routes:\n", paste(errors, collapse = "\n"))
+      message(paste(names(errors), collapse = "\n"))
+    }
   }
   if(!is.null(res_json$ready)) {
     if(res_json$ready) {
