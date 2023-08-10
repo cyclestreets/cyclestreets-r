@@ -76,7 +76,7 @@ batch = function(
     directory = tempdir(),
     wait = FALSE,
     wait_time = NULL,
-    name = "test batch",
+    name = "Batch job",
     serverId = 21,
     strategies = "quietest",
     bothDirections = 0,
@@ -214,7 +214,7 @@ get_routes = function(url, desire_lines = NULL, filename, directory) {
 
 batch_routes = function(
     desire_lines,
-    name = "test batch",
+    name = "Batch job",
     serverId = 21,
     strategies = "quietest",
     bothDirections = 1,
