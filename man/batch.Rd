@@ -10,7 +10,7 @@ batch(
   directory = tempdir(),
   wait = FALSE,
   wait_time = NULL,
-  name = "test batch",
+  name = "Batch job",
   serverId = 21,
   strategies = "quietest",
   bothDirections = 0,
