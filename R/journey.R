@@ -83,50 +83,10 @@ journey = function(from,
                     base_url = "https://www.cyclestreets.net",
                     reporterrors = TRUE,
                     save_raw = "FALSE",
-                    cols = c(
-                      "name",
-                      "distances",
-                      "time",
-                      "busynance",
-                      "elevations",
-                      "start_longitude",
-                      "start_latitude",
-                      "finish_longitude",
-                      "finish_latitude"
-                    ),
-                    cols_extra = c(
-                      "crow_fly_distance",
-                      "event",
-                      "whence",
-                      "speed",
-                      "itinerary",
-                      "plan",
-                      "note",
-                      "length",
-                      "quietness",
-                      "west",
-                      "south",
-                      "east",
-                      "north",
-                      "leaving",
-                      "arriving",
-                      "grammesCO2saved",
-                      "calories",
-                      "edition",
-                      "gradient_segment",
-                      # "gradient_median",
-                      # "gradient_p75",
-                      # "gradient_max",
-                      "elevation_change",
-                      "provisionName"
-                    ),
-                    smooth_gradient = TRUE,
-                    distance_cutoff = 50,
-                    gradient_cutoff = 0.1,
-                    n = 3,
-                    warnNA = FALSE) {
-  if (is.null(pat))
-    pat = Sys.getenv("CYCLESTREETS")
+                    warnNA = FALSE,
+                   ...
+                   ) {
+  if (is.null(pat)) pat = Sys.getenv("CYCLESTREETS")
   orig = paste0(from, collapse = ",")
   dest = paste0(to, collapse = ",")
   ft_string = paste(orig, dest, sep = "|")
@@ -156,29 +116,11 @@ journey = function(from,
   if (txt == "") {
     stop("Error: CycleStreets did not return a valid result")
   }
-
-  obj = jsonlite::fromJSON(txt, simplifyDataFrame = TRUE, bigint_as_char = FALSE)
-
-  if (is.element("error", names(obj))) {
-    stop(paste0("Error: ", obj$error))
+  if(save_raw) {
+    return(jsonlite::fromJSON(txt, simplifyDataFrame = TRUE, bigint_as_char = FALSE))
   }
-
-  if (save_raw) {
-    return(obj)
-  } else {
-    r = json2sf_cs(
-      obj,
-      cols = cols,
-      cols_extra = cols_extra,
-      smooth_gradient,
-      distance_cutoff,
-      gradient_cutoff,
-      n,
-      warnNA = warnNA
-    )
-  }
-  sf::st_crs(r) = "EPSG:4326"
-  r
+  res = json2sf_cs2(txt, id = 1)
+  res
 }
 #' Convert output from CycleStreets.net into sf object
 #'
