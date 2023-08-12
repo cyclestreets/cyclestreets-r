@@ -282,7 +282,7 @@ add_columns = function(r) {
 #' json2sf_cs(readLines(f), id = 1, segments = TRUE, cols_to_keep = cols)
 json2sf_cs = function(
     results_raw,
-    id,
+    id = 1,
     segments = TRUE,
     route_variables = c("start","finish","start_longitude","start_latitude","finish_longitude","finish_latitude",
                         "crow_fly_distance","event","whence","speed","itinerary","plan",
