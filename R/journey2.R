@@ -235,7 +235,66 @@ add_columns = function(r) {
   )
   r
 }
-
+#' Quickly convert output from CycleStreets.net into sf object
+#'
+#' Available fields from CycleStreets include:
+#'
+#' ```
+#' c("start", "finish", "startBearing", "startSpeed", "start_longitude",
+#'   "start_latitude", "finish_longitude", "finish_latitude", "crow_fly_distance",
+#'   "event", "whence", "speed", "itinerary", "clientRouteId", "plan",
+#'   "note", "length", "time", "busynance", "quietness", "signalledJunctions",
+#'   "signalledCrossings", "west", "south", "east", "north", "name",
+#'   "walk", "leaving", "arriving", "coordinates", "elevations", "distances",
+#'   "grammesCO2saved", "calories", "edition", "type", "legNumber",
+#'   "distance", "flow", "turn", "color", "points", "provisionName"
+#' )
+#' ```
+#'
+#' @param obj Object from CycleStreets.net read-in with
+#' @param cols Columns to be included in the result, a character vector or `NULL` for all available columns (see details for default)
+#' @param cols_extra Additional columns to be added providing summaries of gradient and other variables
+#' @inheritParams smooth_with_cutoffs
+#' @inheritParams journey
+#' @export
+#' @examples
+#' from = "Leeds Rail Station"
+#' to = "University of Leeds"
+#' # from_point = tmaptools::geocode_OSM(from)
+#' # to_point = tmaptools::geocode_OSM(to)
+#' from_point = c(-1.54408, 53.79360)
+#' to_point =   c(-1.54802, 53.79618)
+#' # save result from the API call to journey.json
+#' # res_json = journey(from_point, to_point, silent = FALSE, save_raw = TRUE)
+#' # jsonlite::write_json(res_json, "inst/extdata/journey.json")
+#' # f = "inst/extdata/journey.json"
+#' f = system.file(package = "cyclestreets", "extdata/journey.json")
+#' obj = jsonlite::read_json(f, simplifyVector = TRUE)
+#' rsf = json2sf_cs(obj)
+#' rsf
+#' json2sf_cs(obj, cols = c("distances"))
+#' rsf2 = json2sf_cs(obj, cols = NULL, cols_extra = NULL)
+#' json2sf_cs(obj, cols_extra = "gradient_median")
+#' json2sf_cs(obj, cols = c("name", "distances"), cols_extra = "gradient_median")
+#' names(rsf2)
+#' # stplanr::line2points(rsf) extract start and end points
+#' sf:::plot.sf(rsf)
+#' json2sf_cs(obj, cols = c("time", "busynance", "elevations"))
+#' json2sf_cs(obj, cols = c("distances"), smooth_gradient = TRUE,
+#'   gradient_cutoff = 0.05, distance_cutoff = 50)
+#' from_point = c(-8.80639, 52.50692)
+#' to_point =   c(-8.80565, 52.51329)
+#' # save result from the API call to journey.json
+#' # res_json = journey(from_point, to_point, silent = FALSE, save_raw = TRUE)
+#' # jsonlite::write_json(res_json, "inst/extdata/journey_short.json")
+#' # f = "inst/extdata/journey_short.json"
+#' f = system.file(package = "cyclestreets", "extdata/journey_short.json")
+#' obj = jsonlite::read_json(f, simplifyVector = TRUE)
+#'
+#' rsf = json2sf_cs(obj, cols = c("name", "distances", "elevations"), cols_extra = "provisionName")
+#' # Inclusion of "start_longitude" leads to the additional ProvisionName1 colum:
+#' rsf = json2sf_cs(obj, cols = c("name", "distances", "start_longitude"), cols_extra = "provisionName")
+#' names(rsf)
 json2sf_cs2 = function(
     results_raw,
     id,

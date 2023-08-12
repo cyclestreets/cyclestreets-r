@@ -6,7 +6,16 @@
 #' @noRd
 
 
-batch_read = function(file, segments = TRUE) {
+batch_read = function(
+    file,
+    segments = TRUE,
+    route_variables = c(
+      "name", # not used currently but could be handy
+      "distance",
+      "gradient_smooth",
+      "quietness"
+    )
+    ) {
   message("Reading in the following file:\n", file)
   res = readr::read_csv(file, show_col_types = FALSE)
   res$route_number = seq(nrow(res))
