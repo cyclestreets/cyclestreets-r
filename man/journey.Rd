@@ -13,17 +13,8 @@ journey(
   base_url = "https://www.cyclestreets.net",
   reporterrors = TRUE,
   save_raw = "FALSE",
-  cols = c("name", "distances", "time", "busynance", "elevations", "start_longitude",
-    "start_latitude", "finish_longitude", "finish_latitude"),
-  cols_extra = c("crow_fly_distance", "event", "whence", "speed", "itinerary", "plan",
-    "note", "length", "quietness", "west", "south", "east", "north", "leaving",
-    "arriving", "grammesCO2saved", "calories", "edition", "gradient_segment",
-    "elevation_change", "provisionName"),
-  smooth_gradient = TRUE,
-  distance_cutoff = 50,
-  gradient_cutoff = 0.1,
-  n = 3,
-  warnNA = FALSE
+  warnNA = FALSE,
+  ...
 )
 }
 \arguments{
@@ -45,21 +36,10 @@ should report errors (FALSE by default).}
 
 \item{save_raw}{Boolean value which returns raw list from the json if TRUE (FALSE by default).}
 
-\item{cols}{Columns to be included in the result, a character vector or \code{NULL} for all available columns (see details for default)}
-
-\item{cols_extra}{Additional columns to be added providing summaries of gradient and other variables}
+\item{...}{Arguments passed to json2sf_cs}
 
 \item{smooth_gradient}{Identify and fix anomalous gradients? TRUE by default. See
 https://github.com/Robinlovelace/cyclestreets/issues/14}
-
-\item{distance_cutoff}{Distance (m) used to identify anomalous gradients}
-
-\item{gradient_cutoff}{Gradient (\%, e.g. 0.1 being 10\%) used to identify anomalous gradients}
-
-\item{n}{The number of segments to use to smooth anomalous gradents.}
-
-\item{warnNA}{Logical should NA warning be given?
-The default is 3, meaning segments directly before, after and including the offending segment.}
 }
 \description{
 R interface to the CycleStreets.net journey planning API,

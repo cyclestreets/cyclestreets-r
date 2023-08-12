@@ -42,8 +42,7 @@
 #' @param save_raw Boolean value which returns raw list from the json if TRUE (FALSE by default).
 #' @param smooth_gradient Identify and fix anomalous gradients? TRUE by default. See
 #' https://github.com/Robinlovelace/cyclestreets/issues/14
-#' @inheritParams json2sf_cs
-#' @inheritParams smooth_with_cutoffs
+#' @param ... Arguments passed to json2sf_cs
 #' @seealso json2sf_cs
 #' @export
 #' @examples
