@@ -272,8 +272,10 @@ add_columns = function(r) {
 #' obj = jsonlite::read_json(f, simplifyVector = TRUE)
 #' rsf = json2sf_cs(obj)
 #' rsf
-#' json2sf_cs(obj, cols = c("distances"))
-#' json2sf_cs2(readLines(f), id = 1, segments = TRUE)
+#' rsf = json2sf_cs(obj, cols = c("distances"))
+#' rsf2 = json2sf_cs2(readLines(f), id = 1, segments = TRUE)
+#' waldo::compare(rsf$distances, rsf2$distances)
+#' waldo::compare(rsf$geometry, rsf2$geometry)
 #' rsf2 = json2sf_cs(obj, cols = NULL, cols_extra = NULL)
 #' json2sf_cs(obj, cols_extra = "gradient_median")
 #' json2sf_cs(obj, cols = c("name", "distances"), cols_extra = "gradient_median")
