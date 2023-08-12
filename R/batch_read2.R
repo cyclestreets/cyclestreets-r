@@ -9,9 +9,9 @@
 batch_read = function(
     file,
     segments = TRUE,
-    route_variables = c(
+    cols_to_keep = c(
       "name", # not used currently but could be handy
-      "distance",
+      "distances",
       "gradient_smooth",
       "quietness"
     )
@@ -33,7 +33,9 @@ batch_read = function(
 
   res_df = json2sf_cs(results_raw = res$json,
                        id = res$route_number,
-                       segments = segments)
+                       segments = segments,
+                      cols_to_keep = cols_to_keep
+                      )
 
   #Character to numeric
   nms = c("time","busynance","quietness","signalledJunctions","signalledCrossings",

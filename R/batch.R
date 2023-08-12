@@ -89,7 +89,8 @@ batch = function(
     base_url = "https://api.cyclestreets.net/v2/batchroutes.createjob",
     pat = Sys.getenv("CYCLESTREETS_BATCH"),
     silent = TRUE,
-    delete_job = TRUE
+    delete_job = TRUE,
+    cols_to_keep = c("name", "provisionName", "distances", "time", "quietness", "gradient_smooth")
 ) {
 
   sys_time = Sys.time()
@@ -196,7 +197,7 @@ get_routes = function(url, desire_lines = NULL, filename, directory) {
   # R.utils::gzip(filename_local)
   # routes = batch_read(gsub(pattern = ".gz", replacement = "", filename_local))
   # list.files(tempdir())
-  routes = batch_read(filename_local)
+  routes = batch_read(filename_local, cols_to_keep = cols_to_keep)
   routes_id_table = table(routes$route_number)
   routes_id_names = sort(as.numeric(names(routes_id_table)))
   if(is.null(desire_lines)) {

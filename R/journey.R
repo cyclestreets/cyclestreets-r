@@ -24,9 +24,15 @@
 #' After setting the environment variable, as outlined above,
 #' you need to restart your R session before the journey function will work.
 #'
-#'
 #' See [www.cyclestreets.net/help/journey/howitworks/](https://www.cyclestreets.net/help/journey/howitworks/)
 #' for details on how these are calculated.
+#'
+#' CycleStreets can give you lots of info at route and segment level.
+#' Commonly useful columns include:
+#'
+#' ```
+#' cols = c("name", "provisionName", "time", "quietness", "edition", "gradient_smooth")
+#' ```
 #'
 #' See [json2sf_cs()] for details.
 #'
@@ -49,6 +55,10 @@
 #' to = c(-1.76, 53.80) # geo_code("bradford uk")
 #' r1 = journey(from, to)
 #' names(r1)
+#' cols = c("name", "provisionName", "distances", "time", "quietness", "edition", "gradient_smooth")
+#' r2 = journey(from, to, cols_to_keep = cols)
+#' names(r2)
+#' r2
 #' r1[1:2, ]
 #' r1$grammesCO2saved
 #' r1$calories
@@ -115,7 +125,7 @@ journey = function(from,
   if(save_raw) {
     return(jsonlite::fromJSON(txt, simplifyDataFrame = TRUE, bigint_as_char = FALSE))
   }
-  res = json2sf_cs(txt, id = 1)
+  res = json2sf_cs(txt, id = 1, ...)
   res
 }
 
