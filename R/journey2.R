@@ -236,7 +236,15 @@ add_columns = function(r) {
   r
 }
 
-json2sf_cs2 = function(results_raw, id, segments){
+json2sf_cs2 = function(
+    results_raw,
+    id,
+    segments,
+    route_variables = c("start","finish","start_longitude","start_latitude","finish_longitude","finish_latitude",
+                        "crow_fly_distance","event","whence","speed","itinerary","plan",
+                        "note","length","west","south","east","north","leaving","arriving",
+                        "grammesCO2saved","calories","edition")
+    ){
   results = RcppSimdJson::fparse(results_raw, query = "/marker", query_error_ok = TRUE, always_list = TRUE)
   results_error = RcppSimdJson::fparse(results_raw, query = "/error", query_error_ok = TRUE, always_list = TRUE)
   results_error = unlist(results_error, use.names = FALSE)
@@ -261,11 +269,6 @@ json2sf_cs2 = function(results_raw, id, segments){
   if(nrow(results) == 0){
     stop("No valid results returned")
   }
-
-  route_variables = c("start","finish","start_longitude","start_latitude","finish_longitude","finish_latitude",
-                      "crow_fly_distance","event","whence","speed","itinerary","plan",
-                      "note","length","west","south","east","north","leaving","arriving",
-                      "grammesCO2saved","calories","edition")
 
   if(segments){
     results$SPECIALIDFORINTERNAL2 = cumsum(!is.na(results$start))

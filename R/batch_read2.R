@@ -43,3 +43,17 @@ batch_read = function(file, segments = TRUE) {
 
   res_df
 }
+
+# # # Tests:
+# devtools::load_all()
+# library(tidyverse)
+# u = "https://github.com/cyclestreets/cyclestreets-r/releases/download/v0.5.3/cambridge-data.csv.gz"
+# file = basename(u)
+# download.file(u, file)
+# res = batch_read(file)
+# l_desire |>
+#   slice(1:3) |>
+#   mapview::mapview()
+# res |>
+#   filter(id %in% 1:3) |>
+#   mapview::mapview()
