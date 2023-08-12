@@ -38,7 +38,7 @@ segments closest to (in front of and behind) the offending segment.
 }
 \examples{
 f = system.file(package = "cyclestreets", "extdata/journey.json")
-rsf = json2sf_cs(readLines(f), cols = c("distances"))
+rsf = json2sf_cs(readLines(f))
 rsf$gradient_segment
 rsf$elevation_change
 rsf$distances

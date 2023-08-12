@@ -24,7 +24,9 @@ batch(
   base_url = "https://api.cyclestreets.net/v2/batchroutes.createjob",
   pat = Sys.getenv("CYCLESTREETS_BATCH"),
   silent = TRUE,
-  delete_job = TRUE
+  delete_job = TRUE,
+  cols_to_keep = c("name", "provisionName", "distances", "time", "quietness",
+    "gradient_smooth")
 )
 }
 \arguments{
@@ -119,7 +121,6 @@ names(routes)
 plot(routes$geometry)
 plot(desire_lines$geometry, add = TRUE, col = "red")
 routes = batch(desire_lines, username = "robinlovelace", wait_time = 5)
-
-profvis::profvis(batch_read("test-data.csv.gz"))
+# profvis::profvis(batch_read("test-data.csv.gz"))
 }
 }

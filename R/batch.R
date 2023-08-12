@@ -176,7 +176,8 @@ batch = function(
       )
     }
   }
-  routes_updated = get_routes(url = res_joburls$dataGz, desire_lines, filename, directory)
+  routes_updated = get_routes(url = res_joburls$dataGz, desire_lines, filename,
+                              directory, cols_to_keep = cols_to_keep)
   # if(wait && !is.null(desire_lines)) {
   #   time_taken_s = round(as.numeric(difftime(time1 = Sys.time(), time2 = sys_time, units = "secs")))
   #   rps = round(nrow(desire_lines) / time_taken_s, 1)
@@ -188,7 +189,9 @@ batch = function(
   routes_updated
 }
 
-get_routes = function(url, desire_lines = NULL, filename, directory) {
+get_routes = function(url, desire_lines = NULL, filename, directory,
+                      cols_to_keep = c("name", "provisionName", "distances", "time",
+                                       "quietness", "gradient_smooth")) {
   filename_local = file.path(directory, paste0(filename, ".csv.gz"))
   if(file.exists(filename_local)) {
     message(filename, " already exists, overwriting it")

@@ -13,7 +13,6 @@ journey(
   base_url = "https://www.cyclestreets.net",
   reporterrors = TRUE,
   save_raw = "FALSE",
-  warnNA = FALSE,
   ...
 )
 }
@@ -37,9 +36,6 @@ should report errors (FALSE by default).}
 \item{save_raw}{Boolean value which returns raw list from the json if TRUE (FALSE by default).}
 
 \item{...}{Arguments passed to json2sf_cs}
-
-\item{smooth_gradient}{Identify and fix anomalous gradients? TRUE by default. See
-https://github.com/Robinlovelace/cyclestreets/issues/14}
 }
 \description{
 R interface to the CycleStreets.net journey planning API,
@@ -69,6 +65,12 @@ you need to restart your R session before the journey function will work.
 See \href{https://www.cyclestreets.net/help/journey/howitworks/}{www.cyclestreets.net/help/journey/howitworks/}
 for details on how these are calculated.
 
+CycleStreets can give you lots of info at route and segment level.
+Commonly useful columns include:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{cols = c("name", "provisionName", "time", "quietness", "edition", "gradient_smooth")
+}\if{html}{\out{</div>}}
+
 See \code{\link[=json2sf_cs]{json2sf_cs()}} for details.
 }
 \examples{
@@ -77,6 +79,10 @@ from = c(-1.55, 53.80) # geo_code("leeds")
 to = c(-1.76, 53.80) # geo_code("bradford uk")
 r1 = journey(from, to)
 names(r1)
+cols = c("name", "provisionName", "distances", "time", "quietness", "edition", "gradient_smooth")
+r2 = journey(from, to, cols_to_keep = cols)
+names(r2)
+r2
 r1[1:2, ]
 r1$grammesCO2saved
 r1$calories

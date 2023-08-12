@@ -38,15 +38,15 @@ json2sf_cs(
 Available fields from CycleStreets include:
 }
 \details{
-\if{html}{\out{<div class="sourceCode">}}\preformatted{c("start", "finish", "startBearing", "startSpeed", "start_longitude",
-  "start_latitude", "finish_longitude", "finish_latitude", "crow_fly_distance",
-  "event", "whence", "speed", "itinerary", "clientRouteId", "plan",
-  "note", "length", "time", "busynance", "quietness", "signalledJunctions",
-  "signalledCrossings", "west", "south", "east", "north", "name",
-  "walk", "leaving", "arriving", "coordinates", "elevations", "distances",
-  "grammesCO2saved", "calories", "edition", "type", "legNumber",
-  "distance", "flow", "turn", "color", "points", "provisionName"
-)
+\if{html}{\out{<div class="sourceCode">}}\preformatted{c("id", "time", "busynance", "quietness", "signalledJunctions",
+  "signalledCrossings", "name", "walk", "elevations", "distances",
+  "type", "legNumber", "distance", "turn", "startBearing", "color",
+  "provisionName", "start", "finish", "start_longitude", "start_latitude",
+  "finish_longitude", "finish_latitude", "crow_fly_distance", "event",
+  "whence", "speed", "itinerary", "plan", "note", "length", "west",
+  "south", "east", "north", "leaving", "arriving", "grammesCO2saved",
+  "calories", "edition", "gradient_segment", "elevation_change",
+  "gradient_smooth", "geometry")
 }\if{html}{\out{</div>}}
 }
 \examples{
@@ -61,7 +61,8 @@ to_point =   c(-1.54802, 53.79618)
 # jsonlite::write_json(res_json, "inst/extdata/journey.json")
 # f = "inst/extdata/journey.json"
 f = system.file(package = "cyclestreets", "extdata/journey.json")
-rsf2 = json2sf_cs(readLines(f), id = 1, segments = TRUE)
+rsf = json2sf_cs(readLines(f), id = 1, segments = TRUE)
+names(rsf)
 json2sf_cs(readLines(f), id = 1, segments = TRUE, cols_to_keep = "quietness")
 # save result from the API call to journey.json
 # res_json = journey(from_point, to_point, silent = FALSE, save_raw = TRUE)
