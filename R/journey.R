@@ -40,8 +40,6 @@
 #' @param reporterrors Boolean value (TRUE/FALSE) indicating if cyclestreets (TRUE by default).
 #' should report errors (FALSE by default).
 #' @param save_raw Boolean value which returns raw list from the json if TRUE (FALSE by default).
-#' @param smooth_gradient Identify and fix anomalous gradients? TRUE by default. See
-#' https://github.com/Robinlovelace/cyclestreets/issues/14
 #' @param ... Arguments passed to json2sf_cs
 #' @seealso json2sf_cs
 #' @export
@@ -82,7 +80,6 @@ journey = function(from,
                     base_url = "https://www.cyclestreets.net",
                     reporterrors = TRUE,
                     save_raw = "FALSE",
-                    warnNA = FALSE,
                    ...
                    ) {
   if (is.null(pat)) pat = Sys.getenv("CYCLESTREETS")

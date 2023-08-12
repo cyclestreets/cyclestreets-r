@@ -67,8 +67,7 @@
 #' plot(routes$geometry)
 #' plot(desire_lines$geometry, add = TRUE, col = "red")
 #' routes = batch(desire_lines, username = "robinlovelace", wait_time = 5)
-#'
-#' profvis::profvis(batch_read("test-data.csv.gz"))
+#' # profvis::profvis(batch_read("test-data.csv.gz"))
 #' }
 batch = function(
     desire_lines = NULL,
@@ -372,14 +371,4 @@ wait_s = function(n) {
     w = 30 + n / 1000
   }
   w
-}
-
-bind_sf = function(x) {
-  if (length(x) == 0) stop("Empty list")
-  geom_name = attr(x[[1]], "sf_column")
-  x = data.table::rbindlist(x, use.names = FALSE)
-  # x = collapse::unlist2d(x, idcols = FALSE, recursive = FALSE)
-  x[[geom_name]] = sf::st_sfc(x[[geom_name]], recompute_bbox = TRUE)
-  x = st_as_sf(x)
-  x
 }
