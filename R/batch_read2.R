@@ -31,7 +31,7 @@ batch_read = function(
     res = res[-which_min_ncar, ]
   }
 
-  res_df = json2sf_cs2(results_raw = res$json,
+  res_df = json2sf_cs(results_raw = res$json,
                        id = res$route_number,
                        segments = segments)
 

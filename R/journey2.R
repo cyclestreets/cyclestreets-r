@@ -39,7 +39,7 @@
 #' @param reporterrors Boolean value (TRUE/FALSE) indicating if cyclestreets (TRUE by default).
 #' should report errors (FALSE by default).
 #' @param segments Logical, if true route segments returned otherwise whole routes
-#' @seealso json2sf_cs2
+#' @seealso json2sf_cs
 #' @export
 #' @examples
 #' \dontrun{
@@ -99,7 +99,7 @@ journey2 = function(fromPlace = NA,
   }
 
   message(Sys.time()," processing results")
-  json2sf_cs2(results_raw, id = id, segments = segments)
+  json2sf_cs(results_raw, id = id, segments = segments)
 
 }
 
@@ -269,8 +269,8 @@ add_columns = function(r) {
 #' # jsonlite::write_json(res_json, "inst/extdata/journey.json")
 #' # f = "inst/extdata/journey.json"
 #' f = system.file(package = "cyclestreets", "extdata/journey.json")
-#' rsf2 = json2sf_cs2(readLines(f), id = 1, segments = TRUE)
-#' json2sf_cs2(readLines(f), id = 1, segments = TRUE, cols_to_keep = "quietness")
+#' rsf2 = json2sf_cs(readLines(f), id = 1, segments = TRUE)
+#' json2sf_cs(readLines(f), id = 1, segments = TRUE, cols_to_keep = "quietness")
 #' # save result from the API call to journey.json
 #' # res_json = journey(from_point, to_point, silent = FALSE, save_raw = TRUE)
 #' # jsonlite::write_json(res_json, "inst/extdata/journey_short.json")
@@ -279,8 +279,8 @@ add_columns = function(r) {
 #' obj = jsonlite::read_json(f, simplifyVector = TRUE)
 #' # Inclusion of "start_longitude" leads to the additional ProvisionName1 colum:
 #' cols = c("name", "distances", "provisionName")
-#' json2sf_cs2(readLines(f), id = 1, segments = TRUE, cols_to_keep = cols)
-json2sf_cs2 = function(
+#' json2sf_cs(readLines(f), id = 1, segments = TRUE, cols_to_keep = cols)
+json2sf_cs = function(
     results_raw,
     id,
     segments = TRUE,
