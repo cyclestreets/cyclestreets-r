@@ -273,6 +273,7 @@ add_columns = function(r) {
 #' rsf = json2sf_cs(obj)
 #' rsf
 #' json2sf_cs(obj, cols = c("distances"))
+#' json2sf_cs2(readLines(f), id = 1, segments = TRUE)
 #' rsf2 = json2sf_cs(obj, cols = NULL, cols_extra = NULL)
 #' json2sf_cs(obj, cols_extra = "gradient_median")
 #' json2sf_cs(obj, cols = c("name", "distances"), cols_extra = "gradient_median")
