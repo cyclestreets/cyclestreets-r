@@ -32,7 +32,7 @@ json2sf_cs(
 
 \item{route_variables}{Route level variables}
 
-\item{cols_to_keep}{Columns to keep}
+\item{cols_to_keep}{Columns to return in output sf object}
 }
 \description{
 Available fields from CycleStreets include:

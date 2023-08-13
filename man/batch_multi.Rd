@@ -38,7 +38,8 @@ od_df = readr::read_csv("https://github.com/nptscot/npt/raw/main/data-raw/od_sub
 zones = sf::read_sf("https://github.com/nptscot/npt/raw/main/data-raw/zones_edinburgh.geojson")
 desire_lines = od::od_to_sf(od_df, zones)
 desire_lines = desire_lines[1:100, ]
-routes_multi = batch_multi(desire_lines, plans = c("fastest", "quietest"), nrow_batch = 26, delete_job = FALSE)
+p = c("fastest", "quietest")
+routes_multi = batch_multi(desire_lines, plans = p, nrow_batch = 26, delete_job = FALSE)
 names(routes_multi)
 plot(routes_multi$fastest$geometry)
 plot(routes_multi$quietest$geometry)
@@ -46,6 +47,6 @@ ids = list(
   fastest = 4059:(4059+3),
   quietest = 4063:(4063+3)
 )
-r_ids = batch_multi(desire_lines, plans = c("fastest", "quietest"), nrow_batch = 26, delete_job = FALSE, batch_ids = ids)
+r_ids = batch_multi(desire_lines, plans = p, nrow_batch = 26, delete_job = FALSE, batch_ids = ids)
 }
 }

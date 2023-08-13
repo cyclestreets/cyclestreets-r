@@ -255,7 +255,7 @@ add_columns = function(r) {
 #' @param id id of the result
 #' @param segments Return segment level data? TRUE by default.
 #' @param route_variables Route level variables
-#' @param cols_to_keep Columns to keep
+#' @param cols_to_keep Columns to return in output sf object
 #' @export
 #' @examples
 #' from = "Leeds Rail Station"

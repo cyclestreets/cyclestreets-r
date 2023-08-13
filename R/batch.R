@@ -40,6 +40,7 @@
 #'   continue: Continue (re-open) job
 #'   terminate: Terminate job and delete data
 #' @param delete_job Delete the job? TRUE by default to avoid clogged servers
+#' @inheritParams json2sf_cs
 #' @inheritParams journey
 #' @export
 #' @examples
@@ -54,7 +55,6 @@
 #' routes_wait = batch(id = routes_id, username = "robinlovelace", wait = TRUE, delete_job = FALSE)
 #' names(routes_wait)
 #' plot(routes_wait)
-#' batch(id = 3724, username = "robinlovelace", wait = TRUE, delete_job = FALSE)
 #' plot(desire_lines$geometry[4])
 #' head(routes_wait$id)
 #' plot(routes_wait$geometry[routes_wait$id == "4"], add = TRUE)
