@@ -348,7 +348,6 @@ json2sf_cs = function(
   results = sf::st_as_sf(results)
   results$SPECIALIDFORINTERNAL2 <- NULL
   cols = cols_to_keep %in% names(results)
-
   results[cols_to_keep]
 }
 
