@@ -40,7 +40,6 @@
 #'   continue: Continue (re-open) job
 #'   terminate: Terminate job and delete data
 #' @param delete_job Delete the job? TRUE by default to avoid clogged servers
-#' @inheritParams json2sf_cs
 #' @inheritParams journey
 #' @export
 #' @examples
@@ -56,18 +55,18 @@
 #' names(routes_wait)
 #' plot(routes_wait)
 #' plot(desire_lines$geometry[4])
-#' unique(routes_wait$route_number)
-#' plot(routes_wait$geometry[routes_wait$route_number == "4"], add = TRUE)
+#' head(routes_wait$id)
+#' plot(routes_wait$geometry[routes_wait$id == "4"], add = TRUE)
 #' # Job is deleted after this command:
 #' routes_attrib = batch(desire_lines, id = routes_id, username = "robinlovelace", wait = TRUE)
 #' names(routes_attrib)
-#' # Test on big dataset
 #' desire_lines_huge = desire_lines[sample(nrow(desire_lines), 100000, replace = TRUE), ]
 #' routes_id = batch(desire_lines_huge, username = "robinlovelace", wait = FALSE)
 #' names(routes)
 #' plot(routes$geometry)
 #' plot(desire_lines$geometry, add = TRUE, col = "red")
 #' routes = batch(desire_lines, username = "robinlovelace", wait_time = 5)
+#' # profvis::profvis(batch_read("test-data.csv.gz"))
 #' }
 batch = function(
     desire_lines = NULL,
@@ -90,7 +89,7 @@ batch = function(
     pat = Sys.getenv("CYCLESTREETS_BATCH"),
     silent = TRUE,
     delete_job = TRUE,
-    cols_to_keep = c("route_number", "name", "provisionName", "distances", "time", "quietness", "gradient_smooth")
+    cols_to_keep = c("id", "name", "provisionName", "distances", "time", "quietness", "gradient_smooth")
 ) {
 
   sys_time = Sys.time()
@@ -191,7 +190,7 @@ batch = function(
 }
 
 get_routes = function(url, desire_lines = NULL, filename, directory,
-                      cols_to_keep = c("route_number", "name", "provisionName", "distances", "time",
+                      cols_to_keep = c("id", "name", "provisionName", "distances", "time",
                                        "quietness", "gradient_smooth")) {
   filename_local = file.path(directory, paste0(filename, ".csv.gz"))
   if(file.exists(filename_local)) {
@@ -238,11 +237,16 @@ batch_routes = function(
     pat,
     silent = TRUE
 ) {
+  browser()
   batch_url = paste0(base_url, "?key=", pat)
+  desire_lines_to_send = desire_lines["id"]
+  # TODO: reduce precision:
+  # st_precision(desire_lines_to_send) = 3
+  # sf::st_write(desire_lines_to_send, "/tmp/to_send.geojson", delete_dsn = TRUE)
   body = list(
     name = name,
     serverId = serverId,
-    geometry = geojsonsf::sf_geojson(desire_lines),
+    geometry = geojsonsf::sf_geojson(desire_lines_to_send),
     strategies = strategies,
     bothDirections = bothDirections,
     minDistance = minDistance,
