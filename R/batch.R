@@ -42,6 +42,7 @@
 #'   continue: Continue (re-open) job
 #'   terminate: Terminate job and delete data
 #' @param delete_job Delete the job? TRUE by default to avoid clogged servers
+#' @param cols_to_keep Columns to return in output sf object
 #' @inheritParams journey
 #' @export
 #' @examples

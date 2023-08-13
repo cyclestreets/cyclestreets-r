@@ -87,6 +87,8 @@ Sys.setenv(CYCLESTREETS_PW="xxxxxx")}
 \item{silent}{Logical (default is FALSE). TRUE hides request sent.}
 
 \item{delete_job}{Delete the job? TRUE by default to avoid clogged servers}
+
+\item{cols_to_keep}{Columns to return in output sf object}
 }
 \description{
 Note: set \code{CYCLESTREETS_BATCH}, \code{CYCLESTREETS_PW} and \code{CYCLESTREETS_PW}
