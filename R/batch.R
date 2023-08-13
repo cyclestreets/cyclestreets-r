@@ -6,7 +6,7 @@
 #'
 #' See https://www.cyclestreets.net/journey/batch/ for web UI.
 #'
-#' Recommneded max batch size: 250,000 routes
+#' Recommneded max batch size: 300k routes
 #'
 #' @param desire_lines Geographic desire lines representing origin-destination data
 #' @param name The name of the batch routing job for CycleStreets
