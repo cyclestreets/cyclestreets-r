@@ -87,8 +87,6 @@ Sys.setenv(CYCLESTREETS_PW="xxxxxx")}
 \item{silent}{Logical (default is FALSE). TRUE hides request sent.}
 
 \item{delete_job}{Delete the job? TRUE by default to avoid clogged servers}
-
-\item{cols_to_keep}{Columns to return in output sf object}
 }
 \description{
 Note: set \code{CYCLESTREETS_BATCH}, \code{CYCLESTREETS_PW} and \code{CYCLESTREETS_PW}
@@ -97,6 +95,8 @@ before trying this.
 }
 \details{
 See https://www.cyclestreets.net/journey/batch/ for web UI.
+
+Recommneded max batch size: 250,000 routes
 }
 \examples{
 if(FALSE) {
@@ -111,12 +111,14 @@ routes_wait = batch(id = routes_id, username = "robinlovelace", wait = TRUE, del
 names(routes_wait)
 plot(routes_wait)
 plot(desire_lines$geometry[4])
-head(routes_wait$id)
-plot(routes_wait$geometry[routes_wait$id == "4"], add = TRUE)
+plot(routes_wait$geometry[routes_wait$route_number == "4"], add = TRUE)
+head(routes_wait$route_number)
+unique(routes_wait$route_number)
 # Job is deleted after this command:
 routes_attrib = batch(desire_lines, id = routes_id, username = "robinlovelace", wait = TRUE)
 names(routes_attrib)
-desire_lines_huge = desire_lines[sample(nrow(desire_lines), 100000, replace = TRUE), ]
+unique(routes_attrib$route_number)
+desire_lines_huge = desire_lines[sample(nrow(desire_lines), 250000, replace = TRUE), ]
 routes_id = batch(desire_lines_huge, username = "robinlovelace", wait = FALSE)
 names(routes)
 plot(routes$geometry)

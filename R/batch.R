@@ -6,6 +6,8 @@
 #'
 #' See https://www.cyclestreets.net/journey/batch/ for web UI.
 #'
+#' Recommneded max batch size: 250,000 routes
+#'
 #' @param desire_lines Geographic desire lines representing origin-destination data
 #' @param name The name of the batch routing job for CycleStreets
 #' @param directory Where to save the data? `tempdir()` by default
@@ -55,12 +57,14 @@
 #' names(routes_wait)
 #' plot(routes_wait)
 #' plot(desire_lines$geometry[4])
-#' head(routes_wait$id)
-#' plot(routes_wait$geometry[routes_wait$id == "4"], add = TRUE)
+#' plot(routes_wait$geometry[routes_wait$route_number == "4"], add = TRUE)
+#' head(routes_wait$route_number)
+#' unique(routes_wait$route_number)
 #' # Job is deleted after this command:
 #' routes_attrib = batch(desire_lines, id = routes_id, username = "robinlovelace", wait = TRUE)
 #' names(routes_attrib)
-#' desire_lines_huge = desire_lines[sample(nrow(desire_lines), 100000, replace = TRUE), ]
+#' unique(routes_attrib$route_number)
+#' desire_lines_huge = desire_lines[sample(nrow(desire_lines), 250000, replace = TRUE), ]
 #' routes_id = batch(desire_lines_huge, username = "robinlovelace", wait = FALSE)
 #' names(routes)
 #' plot(routes$geometry)
@@ -237,12 +241,13 @@ batch_routes = function(
     pat,
     silent = TRUE
 ) {
-  browser()
   batch_url = paste0(base_url, "?key=", pat)
   desire_lines_to_send = desire_lines["id"]
-  # TODO: reduce precision:
-  # st_precision(desire_lines_to_send) = 3
-  # sf::st_write(desire_lines_to_send, "/tmp/to_send.geojson", delete_dsn = TRUE)
+  desire_lines_to_send = sf::st_set_precision(desire_lines_to_send, precision = 10^5)
+  # Reduce precision:
+  f_tmp = file.path(tempdir(), "to_send.geojson")
+  sf::write_sf(desire_lines_to_send, f_tmp, delete_dsn = TRUE)
+  desire_lines_to_send = sf::read_sf(f_tmp)
   body = list(
     name = name,
     serverId = serverId,
