@@ -25,7 +25,7 @@ batch(
   pat = Sys.getenv("CYCLESTREETS_BATCH"),
   silent = TRUE,
   delete_job = TRUE,
-  cols_to_keep = c("name", "provisionName", "distances", "time", "quietness",
+  cols_to_keep = c("id", "name", "provisionName", "distances", "time", "quietness",
     "gradient_smooth")
 )
 }

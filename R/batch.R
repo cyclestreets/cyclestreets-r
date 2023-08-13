@@ -90,7 +90,7 @@ batch = function(
     pat = Sys.getenv("CYCLESTREETS_BATCH"),
     silent = TRUE,
     delete_job = TRUE,
-    cols_to_keep = c("name", "provisionName", "distances", "time", "quietness", "gradient_smooth")
+    cols_to_keep = c("id", "name", "provisionName", "distances", "time", "quietness", "gradient_smooth")
 ) {
 
   sys_time = Sys.time()
@@ -214,7 +214,7 @@ get_routes = function(url, desire_lines = NULL, filename, directory,
   routes_updated = dplyr::left_join(
     routes,
     desire_lines,
-    by = dplyr::join_by(route_number == route_number)
+    by = dplyr::join_by(id == route_number)
   )
   routes_updated
 }
