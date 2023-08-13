@@ -56,8 +56,8 @@
 #' plot(routes_wait)
 #' batch(id = 3724, username = "robinlovelace", wait = TRUE, delete_job = FALSE)
 #' plot(desire_lines$geometry[4])
-#' head(routes_wait$route_number)
-#' plot(routes_wait$geometry[routes_wait$route_number == "4"], add = TRUE)
+#' head(routes_wait$id)
+#' plot(routes_wait$geometry[routes_wait$id == "4"], add = TRUE)
 #' # Job is deleted after this command:
 #' routes_attrib = batch(desire_lines, id = routes_id, username = "robinlovelace", wait = TRUE)
 #' names(routes_attrib)
@@ -99,6 +99,7 @@ batch = function(
     wait_time = wait_s(n = nrow(desire_lines))
   }
 
+  # Add id column required by cyclestreets:
   if(!is.null(desire_lines)) {
     if(! "id" %in% names(desire_lines)) {
       desire_lines$id = seq(nrow(desire_lines))
@@ -190,7 +191,7 @@ batch = function(
 }
 
 get_routes = function(url, desire_lines = NULL, filename, directory,
-                      cols_to_keep = c("name", "provisionName", "distances", "time",
+                      cols_to_keep = c("id", "name", "provisionName", "distances", "time",
                                        "quietness", "gradient_smooth")) {
   filename_local = file.path(directory, paste0(filename, ".csv.gz"))
   if(file.exists(filename_local)) {
@@ -201,20 +202,20 @@ get_routes = function(url, desire_lines = NULL, filename, directory,
   # routes = batch_read(gsub(pattern = ".gz", replacement = "", filename_local))
   # list.files(tempdir())
   routes = batch_read(filename_local, cols_to_keep = cols_to_keep)
-  routes_id_table = table(routes$route_number)
+  routes_id_table = table(routes$id)
   routes_id_names = sort(as.numeric(names(routes_id_table)))
   if(is.null(desire_lines)) {
     return(routes)
   }
   # If there are desire lines:
-  desire_lines$route_number = as.character(seq(nrow(desire_lines)))
+  desire_lines$id = as.character(seq(nrow(desire_lines)))
   desire_lines = sf::st_drop_geometry(desire_lines)
   n_routes_removed = nrow(desire_lines) - length(routes_id_names)
   message(n_routes_removed, " routes removed")
   routes_updated = dplyr::left_join(
     routes,
     desire_lines,
-    by = dplyr::join_by(id == route_number)
+    by = dplyr::join_by(route_number == id)
   )
   routes_updated
 }

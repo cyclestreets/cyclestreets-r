@@ -51,7 +51,6 @@ batch_read = function(
 
   names(res_df)[names(res_df) == "id"] = "route_number"
 
-
   res_df
 }
 
