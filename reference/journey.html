@@ -66,17 +66,7 @@ See <a href="https://www.cyclestreets.net/api/" class="external-link">cyclestree
 <span>  base_url <span class="op">=</span> <span class="st">"https://www.cyclestreets.net"</span>,</span>
 <span>  reporterrors <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  save_raw <span class="op">=</span> <span class="st">"FALSE"</span>,</span>
-<span>  cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"name"</span>, <span class="st">"distances"</span>, <span class="st">"time"</span>, <span class="st">"busynance"</span>, <span class="st">"elevations"</span>, <span class="st">"start_longitude"</span>,</span>
-<span>    <span class="st">"start_latitude"</span>, <span class="st">"finish_longitude"</span>, <span class="st">"finish_latitude"</span><span class="op">)</span>,</span>
-<span>  cols_extra <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"crow_fly_distance"</span>, <span class="st">"event"</span>, <span class="st">"whence"</span>, <span class="st">"speed"</span>, <span class="st">"itinerary"</span>, <span class="st">"plan"</span>,</span>
-<span>    <span class="st">"note"</span>, <span class="st">"length"</span>, <span class="st">"quietness"</span>, <span class="st">"west"</span>, <span class="st">"south"</span>, <span class="st">"east"</span>, <span class="st">"north"</span>, <span class="st">"leaving"</span>,</span>
-<span>    <span class="st">"arriving"</span>, <span class="st">"grammesCO2saved"</span>, <span class="st">"calories"</span>, <span class="st">"edition"</span>, <span class="st">"gradient_segment"</span>,</span>
-<span>    <span class="st">"elevation_change"</span>, <span class="st">"provisionName"</span><span class="op">)</span>,</span>
-<span>  smooth_gradient <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  distance_cutoff <span class="op">=</span> <span class="fl">50</span>,</span>
-<span>  gradient_cutoff <span class="op">=</span> <span class="fl">0.1</span>,</span>
-<span>  n <span class="op">=</span> <span class="fl">3</span>,</span>
-<span>  warnNA <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -116,34 +106,8 @@ should report errors (FALSE by default).</p></dd>
 <dd><p>Boolean value which returns raw list from the json if TRUE (FALSE by default).</p></dd>
 
 
-<dt>cols</dt>
-<dd><p>Columns to be included in the result, a character vector or <code>NULL</code> for all available columns (see details for default)</p></dd>
-
-
-<dt>cols_extra</dt>
-<dd><p>Additional columns to be added providing summaries of gradient and other variables</p></dd>
-
-
-<dt>smooth_gradient</dt>
-<dd><p>Identify and fix anomalous gradients? TRUE by default. See
-https://github.com/Robinlovelace/cyclestreets/issues/14</p></dd>
-
-
-<dt>distance_cutoff</dt>
-<dd><p>Distance (m) used to identify anomalous gradients</p></dd>
-
-
-<dt>gradient_cutoff</dt>
-<dd><p>Gradient (%, e.g. 0.1 being 10%) used to identify anomalous gradients</p></dd>
-
-
-<dt>n</dt>
-<dd><p>The number of segments to use to smooth anomalous gradents.</p></dd>
-
-
-<dt>warnNA</dt>
-<dd><p>Logical should NA warning be given?
-The default is 3, meaning segments directly before, after and including the offending segment.</p></dd>
+<dt>...</dt>
+<dd><p>Arguments passed to json2sf_cs</p></dd>
 
 </dl></div>
     <div id="details">
@@ -163,6 +127,9 @@ can add the environment variable as follows
 you need to restart your R session before the journey function will work.</p>
 <p>See <a href="https://www.cyclestreets.net/help/journey/howitworks/" class="external-link">www.cyclestreets.net/help/journey/howitworks/</a>
 for details on how these are calculated.</p>
+<p>CycleStreets can give you lots of info at route and segment level.
+Commonly useful columns include:</p>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>cols <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"name"</span>, <span class="st">"provisionName"</span>, <span class="st">"time"</span>, <span class="st">"quietness"</span>, <span class="st">"edition"</span>, <span class="st">"gradient_smooth"</span>)</span></code></pre><p></p></div>
 <p>See <code><a href="json2sf_cs.html">json2sf_cs()</a></code> for details.</p>
     </div>
     <div id="see-also">
@@ -177,6 +144,10 @@ for details on how these are calculated.</p>
 <span class="r-in"><span><span class="va">to</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1.76</span>, <span class="fl">53.80</span><span class="op">)</span> <span class="co"># geo_code("bradford uk")</span></span></span>
 <span class="r-in"><span><span class="va">r1</span> <span class="op">=</span> <span class="fu">journey</span><span class="op">(</span><span class="va">from</span>, <span class="va">to</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">r1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">cols</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"name"</span>, <span class="st">"provisionName"</span>, <span class="st">"distances"</span>, <span class="st">"time"</span>, <span class="st">"quietness"</span>, <span class="st">"edition"</span>, <span class="st">"gradient_smooth"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">r2</span> <span class="op">=</span> <span class="fu">journey</span><span class="op">(</span><span class="va">from</span>, <span class="va">to</span>, cols_to_keep <span class="op">=</span> <span class="va">cols</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">r2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">r2</span></span></span>
 <span class="r-in"><span><span class="va">r1</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="op">]</span></span></span>
 <span class="r-in"><span><span class="va">r1</span><span class="op">$</span><span class="va">grammesCO2saved</span></span></span>
 <span class="r-in"><span><span class="va">r1</span><span class="op">$</span><span class="va">calories</span></span></span>
