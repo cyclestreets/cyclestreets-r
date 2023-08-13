@@ -6,6 +6,8 @@
 #'
 #' See https://www.cyclestreets.net/journey/batch/ for web UI.
 #'
+#' Recommneded max batch size: 250,000 routes
+#'
 #' @param desire_lines Geographic desire lines representing origin-destination data
 #' @param name The name of the batch routing job for CycleStreets
 #' @param directory Where to save the data? `tempdir()` by default
@@ -40,6 +42,7 @@
 #'   continue: Continue (re-open) job
 #'   terminate: Terminate job and delete data
 #' @param delete_job Delete the job? TRUE by default to avoid clogged servers
+#' @param cols_to_keep Columns to return in output sf object
 #' @inheritParams journey
 #' @export
 #' @examples
@@ -54,21 +57,21 @@
 #' routes_wait = batch(id = routes_id, username = "robinlovelace", wait = TRUE, delete_job = FALSE)
 #' names(routes_wait)
 #' plot(routes_wait)
-#' batch(id = 3724, username = "robinlovelace", wait = TRUE, delete_job = FALSE)
 #' plot(desire_lines$geometry[4])
-#' head(routes_wait$route_number)
 #' plot(routes_wait$geometry[routes_wait$route_number == "4"], add = TRUE)
+#' head(routes_wait$route_number)
+#' unique(routes_wait$route_number)
 #' # Job is deleted after this command:
 #' routes_attrib = batch(desire_lines, id = routes_id, username = "robinlovelace", wait = TRUE)
 #' names(routes_attrib)
-#' desire_lines_huge = desire_lines[sample(nrow(desire_lines), 100000, replace = TRUE), ]
+#' unique(routes_attrib$route_number)
+#' desire_lines_huge = desire_lines[sample(nrow(desire_lines), 250000, replace = TRUE), ]
 #' routes_id = batch(desire_lines_huge, username = "robinlovelace", wait = FALSE)
 #' names(routes)
 #' plot(routes$geometry)
 #' plot(desire_lines$geometry, add = TRUE, col = "red")
 #' routes = batch(desire_lines, username = "robinlovelace", wait_time = 5)
-#'
-#' profvis::profvis(batch_read("test-data.csv.gz"))
+#' # profvis::profvis(batch_read("test-data.csv.gz"))
 #' }
 batch = function(
     desire_lines = NULL,
@@ -90,7 +93,8 @@ batch = function(
     base_url = "https://api.cyclestreets.net/v2/batchroutes.createjob",
     pat = Sys.getenv("CYCLESTREETS_BATCH"),
     silent = TRUE,
-    delete_job = TRUE
+    delete_job = TRUE,
+    cols_to_keep = c("id", "name", "provisionName", "distances", "time", "quietness", "gradient_smooth")
 ) {
 
   sys_time = Sys.time()
@@ -99,6 +103,7 @@ batch = function(
     wait_time = wait_s(n = nrow(desire_lines))
   }
 
+  # Add id column required by cyclestreets:
   if(!is.null(desire_lines)) {
     if(! "id" %in% names(desire_lines)) {
       desire_lines$id = seq(nrow(desire_lines))
@@ -176,7 +181,8 @@ batch = function(
       )
     }
   }
-  routes_updated = get_routes(url = res_joburls$dataGz, desire_lines, filename, directory)
+  routes_updated = get_routes(url = res_joburls$dataGz, desire_lines, filename,
+                              directory, cols_to_keep = cols_to_keep)
   # if(wait && !is.null(desire_lines)) {
   #   time_taken_s = round(as.numeric(difftime(time1 = Sys.time(), time2 = sys_time, units = "secs")))
   #   rps = round(nrow(desire_lines) / time_taken_s, 1)
@@ -188,7 +194,9 @@ batch = function(
   routes_updated
 }
 
-get_routes = function(url, desire_lines = NULL, filename, directory) {
+get_routes = function(url, desire_lines = NULL, filename, directory,
+                      cols_to_keep = c("id", "name", "provisionName", "distances", "time",
+                                       "quietness", "gradient_smooth")) {
   filename_local = file.path(directory, paste0(filename, ".csv.gz"))
   if(file.exists(filename_local)) {
     message(filename, " already exists, overwriting it")
@@ -197,21 +205,21 @@ get_routes = function(url, desire_lines = NULL, filename, directory) {
   # R.utils::gzip(filename_local)
   # routes = batch_read(gsub(pattern = ".gz", replacement = "", filename_local))
   # list.files(tempdir())
-  routes = batch_read(filename_local)
-  routes_id_table = table(routes$route_number)
+  routes = batch_read(filename_local, cols_to_keep = cols_to_keep)
+  routes_id_table = table(routes$id)
   routes_id_names = sort(as.numeric(names(routes_id_table)))
   if(is.null(desire_lines)) {
     return(routes)
   }
   # If there are desire lines:
-  desire_lines$route_number = as.character(seq(nrow(desire_lines)))
+  desire_lines$id = as.character(seq(nrow(desire_lines)))
   desire_lines = sf::st_drop_geometry(desire_lines)
   n_routes_removed = nrow(desire_lines) - length(routes_id_names)
   message(n_routes_removed, " routes removed")
   routes_updated = dplyr::left_join(
     routes,
     desire_lines,
-    by = dplyr::join_by(route_number == route_number)
+    by = dplyr::join_by(route_number == id)
   )
   routes_updated
 }
@@ -235,10 +243,16 @@ batch_routes = function(
     silent = TRUE
 ) {
   batch_url = paste0(base_url, "?key=", pat)
+  desire_lines_to_send = desire_lines["id"]
+  desire_lines_to_send = sf::st_set_precision(desire_lines_to_send, precision = 10^5)
+  # Reduce precision:
+  f_tmp = file.path(tempdir(), "to_send.geojson")
+  sf::write_sf(desire_lines_to_send, f_tmp, delete_dsn = TRUE)
+  desire_lines_to_send = sf::read_sf(f_tmp)
   body = list(
     name = name,
     serverId = serverId,
-    geometry = geojsonsf::sf_geojson(desire_lines),
+    geometry = geojsonsf::sf_geojson(desire_lines_to_send),
     strategies = strategies,
     bothDirections = bothDirections,
     minDistance = minDistance,
@@ -364,115 +378,6 @@ batch_deletejob = function(
   message(paste0(res_json, collapse = ": "))
 }
 
-# # # Tests:
-# devtools::load_all()
-# library(tidyverse)
-# u = "https://github.com/cyclestreets/cyclestreets-r/releases/download/v0.5.3/cambridge-data.csv.gz"
-# file = basename(u)
-# download.file(u, file)
-# res = batch_read(file)
-# l_desire |>
-#   slice(1:3) |>
-#   mapview::mapview()
-# res |>
-#   filter(id %in% 1:3) |>
-#   mapview::mapview()
-
-
-# batch_read = function(file) {
-#   # if(grepl(pattern = ".gz", x = file)) {
-#   #   file_csv = gsub(pattern = ".gz", replacement = "", x = file)
-#   #   if(file.exists(file_csv)) {
-#   #     message(".csv File already exists. Removing it.")
-#   #     file.remove(file_csv)
-#   #   }
-#   #   R.utils::gunzip(file)
-#   # } else {
-#     # file_csv = file
-#   # }
-#   # res = readr::read_csv(file_csv)
-#   # message("Reading in the following file:\n", file_csv)
-#   message("Reading in the following file:\n", file)
-#   # res = utils::read.csv(file)
-#   res = readr::read_csv(file)
-#   # res_dt = data.table::fread(file, qmethod = "double")
-#   res$route_number = seq(nrow(res))
-#   n_char = nchar(res$json)
-#   n_char[is.na(n_char)] = 0
-#   if(all(n_char == 0)) {
-#     stop("No routes returned: does CycleStreets operate where you requested data?")
-#   }
-#   min_nchar = min(n_char)
-#   if(min_nchar == 0) {
-#     which_min_ncar = which(n_char == 0)
-#     message("Removing NA routes: ", paste(which_min_ncar, collapse = " "))
-#     res = res[-which_min_ncar, ]
-#   }
-#   # Commented debugging code to identify the failing line:
-#   # try({
-#   message("Reading route data")
-#     res_list = pbapply::pblapply(res$json, function(x) {
-#   #     if(exists("i_line")) {
-#   #       i_line <<- i_line + 1
-#   #     } else {
-#   #       i_line <<- 1
-#   #     }
-#       # message("Line number ", i_line)
-#       jsonlite::parse_json(x, simplifyVector = TRUE)
-#     } )
-#   # })
-#   message("Converting json values to linestrings")
-#   res_list = pbapply::pblapply(
-#     res_list,
-#     json2sf_cs, cols = c(
-#     # "name",
-#     "distances",
-#     # "time",
-#     "busynance",
-#     "elevations"
-#     # ,
-#     # "start_longitude",
-#     # "start_latitude",
-#     # "finish_longitude",
-#     # "finish_latitude"
-#   ),
-#   cols_extra = c(
-#     # "crow_fly_distance",
-#     # "event",
-#     # "whence",
-#     # "speed",
-#     # "itinerary",
-#     # "plan",
-#     # "note",
-#     # "length",
-#     # "west",
-#     # "south",
-#     # "east",
-#     # "north",
-#     # "leaving",
-#     # "arriving",
-#     # "grammesCO2saved",
-#     # "calories",
-#     # "edition",
-#     "gradient_segment",
-#     # "elevation_change",
-#     # "provisionName",
-#     "quietness"
-#   ),
-#   smooth_gradient = TRUE,
-#   distance_cutoff = 50,
-#   gradient_cutoff = 0.1,
-#   n = 3
-#   )
-#   res_list = lapply(seq(length(res_list)), function(i) {
-#     res_list[[i]]$route_number = as.character(i)
-#     res_list[[i]]
-#   } )
-#   res_df = bind_sf(res_list)
-#   sf::st_crs(res_df) = "EPSG:4326"
-#   res_df
-# }
-
 wait_s = function(n) {
   if(n < 2000) {
     w = 10 + n / 100
@@ -481,13 +386,4 @@ wait_s = function(n) {
     w = 30 + n / 1000
   }
   w
-}
-
-bind_sf = function(x) {
-  if (length(x) == 0) stop("Empty list")
-  geom_name = attr(x[[1]], "sf_column")
-  x = data.table::rbindlist(x, use.names = FALSE)
-  # x = collapse::unlist2d(x, idcols = FALSE, recursive = FALSE)
-  x[[geom_name]] = st_sfc(x[[geom_name]], recompute_bbox = TRUE)
-  x = st_as_sf(x)
 }

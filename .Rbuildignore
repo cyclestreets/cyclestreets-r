@@ -9,3 +9,4 @@
 ^\.github$
 ^CRAN-SUBMISSION$
 ^data-raw$
+^test-data-7mb\.csv$
