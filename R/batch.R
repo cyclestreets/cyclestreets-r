@@ -43,6 +43,7 @@
 #'   terminate: Terminate job and delete data
 #' @param delete_job Delete the job? TRUE by default to avoid clogged servers
 #' @param cols_to_keep Columns to return in output sf object
+#' @param segments logical, return segments TRUE/FALSE/"both"
 #' @inheritParams journey
 #' @export
 #' @examples
@@ -94,7 +95,8 @@ batch = function(
     pat = Sys.getenv("CYCLESTREETS_BATCH"),
     silent = TRUE,
     delete_job = TRUE,
-    cols_to_keep = c("id", "name", "provisionName", "distances", "time", "quietness", "gradient_smooth")
+    cols_to_keep = c("id", "name", "provisionName", "distances", "time", "quietness", "gradient_smooth"),
+    segments = TRUE
 ) {
 
   sys_time = Sys.time()
@@ -182,7 +184,7 @@ batch = function(
     }
   }
   routes_updated = get_routes(url = res_joburls$dataGz, desire_lines, filename,
-                              directory, cols_to_keep = cols_to_keep)
+                              directory, cols_to_keep = cols_to_keep, segments = segments)
   # if(wait && !is.null(desire_lines)) {
   #   time_taken_s = round(as.numeric(difftime(time1 = Sys.time(), time2 = sys_time, units = "secs")))
   #   rps = round(nrow(desire_lines) / time_taken_s, 1)
@@ -196,7 +198,8 @@ batch = function(
 
 get_routes = function(url, desire_lines = NULL, filename, directory,
                       cols_to_keep = c("id", "name", "provisionName", "distances", "time",
-                                       "quietness", "gradient_smooth")) {
+                                       "quietness", "gradient_smooth"),
+                      segments = TRUE) {
   filename_local = file.path(directory, paste0(filename, ".csv.gz"))
   if(file.exists(filename_local)) {
     message(filename, " already exists, overwriting it")
@@ -205,7 +208,7 @@ get_routes = function(url, desire_lines = NULL, filename, directory,
   # R.utils::gzip(filename_local)
   # routes = batch_read(gsub(pattern = ".gz", replacement = "", filename_local))
   # list.files(tempdir())
-  routes = batch_read(filename_local, cols_to_keep = cols_to_keep)
+  routes = batch_read(filename_local, cols_to_keep = cols_to_keep, segments = segments)
   routes_id_table = table(routes$id)
   routes_id_names = sort(as.numeric(names(routes_id_table)))
   if(is.null(desire_lines)) {
