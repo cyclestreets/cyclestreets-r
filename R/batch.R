@@ -237,7 +237,7 @@ get_routes = function(url, desire_lines = NULL, filename, directory,
     }
   }
   # If there are desire lines:
-  routes_id_table = table(routes$id)
+  routes_id_table = table(routes$route_number)
   routes_id_names = sort(as.numeric(names(routes_id_table)))
 
   desire_lines$id = as.character(seq(nrow(desire_lines)))
