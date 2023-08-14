@@ -1,3 +1,5 @@
+# cyclestreets 1.0.1
+
 # cyclestreets 1.0.0
 
 * Breaking changes: there are some differences in inputs and outputs, check you code before updating
