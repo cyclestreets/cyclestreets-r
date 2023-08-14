@@ -208,13 +208,38 @@ get_routes = function(url, desire_lines = NULL, filename, directory,
   # R.utils::gzip(filename_local)
   # routes = batch_read(gsub(pattern = ".gz", replacement = "", filename_local))
   # list.files(tempdir())
-  routes = batch_read(filename_local, cols_to_keep = cols_to_keep, segments = segments)
-  routes_id_table = table(routes$id)
-  routes_id_names = sort(as.numeric(names(routes_id_table)))
+
+
+  if(is.character(segments)){
+    if(segments == "both"){
+      routes_segs = batch_read(filename_local, cols_to_keep = cols_to_keep, segments = segments)
+      routes = routes_segs$routes
+      segments = routes_segs$segments
+      rm(routes_segs)
+
+      if(!is.null(desire_lines)){
+        message("When using segments = both, only the routes are joined to desire lines")
+      }
+    } else {
+      stop("Unknown segments value")
+    }
+  } else {
+    routes = batch_read(filename_local, cols_to_keep = cols_to_keep, segments = segments)
+  }
+
+
+
   if(is.null(desire_lines)) {
-    return(routes)
+    if(is.character(segments)){
+      return(list(routes = routes, segments = segments))
+    } else {
+      return(routes)
+    }
   }
   # If there are desire lines:
+  routes_id_table = table(routes$id)
+  routes_id_names = sort(as.numeric(names(routes_id_table)))
+
   desire_lines$id = as.character(seq(nrow(desire_lines)))
   desire_lines = sf::st_drop_geometry(desire_lines)
   n_routes_removed = nrow(desire_lines) - length(routes_id_names)
@@ -224,7 +249,13 @@ get_routes = function(url, desire_lines = NULL, filename, directory,
     desire_lines,
     by = dplyr::join_by(route_number == id)
   )
-  routes_updated
+
+  if(is.character(segments)){
+    return(list(routes = routes_updated, segments = segments))
+  } else {
+    return(routes_updated)
+  }
+
 }
 
 batch_routes = function(
