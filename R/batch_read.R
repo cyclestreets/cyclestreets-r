@@ -43,15 +43,43 @@ batch_read = function(
           "start_longitude","start_latitude","finish_longitude","finish_latitude",
           "crow_fly_distance","speed","itinerary","length","west","south","east",
           "north","grammesCO2saved","calories")
-  for(i in seq(1, length(nms))){
-    if(nms[i] %in% names(res_df)){
-      res_df[[nms[i]]] = as.numeric(res_df[[nms[i]]])
+
+
+
+  if(is.character(segments)){
+    if(segments != "both"){
+      stop("Unknown segments")
     }
+
+    for(i in seq(1, length(nms))){
+      if(nms[i] %in% names(res_df$routes)){
+        res_df$routes[[nms[i]]] = as.numeric(res_df$routes[[nms[i]]])
+      }
+    }
+    names(res_df$routes)[names(res_df$routes) == "id"] = "route_number"
+
+    for(i in seq(1, length(nms))){
+      if(nms[i] %in% names(res_df$segments)){
+        res_df$segments[[nms[i]]] = as.numeric(res_df$segments[[nms[i]]])
+      }
+    }
+    names(res_df$segments)[names(res_df$segments) == "id"] = "route_number"
+
+  } else {
+
+    for(i in seq(1, length(nms))){
+      if(nms[i] %in% names(res_df)){
+        res_df[[nms[i]]] = as.numeric(res_df[[nms[i]]])
+      }
+    }
+
+    names(res_df)[names(res_df) == "id"] = "route_number"
+
+
   }
 
-  names(res_df)[names(res_df) == "id"] = "route_number"
-
   res_df
+
 }
 
 # # # Tests:

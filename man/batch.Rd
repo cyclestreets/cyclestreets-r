@@ -26,7 +26,8 @@ batch(
   silent = TRUE,
   delete_job = TRUE,
   cols_to_keep = c("id", "name", "provisionName", "distances", "time", "quietness",
-    "gradient_smooth")
+    "gradient_smooth"),
+  segments = TRUE
 )
 }
 \arguments{
@@ -89,6 +90,8 @@ Sys.setenv(CYCLESTREETS_PW="xxxxxx")}
 \item{delete_job}{Delete the job? TRUE by default to avoid clogged servers}
 
 \item{cols_to_keep}{Columns to return in output sf object}
+
+\item{segments}{logical, return segments TRUE/FALSE/"both"}
 }
 \description{
 Note: set \code{CYCLESTREETS_BATCH}, \code{CYCLESTREETS_PW} and \code{CYCLESTREETS_PW}
@@ -98,7 +101,7 @@ before trying this.
 \details{
 See https://www.cyclestreets.net/journey/batch/ for web UI.
 
-Recommneded max batch size: 250,000 routes
+Recommneded max batch size: 300k routes
 }
 \examples{
 if(FALSE) {

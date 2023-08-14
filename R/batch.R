@@ -43,6 +43,7 @@
 #'   terminate: Terminate job and delete data
 #' @param delete_job Delete the job? TRUE by default to avoid clogged servers
 #' @param cols_to_keep Columns to return in output sf object
+#' @param segments logical, return segments TRUE/FALSE/"both"
 #' @inheritParams journey
 #' @export
 #' @examples
@@ -70,7 +71,9 @@
 #' names(routes)
 #' plot(routes$geometry)
 #' plot(desire_lines$geometry, add = TRUE, col = "red")
-#' routes = batch(desire_lines, username = "robinlovelace", wait_time = 5)
+#' routes = batch(desire_lines, username = "robinlovelace", wait_time = 5, segments = FALSE)
+#' segments = batch(desire_lines, username = "robinlovelace", wait_time = 5, segments = TRUE)
+#' both = batch(desire_lines, username = "robinlovelace", wait_time = 5, segments = "both")
 #' # profvis::profvis(batch_read("test-data.csv.gz"))
 #' }
 batch = function(
@@ -94,7 +97,8 @@ batch = function(
     pat = Sys.getenv("CYCLESTREETS_BATCH"),
     silent = TRUE,
     delete_job = TRUE,
-    cols_to_keep = c("id", "name", "provisionName", "distances", "time", "quietness", "gradient_smooth")
+    cols_to_keep = c("id", "name", "provisionName", "distances", "time", "quietness", "gradient_smooth"),
+    segments = TRUE
 ) {
 
   sys_time = Sys.time()
@@ -182,7 +186,7 @@ batch = function(
     }
   }
   routes_updated = get_routes(url = res_joburls$dataGz, desire_lines, filename,
-                              directory, cols_to_keep = cols_to_keep)
+                              directory, cols_to_keep = cols_to_keep, segments = segments)
   # if(wait && !is.null(desire_lines)) {
   #   time_taken_s = round(as.numeric(difftime(time1 = Sys.time(), time2 = sys_time, units = "secs")))
   #   rps = round(nrow(desire_lines) / time_taken_s, 1)
@@ -196,7 +200,8 @@ batch = function(
 
 get_routes = function(url, desire_lines = NULL, filename, directory,
                       cols_to_keep = c("id", "name", "provisionName", "distances", "time",
-                                       "quietness", "gradient_smooth")) {
+                                       "quietness", "gradient_smooth"),
+                      segments = TRUE) {
   filename_local = file.path(directory, paste0(filename, ".csv.gz"))
   if(file.exists(filename_local)) {
     message(filename, " already exists, overwriting it")
@@ -205,13 +210,38 @@ get_routes = function(url, desire_lines = NULL, filename, directory,
   # R.utils::gzip(filename_local)
   # routes = batch_read(gsub(pattern = ".gz", replacement = "", filename_local))
   # list.files(tempdir())
-  routes = batch_read(filename_local, cols_to_keep = cols_to_keep)
-  routes_id_table = table(routes$id)
-  routes_id_names = sort(as.numeric(names(routes_id_table)))
+
+
+  if(is.character(segments)){
+    if(segments == "both"){
+      routes_segs = batch_read(filename_local, cols_to_keep = cols_to_keep, segments = segments)
+      routes = routes_segs$routes
+      segs = routes_segs$segments
+      rm(routes_segs)
+
+      if(!is.null(desire_lines)){
+        message("When using segments = both, only the routes are joined to desire lines")
+      }
+    } else {
+      stop("Unknown segments value")
+    }
+  } else {
+    routes = batch_read(filename_local, cols_to_keep = cols_to_keep, segments = segments)
+  }
+
+
+
   if(is.null(desire_lines)) {
-    return(routes)
+    if(is.character(segments)){
+      return(list(routes = routes, segments = segments))
+    } else {
+      return(routes)
+    }
   }
   # If there are desire lines:
+  routes_id_table = table(routes$route_number)
+  routes_id_names = sort(as.numeric(names(routes_id_table)))
+
   desire_lines$id = as.character(seq(nrow(desire_lines)))
   desire_lines = sf::st_drop_geometry(desire_lines)
   n_routes_removed = nrow(desire_lines) - length(routes_id_names)
@@ -221,7 +251,13 @@ get_routes = function(url, desire_lines = NULL, filename, directory,
     desire_lines,
     by = dplyr::join_by(route_number == id)
   )
-  routes_updated
+
+  if(is.character(segments)){
+    return(list(routes = routes_updated, segments = segs))
+  } else {
+    return(routes_updated)
+  }
+
 }
 
 batch_routes = function(
@@ -375,7 +411,7 @@ batch_deletejob = function(
   if(!silent) message("Deleting the data")
   res = httr::POST(url = batch_url, body = body)
   res_json = httr::content(res, "parsed")
-  message(paste0(res_json, collapse = ": "))
+  message("Job ",paste0(res_json, collapse = ": "))
 }
 
 wait_s = function(n) {
