@@ -79,7 +79,8 @@ before trying this.</p>
 <span>  silent <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  delete_job <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  cols_to_keep <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"id"</span>, <span class="st">"name"</span>, <span class="st">"provisionName"</span>, <span class="st">"distances"</span>, <span class="st">"time"</span>, <span class="st">"quietness"</span>,</span>
-<span>    <span class="st">"gradient_smooth"</span><span class="op">)</span></span>
+<span>    <span class="st">"gradient_smooth"</span><span class="op">)</span>,</span>
+<span>  segments <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -186,11 +187,15 @@ Sys.setenv(CYCLESTREETS_PW="xxxxxx")</p></dd>
 <dt>cols_to_keep</dt>
 <dd><p>Columns to return in output sf object</p></dd>
 
+
+<dt>segments</dt>
+<dd><p>logical, return segments TRUE/FALSE/"both"</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
     <p>See https://www.cyclestreets.net/journey/batch/ for web UI.</p>
-<p>Recommneded max batch size: 250,000 routes</p>
+<p>Recommneded max batch size: 300k routes</p>
     </div>
 
     <div id="ref-examples">
