@@ -37,7 +37,7 @@ cs2num_mean = function(x) {
 cs2num_mean(elev_list)
 
 
-json2sf_cs2 = function(obj,
+json2sf_cs = function(obj,
                       cols = NULL,
                       cols_extra = c(
                         # "gradient_mean",
@@ -171,7 +171,7 @@ json2sf_cs2 = function(obj,
 }
 
 
-rsf2 = json2sf_cs2(obj, cols = c("distances"))
+rsf2 = json2sf_cs(obj, cols = c("distances"))
 waldo::compare(rsf, rsf2)
 sf:::plot.sf(rsf)
 
@@ -179,5 +179,5 @@ setwd("~/github/cyclestreets/cyclestreets-r/")
 devtools::load_all()
 bench::mark(check = FALSE,
   original = cyclestreets::json2sf_cs(obj, cols = c("distances")),
-  new = json2sf_cs2(obj, cols = c("distances"))
+  new = json2sf_cs(obj, cols = c("distances"))
 )

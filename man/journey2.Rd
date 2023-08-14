@@ -84,5 +84,5 @@ r1$calories
 }
 }
 \seealso{
-json2sf_cs2
+json2sf_cs
 }

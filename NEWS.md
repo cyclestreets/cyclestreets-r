@@ -1,3 +1,10 @@
+# cyclestreets 1.0.0
+
+* Breaking changes: there are some differences in inputs and outputs, check you code before updating
+* Refactored to use faster implemenations throughout, thanks to Malcolm Morgan (@mem48) for SIMDJSON implementations
+* You can now choose which columns to return with `cols_to_keep` in `journey()` and `batch()` functions, with minimal defaults for `batch()`
+* Tests now pass
+
 # cyclestreets 0.6.0 (February 2023)
 
 * Experimental `journey2()` function added (#31)

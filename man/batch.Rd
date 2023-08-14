@@ -10,7 +10,7 @@ batch(
   directory = tempdir(),
   wait = FALSE,
   wait_time = NULL,
-  name = "test batch",
+  name = "Batch job",
   serverId = 21,
   strategies = "quietest",
   bothDirections = 0,
@@ -24,7 +24,9 @@ batch(
   base_url = "https://api.cyclestreets.net/v2/batchroutes.createjob",
   pat = Sys.getenv("CYCLESTREETS_BATCH"),
   silent = TRUE,
-  delete_job = TRUE
+  delete_job = TRUE,
+  cols_to_keep = c("id", "name", "provisionName", "distances", "time", "quietness",
+    "gradient_smooth")
 )
 }
 \arguments{
@@ -85,6 +87,8 @@ Sys.setenv(CYCLESTREETS_PW="xxxxxx")}
 \item{silent}{Logical (default is FALSE). TRUE hides request sent.}
 
 \item{delete_job}{Delete the job? TRUE by default to avoid clogged servers}
+
+\item{cols_to_keep}{Columns to return in output sf object}
 }
 \description{
 Note: set \code{CYCLESTREETS_BATCH}, \code{CYCLESTREETS_PW} and \code{CYCLESTREETS_PW}
@@ -93,6 +97,8 @@ before trying this.
 }
 \details{
 See https://www.cyclestreets.net/journey/batch/ for web UI.
+
+Recommneded max batch size: 250,000 routes
 }
 \examples{
 if(FALSE) {
@@ -106,20 +112,20 @@ routes_id = batch(desire_lines, username = "robinlovelace", wait = FALSE)
 routes_wait = batch(id = routes_id, username = "robinlovelace", wait = TRUE, delete_job = FALSE)
 names(routes_wait)
 plot(routes_wait)
-batch(id = 3724, username = "robinlovelace", wait = TRUE, delete_job = FALSE)
 plot(desire_lines$geometry[4])
-head(routes_wait$route_number)
 plot(routes_wait$geometry[routes_wait$route_number == "4"], add = TRUE)
+head(routes_wait$route_number)
+unique(routes_wait$route_number)
 # Job is deleted after this command:
 routes_attrib = batch(desire_lines, id = routes_id, username = "robinlovelace", wait = TRUE)
 names(routes_attrib)
-desire_lines_huge = desire_lines[sample(nrow(desire_lines), 100000, replace = TRUE), ]
+unique(routes_attrib$route_number)
+desire_lines_huge = desire_lines[sample(nrow(desire_lines), 250000, replace = TRUE), ]
 routes_id = batch(desire_lines_huge, username = "robinlovelace", wait = FALSE)
 names(routes)
 plot(routes$geometry)
 plot(desire_lines$geometry, add = TRUE, col = "red")
 routes = batch(desire_lines, username = "robinlovelace", wait_time = 5)
-
-profvis::profvis(batch_read("test-data.csv.gz"))
+# profvis::profvis(batch_read("test-data.csv.gz"))
 }
 }

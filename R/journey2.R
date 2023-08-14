@@ -39,7 +39,7 @@
 #' @param reporterrors Boolean value (TRUE/FALSE) indicating if cyclestreets (TRUE by default).
 #' should report errors (FALSE by default).
 #' @param segments Logical, if true route segments returned otherwise whole routes
-#' @seealso json2sf_cs2
+#' @seealso json2sf_cs
 #' @export
 #' @examples
 #' \dontrun{
@@ -99,7 +99,7 @@ journey2 = function(fromPlace = NA,
   }
 
   message(Sys.time()," processing results")
-  json2sf_cs2(results_raw, id = id, segments = segments)
+  json2sf_cs(results_raw, id = id, segments = segments)
 
 }
 
@@ -225,7 +225,7 @@ add_columns = function(r) {
   # Order for compatibility with journey:
   r$gradient_segment = elevation_change / r$distances
   r$elevation_change = elevation_max - elevation_min
-  r$gradient_smooth = cyclestreets::smooth_with_cutoffs(
+  r$gradient_smooth = smooth_with_cutoffs(
     r$gradient_segment,
     r$elevation_change,
     r$distances,
@@ -235,65 +235,3 @@ add_columns = function(r) {
   )
   r
 }
-
-json2sf_cs2 = function(results_raw, id, segments){
-  results = RcppSimdJson::fparse(results_raw, query = "/marker", query_error_ok = TRUE, always_list = TRUE)
-  results_error = RcppSimdJson::fparse(results_raw, query = "/error", query_error_ok = TRUE, always_list = TRUE)
-  results_error = unlist(results_error, use.names = FALSE)
-  if(length(results_error) > 0){
-    message(length(results_error)," routes returned errors. Unique error messages are:\n")
-    results_error = as.data.frame(table(results_error))
-    results_error = results_error[order(results_error$Freq, decreasing = TRUE),]
-    for(msgs in seq_len(nrow(results_error))){
-      message(results_error$Freq[msgs],'x messages: "',results_error$results_error[msgs],'"\n')
-    }
-  }
-
-  # Process Marker
-  results = lapply(results, `[[`, "@attributes")
-  if(!is.null(id)){
-    names(results) = as.character(id)
-  }
-
-  results = lapply(results, data.table::rbindlist, fill = TRUE)
-  results = data.table::rbindlist(results, idcol = "id", fill = TRUE)
-
-  if(nrow(results) == 0){
-    stop("No valid results returned")
-  }
-
-  route_variables = c("start","finish","start_longitude","start_latitude","finish_longitude","finish_latitude",
-                      "crow_fly_distance","event","whence","speed","itinerary","plan",
-                      "note","length","west","south","east","north","leaving","arriving",
-                      "grammesCO2saved","calories","edition")
-
-  if(segments){
-    results$SPECIALIDFORINTERNAL2 = cumsum(!is.na(results$start))
-
-    results_seg = results[results$type == "segment",]
-    results_seg$geometry = sf::st_sfc(lapply(results_seg$points, txt2coords2), crs = 4326)
-
-    results_rt = results[results$type == "route",]
-    results_rt = results_rt[,names(results_rt) %in% c(route_variables,"SPECIALIDFORINTERNAL2"), with = FALSE]
-
-    results_seg = results_seg[,!names(results_seg) %in% route_variables, with = FALSE]
-    results_seg = dplyr::left_join(results_seg, results_rt, by = "SPECIALIDFORINTERNAL2")
-
-    results = results_seg
-
-  } else {
-    results = results[results$type == "route",]
-    results$geometry = sf::st_sfc(lapply(results$coordinates, txt2coords2), crs = 4326)
-  }
-
-  results$points = NULL
-  results$coordinates = NULL
-  results = sf::st_as_sf(results)
-
-  # message("results may not be in the order they were provided")
-  results = add_columns(results)
-  results$SPECIALIDFORINTERNAL2 <- NULL
-  results
-}
-
-

@@ -18,7 +18,8 @@
 #' zones = sf::read_sf("https://github.com/nptscot/npt/raw/main/data-raw/zones_edinburgh.geojson")
 #' desire_lines = od::od_to_sf(od_df, zones)
 #' desire_lines = desire_lines[1:100, ]
-#' routes_multi = batch_multi(desire_lines, plans = c("fastest", "quietest"), nrow_batch = 26, delete_job = FALSE)
+#' p = c("fastest", "quietest")
+#' routes_multi = batch_multi(desire_lines, plans = p, nrow_batch = 26, delete_job = FALSE)
 #' names(routes_multi)
 #' plot(routes_multi$fastest$geometry)
 #' plot(routes_multi$quietest$geometry)
@@ -26,7 +27,7 @@
 #'   fastest = 4059:(4059+3),
 #'   quietest = 4063:(4063+3)
 #' )
-#' r_ids = batch_multi(desire_lines, plans = c("fastest", "quietest"), nrow_batch = 26, delete_job = FALSE, batch_ids = ids)
+#' r_ids = batch_multi(desire_lines, plans = p, nrow_batch = 26, delete_job = FALSE, batch_ids = ids)
 #' }
 batch_multi = function(desire_lines,
                        plans = c("fastest", "balanced"),
@@ -34,7 +35,6 @@ batch_multi = function(desire_lines,
                        temp_folder = tempdir(),
                        batch_ids = NULL,
                        ...) {
-  library(sf)
   nrow_od = nrow(desire_lines)
   # Break od dataset into chunks:
   desire_lines$splittingID = ceiling(seq_len(nrow(desire_lines)) / nrow_batch)
@@ -135,8 +135,7 @@ batch_multi = function(desire_lines,
 }
 
 bind_sf = function(x) {
-  if (length(x) == 0)
-    stop("Empty list")
+  if (length(x) == 0) stop("Empty list")
   geom_name = attr(x[[1]], "sf_column")
   x = data.table::rbindlist(x, use.names = FALSE)
   # x = collapse::unlist2d(x, idcols = FALSE, recursive = FALSE)

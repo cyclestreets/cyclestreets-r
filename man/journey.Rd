@@ -13,17 +13,7 @@ journey(
   base_url = "https://www.cyclestreets.net",
   reporterrors = TRUE,
   save_raw = "FALSE",
-  cols = c("name", "distances", "time", "busynance", "elevations", "start_longitude",
-    "start_latitude", "finish_longitude", "finish_latitude"),
-  cols_extra = c("crow_fly_distance", "event", "whence", "speed", "itinerary", "plan",
-    "note", "length", "quietness", "west", "south", "east", "north", "leaving",
-    "arriving", "grammesCO2saved", "calories", "edition", "gradient_segment",
-    "elevation_change", "provisionName"),
-  smooth_gradient = TRUE,
-  distance_cutoff = 50,
-  gradient_cutoff = 0.1,
-  n = 3,
-  warnNA = FALSE
+  ...
 )
 }
 \arguments{
@@ -45,21 +35,7 @@ should report errors (FALSE by default).}
 
 \item{save_raw}{Boolean value which returns raw list from the json if TRUE (FALSE by default).}
 
-\item{cols}{Columns to be included in the result, a character vector or \code{NULL} for all available columns (see details for default)}
-
-\item{cols_extra}{Additional columns to be added providing summaries of gradient and other variables}
-
-\item{smooth_gradient}{Identify and fix anomalous gradients? TRUE by default. See
-https://github.com/Robinlovelace/cyclestreets/issues/14}
-
-\item{distance_cutoff}{Distance (m) used to identify anomalous gradients}
-
-\item{gradient_cutoff}{Gradient (\%, e.g. 0.1 being 10\%) used to identify anomalous gradients}
-
-\item{n}{The number of segments to use to smooth anomalous gradents.}
-
-\item{warnNA}{Logical should NA warning be given?
-The default is 3, meaning segments directly before, after and including the offending segment.}
+\item{...}{Arguments passed to json2sf_cs}
 }
 \description{
 R interface to the CycleStreets.net journey planning API,
@@ -89,6 +65,12 @@ you need to restart your R session before the journey function will work.
 See \href{https://www.cyclestreets.net/help/journey/howitworks/}{www.cyclestreets.net/help/journey/howitworks/}
 for details on how these are calculated.
 
+CycleStreets can give you lots of info at route and segment level.
+Commonly useful columns include:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{cols = c("name", "provisionName", "time", "quietness", "edition", "gradient_smooth")
+}\if{html}{\out{</div>}}
+
 See \code{\link[=json2sf_cs]{json2sf_cs()}} for details.
 }
 \examples{
@@ -97,6 +79,10 @@ from = c(-1.55, 53.80) # geo_code("leeds")
 to = c(-1.76, 53.80) # geo_code("bradford uk")
 r1 = journey(from, to)
 names(r1)
+cols = c("name", "provisionName", "distances", "time", "quietness", "edition", "gradient_smooth")
+r2 = journey(from, to, cols_to_keep = cols)
+names(r2)
+r2
 r1[1:2, ]
 r1$grammesCO2saved
 r1$calories

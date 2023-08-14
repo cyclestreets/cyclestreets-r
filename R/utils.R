@@ -85,3 +85,4 @@ add_columns = function(r) {
   r
 }
 
+utils::globalVariables(c("id", "route_number"))

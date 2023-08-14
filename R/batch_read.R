@@ -6,7 +6,16 @@
 #' @noRd
 
 
-batch_read = function(file, segments = TRUE) {
+batch_read = function(
+    file,
+    segments = TRUE,
+    cols_to_keep = c(
+      "name", # not used currently but could be handy
+      "distances",
+      "gradient_smooth",
+      "quietness"
+    )
+    ) {
   message("Reading in the following file:\n", file)
   res = readr::read_csv(file, show_col_types = FALSE)
   res$route_number = seq(nrow(res))
@@ -22,9 +31,11 @@ batch_read = function(file, segments = TRUE) {
     res = res[-which_min_ncar, ]
   }
 
-  res_df = json2sf_cs2(results_raw = res$json,
+  res_df = json2sf_cs(results_raw = res$json,
                        id = res$route_number,
-                       segments = segments)
+                       segments = segments,
+                      cols_to_keep = cols_to_keep
+                      )
 
   #Character to numeric
   nms = c("time","busynance","quietness","signalledJunctions","signalledCrossings",
@@ -40,6 +51,19 @@ batch_read = function(file, segments = TRUE) {
 
   names(res_df)[names(res_df) == "id"] = "route_number"
 
-
   res_df
 }
+
+# # # Tests:
+# devtools::load_all()
+# library(tidyverse)
+# u = "https://github.com/cyclestreets/cyclestreets-r/releases/download/v0.5.3/cambridge-data.csv.gz"
+# file = basename(u)
+# download.file(u, file)
+# res = batch_read(file)
+# l_desire |>
+#   slice(1:3) |>
+#   mapview::mapview()
+# res |>
+#   filter(id %in% 1:3) |>
+#   mapview::mapview()
