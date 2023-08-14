@@ -214,7 +214,7 @@ get_routes = function(url, desire_lines = NULL, filename, directory,
     if(segments == "both"){
       routes_segs = batch_read(filename_local, cols_to_keep = cols_to_keep, segments = segments)
       routes = routes_segs$routes
-      segments = routes_segs$segments
+      segs = routes_segs$segments
       rm(routes_segs)
 
       if(!is.null(desire_lines)){
@@ -251,7 +251,7 @@ get_routes = function(url, desire_lines = NULL, filename, directory,
   )
 
   if(is.character(segments)){
-    return(list(routes = routes_updated, segments = segments))
+    return(list(routes = routes_updated, segments = segs))
   } else {
     return(routes_updated)
   }
@@ -409,7 +409,7 @@ batch_deletejob = function(
   if(!silent) message("Deleting the data")
   res = httr::POST(url = batch_url, body = body)
   res_json = httr::content(res, "parsed")
-  message(paste0(res_json, collapse = ": "))
+  message("Job ",paste0(res_json, collapse = ": "))
 }
 
 wait_s = function(n) {
