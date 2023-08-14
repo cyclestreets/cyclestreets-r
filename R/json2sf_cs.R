@@ -64,6 +64,20 @@ json2sf_cs = function(
                      "calories", "edition", "gradient_segment", "elevation_change",
                      "gradient_smooth")
 ){
+
+  # Support both
+  if(is.character(segments)){
+    if(segments == "both"){
+      do_segments = TRUE
+      segments = as.character(segments)
+    } else {
+      stop("Unknow segments value, can be TRUE,FALSE,'both'")
+    }
+  } else {
+    do_segments = segments
+    segments = as.character(segments)
+  }
+
   # browser()
   results = RcppSimdJson::fparse(results_raw, query = "/marker", query_error_ok = TRUE, always_list = TRUE)
   results_error = RcppSimdJson::fparse(results_raw, query = "/error", query_error_ok = TRUE, always_list = TRUE)
@@ -89,7 +103,7 @@ json2sf_cs = function(
     stop("No valid results returned")
   }
 
-  if(segments){
+  if(do_segments){
     results$SPECIALIDFORINTERNAL2 = cumsum(!is.na(results$start))
     results_seg = results[results$type == "segment",]
     results_seg$geometry = sf::st_sfc(lapply(results_seg$points, txt2coords2), crs = 4326)
@@ -97,19 +111,36 @@ json2sf_cs = function(
     results_rt = results_rt[,names(results_rt) %in% c(route_variables,"SPECIALIDFORINTERNAL2"), with = FALSE]
     results_seg = results_seg[,!names(results_seg) %in% route_variables, with = FALSE]
     results_seg = dplyr::left_join(results_seg, results_rt, by = "SPECIALIDFORINTERNAL2")
-    results = results_seg
+    results_seg = cleanup_results(results_seg, cols_to_keep)
   } else {
     results = results[results$type == "route",]
     results$geometry = sf::st_sfc(lapply(results$coordinates, txt2coords2), crs = 4326)
+    results = cleanup_results(results, cols_to_keep)
+    return(results)
   }
 
-  results$points = NULL
-  results$coordinates = NULL
+  if(segments == "TRUE"){
+    return(results_seg)
 
-  # message("results may not be in the order they were provided")
-  results = add_columns(results)
-  results = sf::st_as_sf(results)
-  results$SPECIALIDFORINTERNAL2 <- NULL
-  cols = cols_to_keep %in% names(results)
-  results[cols_to_keep]
+  } else if (segments == "both") {
+    results = results[results$type == "route",]
+    results$geometry = sf::st_sfc(lapply(results$coordinates, txt2coords2), crs = 4326)
+    results = cleanup_results(results, cols_to_keep)
+    return(list(routes = results, segments = results_seg))
+
+  } else {
+    stop("Invalid segments value, can be TRUE,FALSE,'both'")
+  }
+
+}
+
+cleanup_results <- function(x, cols_to_keep){
+  x$points = NULL
+  x$coordinates = NULL
+
+  x = add_columns(x)
+  x = sf::st_as_sf(x)
+  x$SPECIALIDFORINTERNAL2 <- NULL
+  cols = cols_to_keep %in% names(x)
+  x[cols_to_keep]
 }
