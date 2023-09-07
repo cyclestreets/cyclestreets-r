@@ -305,7 +305,7 @@ batch_routes = function(
   }
 
   # # With httr:
-  res = httr::POST(url = batch_url, body = body, httr::timeout(60))
+  res = httr::POST(url = batch_url, body = body, httr::timeout(600))
   res_json = httr::content(res, "parsed")
 
   # # # With httr2:
