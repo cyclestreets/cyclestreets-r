@@ -12,13 +12,12 @@ batch_read = function(
     cols_to_keep = c(
       "name", # not used currently but could be handy
       "distances",
-      "gradient_smooth",
+      "elevations",
       "quietness"
     )
     ) {
   message("Reading in the following file:\n", file)
   res = readr::read_csv(file, show_col_types = FALSE)
-  res$route_number = seq(nrow(res))
   n_char = nchar(res$json)
   n_char[is.na(n_char)] = 0
   if(all(n_char == 0)) {
@@ -31,8 +30,8 @@ batch_read = function(
     res = res[-which_min_ncar, ]
   }
 
-  res_df = json2sf_cs(results_raw = res$json,
-                       id = res$route_number,
+  res = json2sf_cs(results_raw = res$json,
+                       id = seq(nrow(res)),
                        segments = segments,
                       cols_to_keep = cols_to_keep
                       )
@@ -52,33 +51,33 @@ batch_read = function(
     }
 
     for(i in seq(1, length(nms))){
-      if(nms[i] %in% names(res_df$routes)){
-        res_df$routes[[nms[i]]] = as.numeric(res_df$routes[[nms[i]]])
+      if(nms[i] %in% names(res$routes)){
+        res$routes[[nms[i]]] = as.numeric(res$routes[[nms[i]]])
       }
     }
-    names(res_df$routes)[names(res_df$routes) == "id"] = "route_number"
+    names(res$routes)[names(res$routes) == "id"] = "route_number"
 
     for(i in seq(1, length(nms))){
-      if(nms[i] %in% names(res_df$segments)){
-        res_df$segments[[nms[i]]] = as.numeric(res_df$segments[[nms[i]]])
+      if(nms[i] %in% names(res$segments)){
+        res$segments[[nms[i]]] = as.numeric(res$segments[[nms[i]]])
       }
     }
-    names(res_df$segments)[names(res_df$segments) == "id"] = "route_number"
+    names(res$segments)[names(res$segments) == "id"] = "route_number"
 
   } else {
 
     for(i in seq(1, length(nms))){
-      if(nms[i] %in% names(res_df)){
-        res_df[[nms[i]]] = as.numeric(res_df[[nms[i]]])
+      if(nms[i] %in% names(res)){
+        res[[nms[i]]] = as.numeric(res[[nms[i]]])
       }
     }
 
-    names(res_df)[names(res_df) == "id"] = "route_number"
+    names(res)[names(res) == "id"] = "route_number"
 
 
   }
 
-  res_df
+  res
 
 }
 
