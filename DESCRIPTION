@@ -39,7 +39,6 @@ Imports:
     magrittr,
     progressr,
     RcppSimdJson,
-    readr,
     sf,
     stringr,
     stringi

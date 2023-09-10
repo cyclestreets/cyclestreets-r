@@ -44,10 +44,10 @@ route_rolling_average = function(x, n = 3) {
 
 
 get_values = function(v, fun) {
-  sapply(v, function(x) fun(as.numeric(x)))
+  vapply(v, function(x) fun(as.numeric(x)), 1)
 }
 
-extract_values = function(x) stringr::str_split(x, pattern = ",")
+extract_values = function(x) stringi::stri_split_fixed(x, pattern = ",")
 get_mean = function(v) get_values(v, fun = mean)
 get_sum = function(v) get_values(v, fun = sum)
 get_min = function(v) get_values(v, fun = min)

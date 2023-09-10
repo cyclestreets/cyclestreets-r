@@ -18,9 +18,7 @@ json2sf_cs(
     "start_longitude", "start_latitude", "finish_longitude", "finish_latitude",
     "crow_fly_distance", "event", "whence", "speed", "itinerary", "plan", "note",
     "length", "west", "south", "east", "north", "leaving", "arriving", "grammesCO2saved",
-    "calories", "edition", "gradient_segment", 
-     "elevation_change",
-    "gradient_smooth")
+    "calories", "edition")
 )
 }
 \arguments{

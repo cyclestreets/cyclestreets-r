@@ -61,8 +61,7 @@ json2sf_cs = function(
                      "start_latitude", "finish_longitude", "finish_latitude", "crow_fly_distance",
                      "event", "whence", "speed", "itinerary", "plan", "note", "length",
                      "west", "south", "east", "north", "leaving", "arriving", "grammesCO2saved",
-                     "calories", "edition", "gradient_segment", "elevation_change",
-                     "gradient_smooth")
+                     "calories", "edition")
 ){
 
   # Support both
@@ -79,7 +78,6 @@ json2sf_cs = function(
   }
 
   # browser()
-  results = RcppSimdJson::fparse(results_raw, query = "/marker", query_error_ok = TRUE, always_list = TRUE)
   results_error = RcppSimdJson::fparse(results_raw, query = "/error", query_error_ok = TRUE, always_list = TRUE)
   results_error = unlist(results_error, use.names = FALSE)
   if(length(results_error) > 0){
@@ -90,14 +88,21 @@ json2sf_cs = function(
       message(results_error$Freq[msgs],'x messages: "',results_error$results_error[msgs],'"\n')
     }
   }
-
+  results = RcppSimdJson::fparse(results_raw, query = "/marker", query_error_ok = TRUE, always_list = TRUE)
+  #rm(results_raw)
   # Process Marker
   results = lapply(results, `[[`, "@attributes")
   if(!is.null(id)){
     names(results) = as.character(id)
   }
-  # TODO: subset to keep only columns of relevance
-  results = lapply(results, data.table::rbindlist, fill = TRUE)
+
+  cols_to_keep2 = unique(c(cols_to_keep,"type","start","points","coordinates", "distances","elevations"))
+
+  results = lapply(results, function(x){
+    x = lapply(x, function(y){y[names(y) %in% cols_to_keep2]})
+    data.table::rbindlist(x, fill = TRUE)
+  })
+
   results = data.table::rbindlist(results, idcol = "id", fill = TRUE)
   if(nrow(results) == 0){
     stop("No valid results returned")
@@ -141,6 +146,7 @@ cleanup_results <- function(x, cols_to_keep){
   x = add_columns(x)
   x = sf::st_as_sf(x)
   x$SPECIALIDFORINTERNAL2 <- NULL
-  cols = cols_to_keep %in% names(x)
-  x[cols_to_keep]
+  cols_to_keep3 = unique(c(cols_to_keep,"gradient_segment","elevation_change","gradient_smooth"))
+  cols = cols_to_keep3 %in% names(x)
+  x[cols]
 }

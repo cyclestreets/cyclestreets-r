@@ -128,7 +128,9 @@ routes_id = batch(desire_lines_huge, username = "robinlovelace", wait = FALSE)
 names(routes)
 plot(routes$geometry)
 plot(desire_lines$geometry, add = TRUE, col = "red")
-routes = batch(desire_lines, username = "robinlovelace", wait_time = 5)
+routes = batch(desire_lines, username = "robinlovelace", wait_time = 5, segments = FALSE)
+segments = batch(desire_lines, username = "robinlovelace", wait_time = 5, segments = TRUE)
+both = batch(desire_lines, username = "robinlovelace", wait_time = 5, segments = "both")
 # profvis::profvis(batch_read("test-data.csv.gz"))
 }
 }
