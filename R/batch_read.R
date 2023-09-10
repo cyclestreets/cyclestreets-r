@@ -17,8 +17,10 @@ batch_read = function(
     )
     ) {
   message("Reading in the following file:\n", file)
-  res = readr::read_csv(file, show_col_types = FALSE)
-  n_char = nchar(res$json)
+
+  res = data.table::fread(file, select = "json")
+  res = stringi::stri_replace_all_fixed(res$json, '""', '"', vectorize_all = FALSE)
+  n_char = nchar(res)
   n_char[is.na(n_char)] = 0
   if(all(n_char == 0)) {
     stop("No routes returned: does CycleStreets operate where you requested data?")
@@ -27,11 +29,11 @@ batch_read = function(
   if(min_nchar == 0) {
     which_min_ncar = which(n_char == 0)
     message("Removing NA routes: ", paste(which_min_ncar, collapse = " "))
-    res = res[-which_min_ncar, ]
+    res = res[-which_min_ncar]
   }
 
-  res = json2sf_cs(results_raw = res$json,
-                       id = seq(nrow(res)),
+  res = json2sf_cs(results_raw = res,
+                       id = seq(length(res)),
                        segments = segments,
                       cols_to_keep = cols_to_keep
                       )
