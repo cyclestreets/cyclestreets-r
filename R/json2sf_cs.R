@@ -96,7 +96,7 @@ json2sf_cs = function(
     names(results) = as.character(id)
   }
 
-  cols_to_keep2 = unique(c(cols_to_keep,"type","start","points","coordinates"))
+  cols_to_keep2 = unique(c(cols_to_keep,"type","start","points","coordinates", "distances","elevations"))
 
   results = lapply(results, function(x){
     x = lapply(x, function(y){y[names(y) %in% cols_to_keep2]})
