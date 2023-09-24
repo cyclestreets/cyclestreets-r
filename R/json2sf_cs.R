@@ -78,7 +78,6 @@ json2sf_cs = function(
     segments = as.character(segments)
   }
 
-  # browser()
   results = RcppSimdJson::fparse(results_raw, query = "/marker", query_error_ok = TRUE, always_list = TRUE)
   results_error = RcppSimdJson::fparse(results_raw, query = "/error", query_error_ok = TRUE, always_list = TRUE)
   results_error = unlist(results_error, use.names = FALSE)
@@ -99,6 +98,7 @@ json2sf_cs = function(
   # TODO: subset to keep only columns of relevance
   results = lapply(results, data.table::rbindlist, fill = TRUE)
   results = data.table::rbindlist(results, idcol = "id", fill = TRUE)
+
   if(nrow(results) == 0){
     stop("No valid results returned")
   }
@@ -112,6 +112,17 @@ json2sf_cs = function(
     results_seg = results_seg[,!names(results_seg) %in% route_variables, with = FALSE]
     results_seg = dplyr::left_join(results_seg, results_rt, by = "SPECIALIDFORINTERNAL2")
     results_seg = cleanup_results(results_seg, cols_to_keep)
+    #Character to numeric
+    nms = c("time","busynance","quietness","signalledJunctions","signalledCrossings",
+            "walk","distances","legNumber","distance","flow","startBearing",
+            "start_longitude","start_latitude","finish_longitude","finish_latitude",
+            "crow_fly_distance","speed","itinerary","length","west","south","east",
+            "north","grammesCO2saved","calories")
+    for(i in seq(length(nms))){
+      if(nms[i] %in% names(results_seg)){
+        results_seg[[nms[i]]] = as.numeric(results_seg[[nms[i]]])
+      }
+    }
   } else {
     results = results[results$type == "route",]
     results$geometry = sf::st_sfc(lapply(results$coordinates, txt2coords2), crs = 4326)
