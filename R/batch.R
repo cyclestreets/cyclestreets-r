@@ -57,6 +57,7 @@
 #' # Wait for some time, around a minute or 2
 #' routes_wait = batch(id = routes_id, username = "robinlovelace", wait = TRUE, delete_job = FALSE)
 #' names(routes_wait)
+#' sapply(routes_wait, class)
 #' plot(routes_wait)
 #' plot(desire_lines$geometry[4])
 #' plot(routes_wait$geometry[routes_wait$route_number == "4"], add = TRUE)
