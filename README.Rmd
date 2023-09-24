@@ -64,28 +64,37 @@ usethis::edit_r_environ()
 
 Check the map is good with leaflet:
 
-```{r}
+```{r, eval=FALSE}
 library(leaflet)
-p = colorNumeric("RdYlBu", domain = r$busynance, reverse = TRUE)
+p = colorNumeric("RdYlBu", domain = r$quietness, reverse = TRUE)
 leaflet(r) %>% 
   addTiles() %>% 
-  addPolylines(color = ~p(busynance), weight = 20, opacity = 0.9) %>% 
-  addLegend(pal = p, values = ~busynance)
+  addPolylines(color = ~p(quietness), weight = 20, opacity = 0.9) %>% 
+  addLegend(pal = p, values = ~quietness)
 ```
 
 Or **tmap**, highlighting the recently added 'quietness' variable:
 
-```{r}
+```{r, eval=FALSE}
 library(tmap)
 tmap_mode("view")
-tm_shape(r) + tm_lines("quietness", palette = "RdYlBu", lwd = 3, popup.vars = names(r)[-32])
+tm_shape(r) + tm_lines("quietness", palette = "RdYlBu", lwd = 3)
 ```
+
+```{r, echo=FALSE}
+library(tmap)
+tmap_mode("view")
+m = tm_shape(r) + tm_lines("quietness", palette = "RdYlBu", lwd = 3)
+tmap_save(m, "m.html")
+webshot2::webshot("m.html")
+```
+
 
 See an interactive version of this map, showing all variables per segment, [here](https://rpubs.com/RobinLovelace/784236).
 
 Or **mapview**:
 
-```{r}
+```{r, eval=FALSE}
 mapview::mapview(r)
 ```
 
@@ -95,6 +104,6 @@ See help pages such as `?journey` and <https://www.cyclestreets.net/api/> for de
 You can also get streets by LTN status.
 
 ```{r}
-network_ltns <- ltns(r)
+network_ltns = ltns(r)
 plot(network_ltns)
 ```

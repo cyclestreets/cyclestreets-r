@@ -4,6 +4,7 @@
 [![R-CMD-check](https://github.com/cyclestreets/cyclestreets-r/workflows/R-CMD-check/badge.svg)](https://github.com/cyclestreets/cyclestreets-r/actions)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/cyclestreets)](https://CRAN.R-project.org/package=cyclestreets)
+[![R-CMD-check](https://github.com/cyclestreets/cyclestreets-r/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/cyclestreets/cyclestreets-r/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -43,10 +44,8 @@ from = c(-1.544, 53.794)
 to = c(-1.551, 53.807)
 r = cyclestreets::journey(from, to, "balanced")
 sf:::plot.sf(r)
-#> Warning: plotting the first 10 out of 32 attributes; use max.plot = 32 to plot
+#> Warning: plotting the first 10 out of 43 attributes; use max.plot = 43 to plot
 #> all
-#> Warning in min(x): no non-missing arguments to min; returning Inf
-#> Warning in max(x): no non-missing arguments to max; returning -Inf
 ```
 
 <img src="man/figures/README-example-1.png" width="100%" />
@@ -66,25 +65,35 @@ Check the map is good with leaflet:
 
 ``` r
 library(leaflet)
-p = colorNumeric("RdYlBu", domain = r$busynance, reverse = TRUE)
+p = colorNumeric("RdYlBu", domain = r$quietness, reverse = TRUE)
 leaflet(r) %>% 
   addTiles() %>% 
-  addPolylines(color = ~p(busynance), weight = 20, opacity = 0.9) %>% 
-  addLegend(pal = p, values = ~busynance)
+  addPolylines(color = ~p(quietness), weight = 20, opacity = 0.9) %>% 
+  addLegend(pal = p, values = ~quietness)
 ```
-
-<img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
 
 Or **tmap**, highlighting the recently added ‘quietness’ variable:
 
 ``` r
 library(tmap)
 tmap_mode("view")
-#> tmap mode set to interactive viewing
-tm_shape(r) + tm_lines("quietness", palette = "RdYlBu", lwd = 3, popup.vars = names(r)[-32])
+tm_shape(r) + tm_lines("quietness", palette = "RdYlBu", lwd = 3)
 ```
 
-<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+    #> The legacy packages maptools, rgdal, and rgeos, underpinning the sp package,
+    #> which was just loaded, will retire in October 2023.
+    #> Please refer to R-spatial evolution reports for details, especially
+    #> https://r-spatial.org/r/2023/05/15/evolution4.html.
+    #> It may be desirable to make the sf package available;
+    #> package maintainers should consider adding sf to Suggests:.
+    #> The sp package is now running under evolution status 2
+    #>      (status 2 uses the sf package in place of rgdal)
+    #> Breaking News: tmap 3.x is retiring. Please test v4, e.g. with
+    #> remotes::install_github('r-tmap/tmap')
+    #> tmap mode set to interactive viewing
+    #> Interactive map saved to /home/robin/github/cyclestreets/cyclestreets-r/m.html
+
+<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 
 See an interactive version of this map, showing all variables per
 segment, [here](https://rpubs.com/RobinLovelace/784236).
@@ -95,16 +104,14 @@ Or **mapview**:
 mapview::mapview(r)
 ```
 
-<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
-
 Route types available are: fastest, quietest, balanced. See help pages
 such as `?journey` and <https://www.cyclestreets.net/api/> for details.
 
 You can also get streets by LTN status.
 
 ``` r
-network_ltns <- ltns(r)
+network_ltns = ltns(r)
 plot(network_ltns)
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
