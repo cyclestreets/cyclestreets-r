@@ -51,14 +51,14 @@ batch_read = function(
       stop("Unknown segments")
     }
 
-    for(i in seq(1, length(nms))){
+    for(i in seq(length(nms))){
       if(nms[i] %in% names(res_df$routes)){
         res_df$routes[[nms[i]]] = as.numeric(res_df$routes[[nms[i]]])
       }
     }
     names(res_df$routes)[names(res_df$routes) == "id"] = "route_number"
 
-    for(i in seq(1, length(nms))){
+    for(i in seq(length(nms))){
       if(nms[i] %in% names(res_df$segments)){
         res_df$segments[[nms[i]]] = as.numeric(res_df$segments[[nms[i]]])
       }
@@ -67,7 +67,7 @@ batch_read = function(
 
   } else {
 
-    for(i in seq(1, length(nms))){
+    for(i in seq(length(nms))){
       if(nms[i] %in% names(res_df)){
         res_df[[nms[i]]] = as.numeric(res_df[[nms[i]]])
       }
