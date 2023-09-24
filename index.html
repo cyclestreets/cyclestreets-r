@@ -105,10 +105,8 @@
 <span><span class="va">to</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1.551</span>, <span class="fl">53.807</span><span class="op">)</span></span>
 <span><span class="va">r</span> <span class="op">=</span> <span class="fu">cyclestreets</span><span class="fu">::</span><span class="fu"><a href="reference/journey.html">journey</a></span><span class="op">(</span><span class="va">from</span>, <span class="va">to</span>, <span class="st">"balanced"</span><span class="op">)</span></span>
 <span><span class="fu">sf</span><span class="fu">:::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot.sf</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: plotting the first 10 out of 32 attributes; use max.plot = 32 to plot</span></span>
-<span><span class="co">#&gt; all</span></span>
-<span><span class="co">#&gt; Warning in min(x): no non-missing arguments to min; returning Inf</span></span>
-<span><span class="co">#&gt; Warning in max(x): no non-missing arguments to max; returning -Inf</span></span></code></pre></div>
+<span><span class="co">#&gt; Warning: plotting the first 10 out of 43 attributes; use max.plot = 43 to plot</span></span>
+<span><span class="co">#&gt; all</span></span></code></pre></div>
 <p><img src="reference/figures/README-example-1.png" width="100%"></p>
 <p>To get a key go to <a href="https://www.cyclestreets.net/api/apply/" class="external-link uri">https://www.cyclestreets.net/api/apply/</a></p>
 <p>Save the key as an environment varible using <code>export CYCLESTREETS=your_key_here</code> by adding <code>CYCLESTREETS=your_key_here</code> as a new line in your <code>.Renviron</code> file, e.g. with the following command:</p>
@@ -117,30 +115,39 @@
 <p>Check the map is good with leaflet:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rstudio.github.io/leaflet/" class="external-link">leaflet</a></span><span class="op">)</span></span>
-<span><span class="va">p</span> <span class="op">=</span> <span class="fu">colorNumeric</span><span class="op">(</span><span class="st">"RdYlBu"</span>, domain <span class="op">=</span> <span class="va">r</span><span class="op">$</span><span class="va">busynance</span>, reverse <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">p</span> <span class="op">=</span> <span class="fu">colorNumeric</span><span class="op">(</span><span class="st">"RdYlBu"</span>, domain <span class="op">=</span> <span class="va">r</span><span class="op">$</span><span class="va">quietness</span>, reverse <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu">leaflet</span><span class="op">(</span><span class="va">r</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu">addTiles</span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu">addPolylines</span><span class="op">(</span>color <span class="op">=</span> <span class="op">~</span><span class="fu">p</span><span class="op">(</span><span class="va">busynance</span><span class="op">)</span>, weight <span class="op">=</span> <span class="fl">20</span>, opacity <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu">addLegend</span><span class="op">(</span>pal <span class="op">=</span> <span class="va">p</span>, values <span class="op">=</span> <span class="op">~</span><span class="va">busynance</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-2-1.png" width="100%"></p>
+<span>  <span class="fu">addPolylines</span><span class="op">(</span>color <span class="op">=</span> <span class="op">~</span><span class="fu">p</span><span class="op">(</span><span class="va">quietness</span><span class="op">)</span>, weight <span class="op">=</span> <span class="fl">20</span>, opacity <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu">addLegend</span><span class="op">(</span>pal <span class="op">=</span> <span class="va">p</span>, values <span class="op">=</span> <span class="op">~</span><span class="va">quietness</span><span class="op">)</span></span></code></pre></div>
 <p>Or <strong>tmap</strong>, highlighting the recently added ‘quietness’ variable:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-tmap.github.io/tmap/" class="external-link">tmap</a></span><span class="op">)</span></span>
 <span><span class="fu">tmap_mode</span><span class="op">(</span><span class="st">"view"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; tmap mode set to interactive viewing</span></span>
-<span><span class="fu">tm_shape</span><span class="op">(</span><span class="va">r</span><span class="op">)</span> <span class="op">+</span> <span class="fu">tm_lines</span><span class="op">(</span><span class="st">"quietness"</span>, palette <span class="op">=</span> <span class="st">"RdYlBu"</span>, lwd <span class="op">=</span> <span class="fl">3</span>, popup.vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">32</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-3-1.png" width="100%"></p>
+<span><span class="fu">tm_shape</span><span class="op">(</span><span class="va">r</span><span class="op">)</span> <span class="op">+</span> <span class="fu">tm_lines</span><span class="op">(</span><span class="st">"quietness"</span>, palette <span class="op">=</span> <span class="st">"RdYlBu"</span>, lwd <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; The legacy packages maptools, rgdal, and rgeos, underpinning the sp package,</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; which was just loaded, will retire in October 2023.</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Please refer to R-spatial evolution reports for details, especially</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; https://r-spatial.org/r/2023/05/15/evolution4.html.</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; It may be desirable to make the sf package available;</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; package maintainers should consider adding sf to Suggests:.</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; The sp package is now running under evolution status 2</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      (status 2 uses the sf package in place of rgdal)</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Breaking News: tmap 3.x is retiring. Please test v4, e.g. with</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; remotes::install_github('r-tmap/tmap')</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; tmap mode set to interactive viewing</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Interactive map saved to /home/robin/github/cyclestreets/cyclestreets-r/m.html</span></span></code></pre></div>
+<p><img src="reference/figures/README-unnamed-chunk-4-1.png" width="100%"></p>
 <p>See an interactive version of this map, showing all variables per segment, <a href="https://rpubs.com/RobinLovelace/784236" class="external-link">here</a>.</p>
 <p>Or <strong>mapview</strong>:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">mapview</span><span class="fu">::</span><span class="fu">mapview</span><span class="op">(</span><span class="va">r</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-4-1.png" width="100%"></p>
 <p>Route types available are: fastest, quietest, balanced. See help pages such as <code><a href="reference/journey.html">?journey</a></code> and <a href="https://www.cyclestreets.net/api/" class="external-link uri">https://www.cyclestreets.net/api/</a> for details.</p>
 <p>You can also get streets by LTN status.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">network_ltns</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/ltns.html">ltns</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">network_ltns</span> <span class="op">=</span> <span class="fu"><a href="reference/ltns.html">ltns</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network_ltns</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-5-1.png" width="100%"></p>
+<p><img src="reference/figures/README-unnamed-chunk-6-1.png" width="100%"></p>
 </div>
 </div>
 
@@ -187,6 +194,7 @@
 <ul class="list-unstyled">
 <li><a href="https://github.com/cyclestreets/cyclestreets-r/actions" class="external-link"><img src="https://github.com/cyclestreets/cyclestreets-r/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
 <li><a href="https://CRAN.R-project.org/package=cyclestreets" class="external-link"><img src="https://www.r-pkg.org/badges/version/cyclestreets" alt="CRAN status"></a></li>
+<li><a href="https://github.com/cyclestreets/cyclestreets-r/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/cyclestreets/cyclestreets-r/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
 </ul>
 </div>
 
