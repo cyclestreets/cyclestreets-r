@@ -1,4 +1,6 @@
-# cyclestreets 1.1.0
+# cyclestreets 1.1.0 (November 2023)
+
+* New argument `successThreshold` (#86)
 
 # cyclestreets 1.0.1
 
