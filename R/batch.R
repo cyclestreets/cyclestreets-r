@@ -41,6 +41,8 @@
 #'   pause: Pause job
 #'   continue: Continue (re-open) job
 #'   terminate: Terminate job and delete data
+#' @param successThreshold int (0-100) The percentage of routes that must be successfully
+#'   calculated before the job is considered complete.
 #' @param delete_job Delete the job? TRUE by default to avoid clogged servers
 #' @param cols_to_keep Columns to return in output sf object
 #' @param segments logical, return segments TRUE/FALSE/"both"
@@ -94,6 +96,7 @@ batch = function(
     emailOnCompletion = "you@example.com",
     username = Sys.getenv("CYCLESTREETS_UN"),
     password = Sys.getenv("CYCLESTREETS_PW"),
+    successThreshold = 90,
     base_url = "https://api.cyclestreets.net/v2/batchroutes.createjob",
     pat = Sys.getenv("CYCLESTREETS_BATCH"),
     silent = TRUE,
@@ -131,6 +134,7 @@ batch = function(
       password,
       base_url,
       id,
+      successThreshold,
       pat,
       silent = silent
     )
@@ -143,7 +147,8 @@ batch = function(
         password = password,
         id = as.character(id),
         pat = pat,
-        silent = silent
+        silent = silent,
+        successThreshold = successThreshold
       )
       if(is.null(res_joburls)) {
         message("Routing job sent, check back in around ", round(wait_time / 60), " minutes if you've just sent this")
@@ -161,7 +166,8 @@ batch = function(
     password = password,
     id = as.character(id),
     pat = pat,
-    silent = silent
+    silent = silent,
+    successThreshold = successThreshold
   )
   if(is.null(res_joburls)) {
     if(!wait) {
@@ -182,7 +188,8 @@ batch = function(
         password = password,
         id = as.character(id),
         pat = pat,
-        silent = n_tries > 1
+        silent = n_tries > 1,
+        successThreshold = successThreshold
       )
     }
   }
@@ -277,7 +284,8 @@ batch_routes = function(
     base_url = "https://api.cyclestreets.net/v2/batchroutes.createjob",
     id = 1,
     pat,
-    silent = TRUE
+    silent = TRUE,
+    successThreshold
 ) {
   batch_url = paste0(base_url, "?key=", pat)
   desire_lines_to_send = desire_lines["id"]
@@ -298,7 +306,8 @@ batch_routes = function(
     includeJsonOutput = includeJsonOutput,
     emailOnCompletion = emailOnCompletion,
     username = username,
-    password = password
+    password = password,
+    successThreshold
   )
   message("POSTing the request to create and start the job")
   if(!silent) {
