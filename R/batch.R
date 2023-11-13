@@ -363,7 +363,7 @@ batch_jobdata = function(
   error_message = paste0(" ", as.character(res_json$error))
   # Print message if silent = FALSE
   if(!silent) {
-    if (error_message == " The job you requested to control is either non-existent or is owned by another user.") {
+    if (error_message %in% " The job you requested to control is either non-existent or is owned by another user.") {
       message("No job with that ID. Try setting delete_job = FALSE")
       stop(error_message)
     }
