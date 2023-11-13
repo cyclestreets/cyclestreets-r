@@ -147,8 +147,7 @@ batch = function(
         password = password,
         id = as.character(id),
         pat = pat,
-        silent = silent,
-        successThreshold = successThreshold
+        silent = silent
       )
       if(is.null(res_joburls)) {
         message("Routing job sent, check back in around ", round(wait_time / 60), " minutes if you've just sent this")
@@ -166,8 +165,7 @@ batch = function(
     password = password,
     id = as.character(id),
     pat = pat,
-    silent = silent,
-    successThreshold = successThreshold
+    silent = silent
   )
   if(is.null(res_joburls)) {
     if(!wait) {
@@ -188,8 +186,7 @@ batch = function(
         password = password,
         id = as.character(id),
         pat = pat,
-        silent = n_tries > 1,
-        successThreshold = successThreshold
+        silent = n_tries > 1
       )
     }
   }
