@@ -1,3 +1,5 @@
+# cyclestreets 1.1.0
+
 # cyclestreets 1.0.1
 
 * Bug fix: issue with batch identified and fix (#80) thanks to @mem48
