@@ -19,7 +19,7 @@ before trying this."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/a
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cyclestreets</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.1.0</span>
       </span>
     </div>
 
@@ -74,6 +74,7 @@ before trying this.</p>
 <span>  emailOnCompletion <span class="op">=</span> <span class="st">"you@example.com"</span>,</span>
 <span>  username <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"CYCLESTREETS_UN"</span><span class="op">)</span>,</span>
 <span>  password <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"CYCLESTREETS_PW"</span><span class="op">)</span>,</span>
+<span>  successThreshold <span class="op">=</span> <span class="fl">90</span>,</span>
 <span>  base_url <span class="op">=</span> <span class="st">"https://api.cyclestreets.net/v2/batchroutes.createjob"</span>,</span>
 <span>  pat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"CYCLESTREETS_BATCH"</span><span class="op">)</span>,</span>
 <span>  silent <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -167,6 +168,11 @@ Your CycleStreets account password. You can set it with
 Sys.setenv(CYCLESTREETS_PW="xxxxxx")</p></dd>
 
 
+<dt>successThreshold</dt>
+<dd><p>int (0-100) The percentage of routes that must be successfully
+calculated before the job is considered complete.</p></dd>
+
+
 <dt>base_url</dt>
 <dd><p>The base url from which to construct API requests
 (with default set to main server)</p></dd>
@@ -210,6 +216,7 @@ Sys.setenv(CYCLESTREETS_PW="xxxxxx")</p></dd>
 <span class="r-in"><span><span class="co"># Wait for some time, around a minute or 2</span></span></span>
 <span class="r-in"><span><span class="va">routes_wait</span> <span class="op">=</span> <span class="fu">batch</span><span class="op">(</span>id <span class="op">=</span> <span class="va">routes_id</span>, username <span class="op">=</span> <span class="st">"robinlovelace"</span>, wait <span class="op">=</span> <span class="cn">TRUE</span>, delete_job <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">routes_wait</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">routes_wait</span>, <span class="va">class</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">routes_wait</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">desire_lines</span><span class="op">$</span><span class="va">geometry</span><span class="op">[</span><span class="fl">4</span><span class="op">]</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">routes_wait</span><span class="op">$</span><span class="va">geometry</span><span class="op">[</span><span class="va">routes_wait</span><span class="op">$</span><span class="va">route_number</span> <span class="op">==</span> <span class="st">"4"</span><span class="op">]</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
@@ -224,7 +231,9 @@ Sys.setenv(CYCLESTREETS_PW="xxxxxx")</p></dd>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">routes</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">routes</span><span class="op">$</span><span class="va">geometry</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">desire_lines</span><span class="op">$</span><span class="va">geometry</span>, add <span class="op">=</span> <span class="cn">TRUE</span>, col <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">routes</span> <span class="op">=</span> <span class="fu">batch</span><span class="op">(</span><span class="va">desire_lines</span>, username <span class="op">=</span> <span class="st">"robinlovelace"</span>, wait_time <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">routes</span> <span class="op">=</span> <span class="fu">batch</span><span class="op">(</span><span class="va">desire_lines</span>, username <span class="op">=</span> <span class="st">"robinlovelace"</span>, wait_time <span class="op">=</span> <span class="fl">5</span>, segments <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">segments</span> <span class="op">=</span> <span class="fu">batch</span><span class="op">(</span><span class="va">desire_lines</span>, username <span class="op">=</span> <span class="st">"robinlovelace"</span>, wait_time <span class="op">=</span> <span class="fl">5</span>, segments <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">both</span> <span class="op">=</span> <span class="fu">batch</span><span class="op">(</span><span class="va">desire_lines</span>, username <span class="op">=</span> <span class="st">"robinlovelace"</span>, wait_time <span class="op">=</span> <span class="fl">5</span>, segments <span class="op">=</span> <span class="st">"both"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># profvis::profvis(batch_read("test-data.csv.gz"))</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
