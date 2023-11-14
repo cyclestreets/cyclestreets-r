@@ -1,3 +1,7 @@
+# cyclestreets 1.1.0 (November 2023)
+
+* New argument `successThreshold` (#86)
+
 # cyclestreets 1.0.1
 
 * Bug fix: issue with batch identified and fix (#80) thanks to @mem48

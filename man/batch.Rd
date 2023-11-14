@@ -21,6 +21,7 @@ batch(
   emailOnCompletion = "you@example.com",
   username = Sys.getenv("CYCLESTREETS_UN"),
   password = Sys.getenv("CYCLESTREETS_PW"),
+  successThreshold = 90,
   base_url = "https://api.cyclestreets.net/v2/batchroutes.createjob",
   pat = Sys.getenv("CYCLESTREETS_BATCH"),
   silent = TRUE,
@@ -80,6 +81,9 @@ Your CycleStreets account username. In due course this will be replaced with an 
 Your CycleStreets account password. You can set it with
 Sys.setenv(CYCLESTREETS_PW="xxxxxx")}
 
+\item{successThreshold}{int (0-100) The percentage of routes that must be successfully
+calculated before the job is considered complete.}
+
 \item{base_url}{The base url from which to construct API requests
 (with default set to main server)}
 
@@ -114,6 +118,7 @@ routes_id = batch(desire_lines, username = "robinlovelace", wait = FALSE)
 # Wait for some time, around a minute or 2
 routes_wait = batch(id = routes_id, username = "robinlovelace", wait = TRUE, delete_job = FALSE)
 names(routes_wait)
+sapply(routes_wait, class)
 plot(routes_wait)
 plot(desire_lines$geometry[4])
 plot(routes_wait$geometry[routes_wait$route_number == "4"], add = TRUE)
@@ -128,7 +133,9 @@ routes_id = batch(desire_lines_huge, username = "robinlovelace", wait = FALSE)
 names(routes)
 plot(routes$geometry)
 plot(desire_lines$geometry, add = TRUE, col = "red")
-routes = batch(desire_lines, username = "robinlovelace", wait_time = 5)
+routes = batch(desire_lines, username = "robinlovelace", wait_time = 5, segments = FALSE)
+segments = batch(desire_lines, username = "robinlovelace", wait_time = 5, segments = TRUE)
+both = batch(desire_lines, username = "robinlovelace", wait_time = 5, segments = "both")
 # profvis::profvis(batch_read("test-data.csv.gz"))
 }
 }
