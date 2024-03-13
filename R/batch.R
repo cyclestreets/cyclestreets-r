@@ -27,7 +27,6 @@
 #' @param includeJsonOutput int (1|0)
 #'   Whether to include a column in the resulting CSV data giving the full JSON output from the API, rather than just summary
 #'   information like distance and time.
-#' @param emailOnCompletion Email on completion?
 #' @param username string
 #'   Your CycleStreets account username. In due course this will be replaced with an OAuth token.
 #' @param password string
@@ -41,6 +40,8 @@
 #'   pause: Pause job
 #'   continue: Continue (re-open) job
 #'   terminate: Terminate job and delete data
+#' @param successThreshold int (0-100) The percentage of routes that must be successfully
+#'   calculated before the job is considered complete.
 #' @param delete_job Delete the job? TRUE by default to avoid clogged servers
 #' @param cols_to_keep Columns to return in output sf object
 #' @param segments logical, return segments TRUE/FALSE/"both"
@@ -91,9 +92,9 @@ batch = function(
     maxDistance = 5000,
     filename = "test",
     includeJsonOutput = 1,
-    emailOnCompletion = "you@example.com",
     username = Sys.getenv("CYCLESTREETS_UN"),
     password = Sys.getenv("CYCLESTREETS_PW"),
+    successThreshold = 90,
     base_url = "https://api.cyclestreets.net/v2/batchroutes.createjob",
     pat = Sys.getenv("CYCLESTREETS_BATCH"),
     silent = TRUE,
@@ -126,11 +127,11 @@ batch = function(
       maxDistance,
       filename,
       includeJsonOutput,
-      emailOnCompletion,
       username,
       password,
       base_url,
       id,
+      successThreshold,
       pat,
       silent = silent
     )
@@ -271,13 +272,13 @@ batch_routes = function(
     maxDistance = 5000,
     filename = "test",
     includeJsonOutput = 1,
-    emailOnCompletion = "you@example.com",
     username = Sys.getenv("CYCLESTREETS_UN"),
     password = Sys.getenv("CYCLESTREETS_PW"),
     base_url = "https://api.cyclestreets.net/v2/batchroutes.createjob",
     id = 1,
     pat,
-    silent = TRUE
+    silent = TRUE,
+    successThreshold
 ) {
   batch_url = paste0(base_url, "?key=", pat)
   desire_lines_to_send = desire_lines["id"]
@@ -296,9 +297,9 @@ batch_routes = function(
     maxDistance = maxDistance,
     filename = filename,
     includeJsonOutput = includeJsonOutput,
-    emailOnCompletion = emailOnCompletion,
     username = username,
-    password = password
+    password = password,
+    successThreshold
   )
   message("POSTing the request to create and start the job")
   if(!silent) {
