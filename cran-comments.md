@@ -1,4 +1,4 @@
-We found a bug in the previous release, apologies for the submission of 2 versions in quick succession
+Minor update to fix an issue with the `batch()` function.
 
 ## R CMD check results
 
