@@ -207,7 +207,7 @@ get_routes = function(url, desire_lines = NULL, filename, directory,
   if(file.exists(filename_local)) {
     message(filename, " already exists, overwriting it")
   }
-  httr::GET(url, httr::write_disk(filename_local, overwrite = TRUE))
+  httr::GET(url, httr::write_disk(filename_local, overwrite = TRUE), httr::timeout(600))
   # R.utils::gzip(filename_local)
   # routes = batch_read(gsub(pattern = ".gz", replacement = "", filename_local))
   # list.files(tempdir())
