@@ -338,7 +338,7 @@ batch_control = function(base_url = "https://api.cyclestreets.net/v2/batchroutes
     username = username,
     password = Sys.getenv("CYCLESTREETS_PW")
   )
-  httr::POST(url = batch_url, body = body)
+  httr::POST(url = batch_url, body = body, httr::timeout(600))
 }
 
 batch_jobdata = function(
@@ -358,7 +358,7 @@ batch_jobdata = function(
   )
   # TODO add polling
   if(!silent) message("Sending data, wait...")
-  res = httr::POST(url = batch_url, body = body)
+  res = httr::POST(url = batch_url, body = body, httr::timeout(600))
   res_json = httr::content(res, "parsed")
   error_message = paste0(" ", as.character(res_json$error))
   # Print message if silent = FALSE
@@ -410,7 +410,7 @@ batch_deletejob = function(
   )
   # TODO add polling
   if(!silent) message("Deleting the data")
-  res = httr::POST(url = batch_url, body = body)
+  res = httr::POST(url = batch_url, body = body, httr::timeout(600))
   res_json = httr::content(res, "parsed")
   message("Job ",paste0(res_json, collapse = ": "))
 }
