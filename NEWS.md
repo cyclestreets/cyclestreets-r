@@ -1,3 +1,8 @@
+# cyclestreets 1.0.3 (2024-12)
+
+* Increased timeout time (#91)
+
+
 # cyclestreets 1.0.2 (2024-09)
 
 * Minor update to fix an issue with the `batch()` function (#91)
