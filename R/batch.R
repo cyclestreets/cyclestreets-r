@@ -306,7 +306,21 @@ batch_routes = function(
   }
 
   # # With httr:
-  res = httr::POST(url = batch_url, body = body, httr::timeout(60*60*5), httr::config(connecttimeout = 60 * 60 * 5))
+  res = httr::RETRY(
+      "POST",
+      url = batch_url,
+      body = body,
+      httr::timeout(60 * 60 * 5),
+      httr::config(connecttimeout = 60 * 60 * 5),
+      times = 5,               # Number of retries
+      pause_base = 2,          # Base delay between retries
+      pause_cap = 60,          # Max delay between retries
+      pause_min = 1,           # Min delay between retries
+      terminate_on = NULL,     # Don't terminate on specific status codes
+      retry_on = NULL,         # Retry on all errors (since connection refused isn't an HTTP status code)
+      httr::verbose()          # Optional: outputs detailed request info
+    )
+
   res_json = httr::content(res, "parsed")
 
   # # # With httr2:
@@ -358,7 +372,20 @@ batch_jobdata = function(
   )
   # TODO add polling
   if(!silent) message("Sending data, wait...")
-  res = httr::POST(url = batch_url, body = body, httr::timeout(60*60*5), httr::config(connecttimeout = 60 * 60 * 5))
+  res = httr::RETRY(
+      "POST",
+      url = batch_url,
+      body = body,
+      httr::timeout(60 * 60 * 5),
+      httr::config(connecttimeout = 60 * 60 * 5),
+      times = 5,
+      pause_base = 2,
+      pause_cap = 60,
+      pause_min = 1,
+      terminate_on = NULL,
+      retry_on = NULL,
+      httr::verbose()
+    )
   res_json = httr::content(res, "parsed")
   error_message = paste0(" ", as.character(res_json$error))
   # Print message if silent = FALSE
