@@ -207,7 +207,21 @@ get_routes = function(url, desire_lines = NULL, filename, directory,
   if(file.exists(filename_local)) {
     message(filename, " already exists, overwriting it")
   }
-  httr::GET(url, httr::write_disk(filename_local, overwrite = TRUE), httr::timeout(60*60*5),httr::config(connecttimeout = 60 * 60 * 5))
+  httr::RETRY(
+      "GET",
+      url,
+      httr::write_disk(filename_local, overwrite = TRUE),
+      httr::timeout(60 * 60 * 5),
+      httr::config(connecttimeout = 60 * 60 * 5),
+      times = 5,
+      pause_base = 2,
+      pause_cap = 60,
+      pause_min = 10,
+      terminate_on = NULL,
+      retry_on = NULL,
+      httr::verbose()
+    )
+
   # R.utils::gzip(filename_local)
   # routes = batch_read(gsub(pattern = ".gz", replacement = "", filename_local))
   # list.files(tempdir())
@@ -315,7 +329,7 @@ batch_routes = function(
       times = 5,               # Number of retries
       pause_base = 2,          # Base delay between retries
       pause_cap = 60,          # Max delay between retries
-      pause_min = 1,           # Min delay between retries
+      pause_min = 10,           # Min delay between retries
       terminate_on = NULL,     # Don't terminate on specific status codes
       retry_on = NULL,         # Retry on all errors (since connection refused isn't an HTTP status code)
       httr::verbose()          # Optional: outputs detailed request info
@@ -381,7 +395,7 @@ batch_jobdata = function(
       times = 5,
       pause_base = 2,
       pause_cap = 60,
-      pause_min = 1,
+      pause_min = 10,
       terminate_on = NULL,
       retry_on = NULL,
       httr::verbose()
