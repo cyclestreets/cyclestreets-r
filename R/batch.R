@@ -51,8 +51,9 @@
 #' if(FALSE) {
 #' library(sf)
 #' desire_lines = od::od_to_sf(od::od_data_df, od::od_data_zones)[4:5, 1:3]
-#' u = paste0("https://github.com/cyclestreets/cyclestreets-r/",
-#'   "releases/download/v0.5.3/od-longford-10-test.Rds")
+#' u1 = "https://github.com/cyclestreets/cyclestreets-r/"
+#' u2 = "releases/download/v0.5.3/od-longford-10-test.Rds"
+#' u = paste0(u1, u2)
 #' desire_lines = readRDS(url(u))
 #' routes_id = batch(desire_lines, username = "robinlovelace", wait = FALSE)
 #' # Wait for some time, around a minute or 2
@@ -208,7 +209,21 @@ get_routes = function(url, desire_lines = NULL, filename, directory,
   if(file.exists(filename_local)) {
     message(filename, " already exists, overwriting it")
   }
-  httr::GET(url, httr::write_disk(filename_local, overwrite = TRUE))
+  httr::RETRY(
+      "GET",
+      url,
+      httr::write_disk(filename_local, overwrite = TRUE),
+      httr::timeout(60 * 60 * 10),
+      httr::config(connecttimeout = 60 * 60 * 10),
+      times = 5,
+      pause_base = 2,
+      pause_cap = 600, # Increased maximum pause cap
+      pause_min = 30,
+      terminate_on = NULL,
+      retry_on = NULL
+      # httr::verbose()
+    )
+
   # R.utils::gzip(filename_local)
   # routes = batch_read(gsub(pattern = ".gz", replacement = "", filename_local))
   # list.files(tempdir())
@@ -307,7 +322,21 @@ batch_routes = function(
   }
 
   # # With httr:
-  res = httr::POST(url = batch_url, body = body, httr::timeout(600))
+  res = httr::RETRY(
+      "POST",
+      url = batch_url,
+      body = body,
+      httr::timeout(60 * 60 * 10),
+      httr::config(connecttimeout = 60 * 60 * 10),
+      times = 5,               # Number of retries
+      pause_base = 2,          # Base delay between retries
+      pause_cap = 600,          # Max delay between retries
+      pause_min = 30,           # Min delay between retries
+      terminate_on = NULL,     # Don't terminate on specific status codes
+      retry_on = NULL        # Retry on all errors (since connection refused isn't an HTTP status code)
+      # httr::verbose()          # Optional: outputs detailed request info
+    )
+
   res_json = httr::content(res, "parsed")
 
   # # # With httr2:
@@ -339,7 +368,7 @@ batch_control = function(base_url = "https://api.cyclestreets.net/v2/batchroutes
     username = username,
     password = Sys.getenv("CYCLESTREETS_PW")
   )
-  httr::POST(url = batch_url, body = body)
+  httr::POST(url = batch_url, body = body, httr::timeout(60*60*5))
 }
 
 batch_jobdata = function(
@@ -359,7 +388,20 @@ batch_jobdata = function(
   )
   # TODO add polling
   if(!silent) message("Sending data, wait...")
-  res = httr::POST(url = batch_url, body = body)
+  res = httr::RETRY(
+      "POST",
+      url = batch_url,
+      body = body,
+      httr::timeout(60 * 60 * 10),
+      httr::config(connecttimeout = 60 * 60 * 10),
+      times = 5,
+      pause_base = 2,
+      pause_cap = 600,
+      pause_min = 30,
+      terminate_on = NULL,
+      retry_on = NULL
+      # httr::verbose()
+    )
   res_json = httr::content(res, "parsed")
   error_message = paste0(" ", as.character(res_json$error))
   # Print message if silent = FALSE
@@ -411,7 +453,7 @@ batch_deletejob = function(
   )
   # TODO add polling
   if(!silent) message("Deleting the data")
-  res = httr::POST(url = batch_url, body = body)
+  res = httr::POST(url = batch_url, body = body, httr::timeout(60*60*5), httr::config(connecttimeout = 60 * 60 * 10))
   res_json = httr::content(res, "parsed")
   message("Job ",paste0(res_json, collapse = ": "))
 }
