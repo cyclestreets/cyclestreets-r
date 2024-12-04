@@ -1,4 +1,4 @@
-Minor update to fix an issue with the `batch()` function.
+Minor patches.
 
 ## R CMD check results
 
