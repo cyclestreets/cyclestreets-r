@@ -218,7 +218,7 @@ get_routes = function(url, desire_lines = NULL, filename, directory,
       pause_cap = 600, # Increased maximum pause cap
       pause_min = 30,
       terminate_on = NULL,
-      retry_on = NULL,
+      retry_on = NULL
       # httr::verbose()
     )
 
