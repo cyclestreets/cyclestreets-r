@@ -50,8 +50,9 @@
 #' if(FALSE) {
 #' library(sf)
 #' desire_lines = od::od_to_sf(od::od_data_df, od::od_data_zones)[4:5, 1:3]
-#' u = paste0("https://github.com/cyclestreets/cyclestreets-r/",
-#'   "releases/download/v0.5.3/od-longford-10-test.Rds")
+#' u1 = "https://github.com/cyclestreets/cyclestreets-r/"
+#' u2 = "releases/download/v0.5.3/od-longford-10-test.Rds"
+#' u = paste0(u1, u2)
 #' desire_lines = readRDS(url(u))
 #' routes_id = batch(desire_lines, username = "robinlovelace", wait = FALSE)
 #' # Wait for some time, around a minute or 2
