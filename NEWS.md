@@ -2,6 +2,7 @@
 
 * Increased timeout time (#91)
 * Use retry
+* Added Wang Zhao to DESCRIPTION file
 
 # cyclestreets 1.0.2 (2024-09)
 
