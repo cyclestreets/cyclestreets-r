@@ -219,7 +219,7 @@ get_routes = function(url, desire_lines = NULL, filename, directory,
       pause_min = 30,
       terminate_on = NULL,
       retry_on = NULL,
-      httr::verbose()
+      # httr::verbose()
     )
 
   # R.utils::gzip(filename_local)
@@ -332,7 +332,7 @@ batch_routes = function(
       pause_min = 30,           # Min delay between retries
       terminate_on = NULL,     # Don't terminate on specific status codes
       retry_on = NULL,         # Retry on all errors (since connection refused isn't an HTTP status code)
-      httr::verbose()          # Optional: outputs detailed request info
+      # httr::verbose()          # Optional: outputs detailed request info
     )
 
   res_json = httr::content(res, "parsed")
@@ -398,7 +398,7 @@ batch_jobdata = function(
       pause_min = 30,
       terminate_on = NULL,
       retry_on = NULL,
-      httr::verbose()
+      # httr::verbose()
     )
   res_json = httr::content(res, "parsed")
   error_message = paste0(" ", as.character(res_json$error))
