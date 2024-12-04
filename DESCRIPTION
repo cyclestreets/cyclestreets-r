@@ -10,7 +10,9 @@ Authors@R: c(
     person("Joey", "Talbot", , "j.d.talbot@leeds.ac.uk", role = "aut",
            comment = c(ORCID = "0000-0002-6520-4560")),
     person("Malcolm", "Morgan", role = "ctb",
-           comment = c(ORCID = "0000-0002-9488-9183"))
+           comment = c(ORCID = "0000-0002-9488-9183")),
+    person("Zhao", "Wang", role = "ctb",
+           comment = c(ORCID = "0000-0002-4054-0533"))
   )
 Description: An interface to the cycle routing/data services provided by
     'CycleStreets', a not-for-profit social enterprise and advocacy

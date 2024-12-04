@@ -1,9 +1,7 @@
-# cyclestreets 1.0.3
-
 # cyclestreets 1.0.3 (2024-12)
 
 * Increased timeout time (#91)
-
+* Use retry
 
 # cyclestreets 1.0.2 (2024-09)
 
