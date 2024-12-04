@@ -331,7 +331,7 @@ batch_routes = function(
       pause_cap = 600,          # Max delay between retries
       pause_min = 30,           # Min delay between retries
       terminate_on = NULL,     # Don't terminate on specific status codes
-      retry_on = NULL,         # Retry on all errors (since connection refused isn't an HTTP status code)
+      retry_on = NULL        # Retry on all errors (since connection refused isn't an HTTP status code)
       # httr::verbose()          # Optional: outputs detailed request info
     )
 
@@ -397,7 +397,7 @@ batch_jobdata = function(
       pause_cap = 600,
       pause_min = 30,
       terminate_on = NULL,
-      retry_on = NULL,
+      retry_on = NULL
       # httr::verbose()
     )
   res_json = httr::content(res, "parsed")
