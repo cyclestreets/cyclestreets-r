@@ -211,12 +211,12 @@ get_routes = function(url, desire_lines = NULL, filename, directory,
       "GET",
       url,
       httr::write_disk(filename_local, overwrite = TRUE),
-      httr::timeout(60 * 60 * 5),
-      httr::config(connecttimeout = 60 * 60 * 5),
+      httr::timeout(60 * 60 * 10),
+      httr::config(connecttimeout = 60 * 60 * 10),
       times = 5,
       pause_base = 2,
-      pause_cap = 60,
-      pause_min = 10,
+      pause_cap = 600, # Increased maximum pause cap
+      pause_min = 30,
       terminate_on = NULL,
       retry_on = NULL,
       httr::verbose()
@@ -324,12 +324,12 @@ batch_routes = function(
       "POST",
       url = batch_url,
       body = body,
-      httr::timeout(60 * 60 * 5),
-      httr::config(connecttimeout = 60 * 60 * 5),
+      httr::timeout(60 * 60 * 10),
+      httr::config(connecttimeout = 60 * 60 * 10),
       times = 5,               # Number of retries
       pause_base = 2,          # Base delay between retries
-      pause_cap = 60,          # Max delay between retries
-      pause_min = 10,           # Min delay between retries
+      pause_cap = 600,          # Max delay between retries
+      pause_min = 30,           # Min delay between retries
       terminate_on = NULL,     # Don't terminate on specific status codes
       retry_on = NULL,         # Retry on all errors (since connection refused isn't an HTTP status code)
       httr::verbose()          # Optional: outputs detailed request info
@@ -390,12 +390,12 @@ batch_jobdata = function(
       "POST",
       url = batch_url,
       body = body,
-      httr::timeout(60 * 60 * 5),
-      httr::config(connecttimeout = 60 * 60 * 5),
+      httr::timeout(60 * 60 * 10),
+      httr::config(connecttimeout = 60 * 60 * 10),
       times = 5,
       pause_base = 2,
-      pause_cap = 60,
-      pause_min = 10,
+      pause_cap = 600,
+      pause_min = 30,
       terminate_on = NULL,
       retry_on = NULL,
       httr::verbose()
@@ -451,7 +451,7 @@ batch_deletejob = function(
   )
   # TODO add polling
   if(!silent) message("Deleting the data")
-  res = httr::POST(url = batch_url, body = body, httr::timeout(60*60*5), httr::config(connecttimeout = 60 * 60 * 5))
+  res = httr::POST(url = batch_url, body = body, httr::timeout(60*60*5), httr::config(connecttimeout = 60 * 60 * 10))
   res_json = httr::content(res, "parsed")
   message("Job ",paste0(res_json, collapse = ": "))
 }
